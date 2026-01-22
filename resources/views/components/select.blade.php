@@ -1,0 +1,25 @@
+@props(['model', 'label', 'required', 'no_search', 'id', 'multiple' => false])
+
+<div wire:ignore>
+    @if( isset( $label ) && $label )
+        <label for="">{{ $label }}
+            @if ( isset( $required ) && $required )
+                <b class="c_red">*</b>
+            @endif
+        </label>
+    @endif
+    @if ( $multiple )
+        <select class="form-control select2" x-model="{{ $model ?? '' }}" id="{{$id ?? ''}}" data-minimum-results-for-search="{{ $no_search ?? '' }}" multiple>
+    @else
+        <select class="form-control select2" x-model="{{ $model ?? '' }}" id="{{$id ?? ''}}" data-minimum-results-for-search="{{ $no_search ?? '' }}">    
+    @endif
+        {{ $slot }}
+    </select>
+</div>
+
+@if ( isset( $model ) && $model )    
+    @php
+        $model = str_replace('$wire.','',$model)
+    @endphp
+    @error( $model ) <span class="c_red">{{ $message }}</span> @enderror
+@endif

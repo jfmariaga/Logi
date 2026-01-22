@@ -1,0 +1,414 @@
+/* ======================================================
+   MEDIA / UTILIDADES
+====================================================== */
+
+@media (width > 700px) {
+  .has-dropdown {
+    height: 90px !important;
+  }
+}
+
+.mw_150 {
+  max-width: 150px;
+}
+
+.mw_400 {
+  max-width: 400px;
+}
+
+.w_180px {
+  width: 180px;
+}
+
+.fs18 {
+  font-size: 18px;
+}
+
+.item_equipo p {
+  margin: 0 !important;
+  text-align: justify;
+}
+
+/* ======================================================
+   IMÁGENES
+====================================================== */
+
+.img_banner {
+  width: 98%;
+  display: block;
+  margin: 20px auto 0;
+  border-radius: 20px;
+}
+
+.img_detail {
+  width: 150px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.img_detail2 {
+  width: auto;
+  max-height: 250px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+/* ======================================================
+   LOADING
+====================================================== */
+
+/* .cc-loadingpage,
+.cc-loadingpage_transparent {
+  position: fixed;
+  inset: 0;
+  z-index: 999999999;
+  background: url('https://admin.gruasytransporte.com/gruas/logo.gif') center no-repeat var(--tp-grey-1);
+}
+
+.cc-loadingpage_transparent {
+  opacity: 0.5;
+} */
+
+/* ======================================================
+   BOTÓN WHATSAPP (NEUTRO)
+====================================================== */
+
+.contenedorbotton {
+  width: 90px;
+  height: 240px;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+
+.botonF1 {
+  width: 65px;
+  height: 65px;
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  border: none;
+  outline: none;
+  transition: 0.3s ease;
+}
+
+.botonF1:hover {
+  width: 70px;
+  height: 70px;
+}
+
+/* ======================================================
+   TEXTOS / FONDOS
+====================================================== */
+
+.text_amarillo {
+  color: var(--tp-theme-1) !important;
+  /* ahora gris */
+}
+
+.background_grey {
+  background-color: var(--tp-grey-1);
+}
+
+/* ======================================================
+   TARJETAS DE SERVICIOS (MONOCROMO)
+====================================================== */
+
+.card_services {
+  border: 1px solid var(--tp-theme-1);
+  border-radius: 5px;
+  display: flex;
+  background: var(--tp-theme-1);
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+/* .card_services:hover .content_img_services img {
+  transform: translateY(-15%);
+} */
+
+.card_services:hover .content_card_services {
+  background: var(--tp-common-white);
+  color: var(--tp-heading-1);
+}
+
+.card_services img {
+  max-width: 150px;
+  border-radius: 5px 0 0 5px;
+}
+
+/* ======================================================
+   CONTENIDO TARJETA
+====================================================== */
+
+/* .content_card_services {
+  padding: 10px;
+  text-align: center;
+  color: var(--tp-text-1) !important;
+  border-radius: 0 5px 5px 0;
+  transition: 0.5s ease;
+  font-size: 18px !important;
+} */
+
+.content_card_services {
+  padding: 10px;
+  text-align: center;
+  color: var(--tp-text-1) !important;
+  border-radius: 0 5px 5px 0;
+  transition: 0.5s ease;
+  font-size: 18px !important;
+
+  /* 🔑 CENTRADO TOTAL */
+  display: flex;
+  align-items: center;
+  /* vertical */
+  justify-content: center;
+  /* horizontal */
+}
+
+
+.tp-features__paragraph {
+  color: var(--tp-common-white);
+  font-size: 16px;
+  line-height: 1.6;
+  max-width: 90%;
+}
+
+
+/* ======================================================
+   IMAGEN SERVICIOS
+====================================================== */
+
+.content_img_services {
+  width: 100%;
+  height: 150px;
+  /* 🔑 tamaño uniforme */
+  background: var(--tp-heading-1);
+  border-radius: 5px 0 0 5px;
+  overflow: hidden;
+  /* CLAVE */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.5s ease;
+}
+
+/* IMAGEN */
+.content_img_services img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* 🔑 CLAVE ABSOLUTA */
+  object-position: center;
+  display: block;
+  filter: drop-shadow(0 0 0.5rem var(--tp-theme-1));
+  transition: transform 0.5s ease;
+}
+
+/* ======================================================
+   SECCIÓN ¿POR QUÉ ELEGIRNOS?
+====================================================== */
+
+.img_pq img {
+  width: 100%;
+  border: 10px solid var(--tp-theme-1);
+}
+
+/* ======================================================
+   ÍTEMS ESPECIALES
+====================================================== */
+
+.item_img_services_all {
+  background: linear-gradient(to right,
+      var(--tp-theme-1) 0%,
+      var(--tp-theme-1) 50%,
+      var(--tp-grey-1) 50%,
+      var(--tp-grey-1) 100%);
+  border-radius: 10px;
+  transition: 0.5s ease;
+}
+
+.item_img_services_all img {
+  width: 80%;
+}
+
+.no_check {
+  width: 30px;
+  height: 30px;
+  background: var(--tp-theme-1);
+  border-radius: 50%;
+  color: var(--tp-common-black);
+  font-size: 20px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ======================================================
+   HEADER
+====================================================== */
+
+#header-sticky {
+  box-shadow: 0 4px 10px rgba(3, 4, 28, 0.1);
+}
+
+
+.fs18 {
+  font-size: 18px;
+}
+
+.brand-area {
+  padding: 0px 0px 90px 0px;
+  z-index: 0;
+  position: relative;
+}
+
+
+.brand-single-item-cell {
+  width: 180px;
+  /* mismo ancho para todos */
+  height: 100px;
+  /* mismo alto para todos */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-single-item-cell img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  /* CLAVE: no deforma */
+}
+
+.footer-video {
+  position: relative;
+  height: 140px;
+  /* ALTURA REAL DEL FOOTER */
+  overflow: hidden;
+}
+
+/* contenedor del personaje */
+.tp-footer__car {
+  position: absolute;
+  bottom: 0;
+  /* PEGADO AL SUELO */
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* video */
+.tp-footer__car video {
+  height: 130px;
+  /* TAMAÑO PROTAGONISTA */
+  width: auto;
+  display: block;
+}
+
+.tp-footer__car {
+  animation: walk 12s linear infinite;
+}
+
+@keyframes walk {
+  from {
+    left: -150px;
+  }
+
+  to {
+    left: 100%;
+  }
+}
+
+
+/* ----------------------marcacion---------------------
+*/
+
+.terminal-card {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+}
+
+.terminal-title {
+  font-weight: 600;
+  color: #111;
+}
+
+.terminal-muted {
+  color: #6c757d;
+}
+
+.estado-libre {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.estado-trabajando {
+  color: #111;
+  font-weight: bold;
+}
+
+.btn-terminal {
+  min-width: 180px;
+  height: 55px;
+  font-size: 18px;
+  border-radius: 30px;
+  font-weight: 600;
+}
+
+.btn-entrada {
+  background: #111;
+  color: #fff;
+  border: none;
+}
+
+.btn-salida {
+  background: #6c757d;
+  color: #fff;
+  border: none;
+}
+
+.btn-corp {
+  background: #92a3b1;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+}
+
+.btn-corp:hover {
+  background: #eaedf0;
+  color: #fff;
+}
+
+.card-corp {
+  border-left: 5px solid #9CA3AF;
+  border-radius: 12px;
+}
+
+.text-corp {
+  color: #0E69B2;
+  font-weight: 700;
+}
+
+.sede-header {
+  background: #f4f6f9;
+  border-left: 5px solid #9CA3AF;
+  font-weight: 600;
+}
+
+.badge-sede {
+  background: #2ecc71;
+  color: white;
+}
+
+.badge-fuera {
+  background: #f39c12;
+  color: white;
+}
+
+.alert-corp {
+  border-left: 6px solid #f39c12;
+}
+
