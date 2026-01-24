@@ -19,6 +19,7 @@
                             <strong x-text="nota.titulo"></strong>
                             {{-- <div class="italic_sub">Creada por: </div> --}}
                             <div class="italic_sub">Expira el: <span x-text="__formatDate( nota.fecha_expired )"></span> </div>
+                            <div class="italic_sub">Destinatarios: <span x-text="nota.rol ? nota.rol.name : 'Todos'"></span> </div>
 
                             <div class="d-flex lh-1">
                                 <p x-text="nota.descripcion" class="lh-1 mt-1"></p>

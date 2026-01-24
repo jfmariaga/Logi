@@ -1,5 +1,5 @@
 <div>
-    <div class="tpcontact-area p-relative fix">
+    <div class="tpcontact-area p-relative fix" id="contacto">
         <div class="tpcontact">
             <div class="container-fluid">
                 <div class="row">

@@ -69,13 +69,13 @@
             <template x-for="( data, fecha ) in getData">
 
                 <div class="content-body">
-                    <div class="card mb-1 mt-1">
+                    <div class="card mb-1 mt-1 p-0">
                         <div class="card-header card-head-inverse bg_menu br_10" >
                             <h5 x-text="__formatDate(fecha)"></h5>
                         </div>
                     </div>
 
-                    <div x-show="Object.keys(data.operadores).length > 0" class="bs-callout-danger callout-border-left mt-1 p-1">
+                    <div x-show=" data.operadores && Object.keys(data.operadores).length > 0" class="bs-callout-warning callout-border-left mt-1 p-1">
                         <strong>Operadores disponibles para este día!</strong>
                         <template x-for="operador in data.operadores">
                             <div>
@@ -131,7 +131,7 @@
                                                         <template x-for="usuario in programacion.personal">
                                                             <div class="col-md-4 mb-1">
                                                                 <span>
-                                                                    <img class="avatar_table" :src="`storage/avatars/${usuario.picture ?? 'img/default.png' }`" onerror="this.onerror=null;this.src='img/default.png';" alt="avatar">
+                                                                    <img class="avatar_table" :src="`storage/avatars/${usuario.picture ?? 'default.png' }`" onerror="this.onerror=null;this.src='img/default.png';" alt="avatar">
                                                                 </span>
                                                                 <span x-text="`${usuario.name} ${usuario.last_name}`" class="ml-1"></span>
                                                                 <span x-show="usuario.phone" x-text="` - ${usuario.phone}`"></span>

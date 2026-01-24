@@ -5,6 +5,8 @@ namespace App\Livewire\Admin;
 use Livewire\Component;
 use App\Models\Curso;
 use App\Models\CursoAsignacion;
+use App\Models\CursoMaterial;
+use App\Models\CursoPregunta;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
 
@@ -153,9 +155,15 @@ class CursoAsignaciones extends Component
 
     public function render()
     {
+        // return view('livewire.admin.curso-asignaciones', [
+        //     'usuarios' => User::with('roles')->orderBy('name')->get(),
+        //     'roles' => Role::orderBy('name')->get(),
+        // ])->title('Asignaciones de Curso');
         return view('livewire.admin.curso-asignaciones', [
             'usuarios' => User::with('roles')->orderBy('name')->get(),
             'roles' => Role::orderBy('name')->get(),
+            'tieneMateriales' => CursoMaterial::where('curso_id', $this->curso->id)->exists(),
+            'tienePreguntas' =>  CursoPregunta::where('curso_id', $this->curso->id)->exists(),
         ])->title('Asignaciones de Curso');
     }
 }

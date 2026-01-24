@@ -147,7 +147,7 @@
                                 if (ok) {
                                     this.preguntas = this.preguntas.filter(x => x.id != id);
                                     $(`#preg_${id}`).remove();
-                                    toastRight('error', 'Pregunta eliminada');
+                                    toastRight('error', 'Pregunta eliminada');  
                                 }
                             }
                         )

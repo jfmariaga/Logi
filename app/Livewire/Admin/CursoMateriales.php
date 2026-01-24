@@ -13,9 +13,8 @@ class CursoMateriales extends Component
     use WithFileUploads;
 
     public $curso;
-    public $materiales = [];
-
     public $material_id, $tipo, $titulo, $archivo, $url, $orden = 1;
+    public $archivo_actual;
 
     // preview
     public $previewMaterial;
@@ -66,7 +65,7 @@ class CursoMateriales extends Component
             return null;
         }
 
-        return $id ? "https://www.youtube.com/embed/".$id : null;
+        return $id ? "https://www.youtube.com/embed/" . $id : null;
     }
 
     /* ================= CRUD ================= */
@@ -77,7 +76,7 @@ class CursoMateriales extends Component
 
         $path = null;
 
-        if (in_array($this->tipo, ['pdf','ppt','video']) && $this->archivo) {
+        if (in_array($this->tipo, ['pdf', 'ppt', 'video']) && $this->archivo) {
             $path = $this->archivo->store('cursos/materiales', 'public');
         }
 
@@ -129,22 +128,21 @@ class CursoMateriales extends Component
                 Storage::disk('public')->delete($material->archivo_path);
             }
             $material->delete();
+            $this->limpiar();
             return true;
         }
-
         return false;
     }
 
     public function limpiar()
     {
-        $this->reset(['material_id','tipo','titulo','archivo','url','orden']);
+        $this->reset(['material_id', 'tipo', 'titulo', 'archivo', 'url', 'orden', 'archivo_actual','previewMaterial','previewEmbed']);
         $this->orden = 1;
         $this->resetValidation();
     }
 
     public function render()
     {
-        return view('livewire.admin.curso-materiales')
-            ->title('Materiales del Curso');
+        return view('livewire.admin.curso-materiales')->title('Materiales del Curso');
     }
 }

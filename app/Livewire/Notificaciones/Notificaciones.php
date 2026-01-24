@@ -4,6 +4,7 @@ namespace App\Livewire\Notificaciones;
 
 use Livewire\Component;
 
+use Illuminate\Support\Facades\Auth;
 use App\Models\Notificacion;
 
 class Notificaciones extends Component
@@ -15,8 +16,14 @@ class Notificaciones extends Component
     }
 
     public function getNotas(){
-        $hoy_menos30 = date('Y-m-d');
-        $this->notas = Notificacion::where('fecha_expired', '>=', $hoy_menos30)->with('usuario')->orderBy('id', 'desc')->get()->toArray();
+
+        $this->id_rol_user = Auth::user()->roles->first()->id ?? 0;
+
+        $hoy = date('Y-m-d');
+        $this->notas = Notificacion::where('fecha_expired', '>=', $hoy)->where(function($query) {
+                $query->whereNull('role_id')
+                ->orWhere('role_id', $this->id_rol_user);
+            })->with('usuario')->orderBy('id', 'desc')->get()->toArray();
 
         // dd( $this->notas );
     }

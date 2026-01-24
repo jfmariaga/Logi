@@ -66,10 +66,10 @@
                                             <div class="tpheader__main-menu main-menu">
                                                 <nav class="tp-main-menu-content">
                                                     <ul>
-                                                        <li><a href="/">INICIO</a></li>
+                                                        <li><a href="#inicio">INICIO</a></li>
                                                         <li><a href="#servicios">SERVICIOS</a></li>
                                                         <li><a href="#clientes">CLIENTES</a></li>
-                                                        <li><a href="#cotacto">CONTACTO</a></li>
+                                                        <li><a href="#contacto">CONTACTO</a></li>
                                                         <li><a href="{{ route('marcacion') }}">Marcación</a></li>
                                                         <li><a href="{{ route('login') }}">ADMIN</a></li>
                                                     </ul>

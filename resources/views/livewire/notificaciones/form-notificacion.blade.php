@@ -26,8 +26,16 @@
             <div class="col-md-6 mt-1">
                 <x-input model="$wire.form.fecha_expired" type="date" label="Fecha expiración" required="true"></x-input>
             </div>
-            <div class="col-md-12 mt-1">
+            <div class="col-md-6 mt-1">
                 <x-input model="$wire.form.titulo" label="Titulo" required="true"></x-input>
+            </div>
+            <div class="col-md-6 mt-1">
+                <x-select model="$wire.form.role_id" label="Destinatarios" id="role_id">
+                    <option value="0" default selected>Todos los usuarios...</option>
+                    @foreach ($roles as $rol)
+                        <option value="{{ $rol->id }}">{{ $rol->name }}</option>
+                    @endforeach
+                </x-select>
             </div>
             <div class="col-md-12 mt-1">
                 <x-textarea model="$wire.form.descripcion" label="Descripción" required="true"></x-textarea>
@@ -55,6 +63,9 @@
                 init(){
                     $('#tipo').change(() => {
                         @this.form.tipo = $('#tipo').val()
+                    })
+                    $('#role_id').change(() => {
+                        @this.form.role_id = $('#role_id').val()
                     })
                     Livewire.on('edit_form_nota', ( form_old ) => {
                         this.openForm( form_old )
@@ -84,14 +95,16 @@
 
                     this.loading_form = false
 
-                    @this.form_old          = item_old;
-                    @this.form.tipo         = item_old ? item_old.tipo : '';
-                    @this.form.titulo       = item_old ? item_old.titulo : '';
+                    @this.form_old              = item_old;
+                    @this.form.tipo             = item_old ? item_old.tipo : '';
+                    @this.form.titulo           = item_old ? item_old.titulo : '';
                     @this.form.descripcion      = item_old ? item_old.descripcion : '';
                     @this.form.fecha_expired    = item_old ? item_old.fecha_expired : '';
+                    @this.form.role_id          = item_old ? item_old.role_id : '';
 
                     setTimeout(() => {
                         $('#tipo').val( @this.form.tipo ).trigger('change');
+                        $('#role_id').val( @this.form.role_id ).trigger('change');
                     }, 300);
 
                     $('#form_nota').modal('show');

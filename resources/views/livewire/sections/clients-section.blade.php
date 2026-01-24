@@ -10,7 +10,7 @@
         $items = $data['items'] ?? [];
     @endphp
 
-    <div class="challenges-area pt-110 pb-95">
+    <div class="challenges-area pt-110 pb-95" id="clientes">
         <div class="container">
 
             {{-- TÍTULO --}}

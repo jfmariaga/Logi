@@ -17,20 +17,22 @@
         <div class="col-md-6 mt-1">
             <x-input model="$wire.user_name" label="Username" required="true"></x-input>
         </div>
-        <div class="col-md-6 mt-1">
-            <x-input type="password" model="$wire.password" label="Contraseña" required="true"
-                placeholder="********"></x-input>
-        </div>
+        <template x-if="!$wire.user_id">
+            <div class="col-md-6 mt-1" >
+                <x-input type="password" model="$wire.password" label="Contraseña" required="true"
+                    placeholder="********"></x-input>
+            </div>
+        </template>
         <div class="col-md-6 mt-1">
             <x-input model="$wire.phone" type="number" label="Teléfono"></x-input>
         </div>
         <div class="col-md-6 mt-1">
-            <x-input model="$wire.email" label="Correo" required="true"></x-input>
+            <x-input model="$wire.email" label="Correo" placeholder="Opcional..."></x-input>
         </div>
 
         <div class="col-md-6 mt-1">
             <x-select model="$wire.role_id" label="Rol Asignado" required="true" id="role">
-                <option value="">----Seleccionar----</option>
+                <option value="" selected disabled>----Seleccionar----</option>
                 @foreach ($roles as $role)
                     <option value="{{ $role->id }}">{{ $role->name }}</option>
                 @endforeach
@@ -39,7 +41,7 @@
 
         <div class="col-md-6 mt-1" x-show="$wire.user_id">
             <x-select model="$wire.status" label="Estado" id="status">
-                <option value="">----Seleccionar----</option>
+                <option value="" selected disabled>----Seleccionar----</option>
                 <option value="1">Activo</option>
                 <option value="0">Inactivo</option>
             </x-select>
@@ -64,12 +66,24 @@
                 <span class="c_red">{{ $message }}</span>
             @enderror
         </div>
+        <template x-if="$wire.user_id">
+            <div class="col-md-12" >
+                <hr>
+                <div class="col-md-6 mt-1">
+                <x-input type="password" model="$wire.reset_password" label="Reestablecer contraseña" required="true"
+                    placeholder="********"></x-input>
+            </div>
+        </template>
     </div>
 
     <x-slot name="footer">
-        <span>
+        <div x-show="!loading_form">
             <button type="button" class="btn grey btn-outline-secondary" data-dismiss="modal">Cancelar</button>
             <button type="button" class="btn btn-outline-primary" x-on:click="saveFront()">Guardar</button>
-        </span>
+        </div>
+
+        <div x-show="loading_form">
+            <x-spinner></x-spinner>
+        </div>
     </x-slot>
 </x-modal>

@@ -13,12 +13,17 @@
 
         <div class="tpoffcanvas__logo">
             @if (!empty($data['logo']))
-                <img src="{{ asset($data['logo']) }}" style="max-width:350px;" alt="logo">
+                <img src="{{ asset($data['logo']) }}" style="max-width:250px;" alt="logo">
             @endif
         </div>
 
         <div class="tp-main-menu-mobile"></div>
 
+        @php
+            // limpiar el numero de lefefoon ya que puedenn veir dos o de manera corrupta
+            $data['phone'] = explode('-', $data['phone'])[0] ?? $data['phone'];
+            $data['phone'] = trim( $data['phone'] );
+        @endphp
         <div class="offcanvas__btn mb-20">
             <a href="https://api.whatsapp.com/send?phone={{ preg_replace('/\D/', '', $data['phone'] ?? '') }}"
                 target="_blank" class="tp-btn w-100">
@@ -102,10 +107,10 @@
                                         <div class="tpheader__main-menu main-menu">
                                             <nav class="tp-main-menu-content">
                                                 <ul>
-                                                    <li><a href="/">INICIO</a></li>
+                                                    <li><a href="#inicio">INICIO</a></li>
                                                     <li><a href="#servicios">SERVICIOS</a></li>
                                                     <li><a href="#clientes">CLIENTES</a></li>
-                                                    <li><a href="#cotacto">CONTACTO</a></li>
+                                                    <li><a href="#contacto">CONTACTO</a></li>
                                                     <li><a href="{{ route('marcacion') }}">MARCACIÓN</a></li>
                                                     <li><a href="{{ route('login') }}">ADMIN</a></li>
                                                 </ul>
@@ -125,7 +130,7 @@
     <div class="mobile-header d-xl-none pt-20 pb-20">
         <div class="container d-flex justify-content-between align-items-center">
             @if (!empty($data['logo']))
-                <img src="{{ asset($data['logo']) }}" style="max-width:350px;">
+                <img src="{{ asset($data['logo']) }}" style="max-width:280px;">
             @endif
 
             <a class="tp-menu-bar" href="javascript:void(0)">

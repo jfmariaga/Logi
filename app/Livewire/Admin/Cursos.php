@@ -25,58 +25,6 @@ class Cursos extends Component
         ];
     }
 
-    // public function getCursos()
-    // {
-    //     $this->skipRender();
-
-    //     return Curso::withCount([
-    //         // inscritos (asignados por usuario o rol)
-    //         'asignaciones as inscritos',
-
-    //         // usuarios que hicieron al menos un intento
-    //         'intentos as iniciaron' => function ($q) {
-    //             $q->select(\DB::raw('count(distinct user_id)'));
-    //         },
-
-    //         // aprobados
-    //         'intentos as aprobados' => function ($q) {
-    //             $q->where('aprobado', 1)
-    //                 ->select(\DB::raw('count(distinct user_id)'));
-    //         },
-
-
-
-    //         // reprobados (último intento no aprobado)
-    //     ])
-    //         ->orderByDesc('id')
-    //         ->get()
-    //         ->map(function ($c) {
-
-    //             $reprobados = CursoIntento::where('curso_id', $c->id)
-    //                 ->select('user_id')
-    //                 ->groupBy('user_id')
-    //                 ->havingRaw('MAX(aprobado) = 0')
-    //                 ->count();
-
-    //             $faltan = max(($c->inscritos ?? 0) - (($c->aprobados ?? 0) + $reprobados), 0);
-
-
-    //             return [
-    //                 'id' => $c->id,
-    //                 'titulo' => $c->titulo,
-    //                 'descripcion' => $c->descripcion,
-    //                 'fecha_inicio' => $c->fecha_inicio,
-    //                 'fecha_fin' => $c->fecha_fin,
-    //                 'activo' => $c->activo,
-    //                 'inscritos' => $c->inscritos ?? 0,
-    //                 'aprobados' => $c->aprobados ?? 0,
-    //                 'reprobados' => $reprobados,
-    //                 'faltan' => $faltan,
-    //             ];
-    //         })
-    //         ->toArray();
-    // }
-
     public function getCursos()
     {
         $this->skipRender();
@@ -126,19 +74,6 @@ class Cursos extends Component
 
             $reprobados = 0;
 
-            // foreach ($usuariosConIntentos as $uid) {
-
-            //     if ($aprobadosIds->contains($uid)) continue;
-
-            //     $intentos = CursoIntento::where('curso_id', $c->id)
-            //         ->where('user_id', $uid)
-            //         ->count();
-
-            //     if ($intentos >= $c->max_intentos) {
-            //         $reprobados++;
-            //     }
-            // }
-
             $reprobados = CursoIntento::where('curso_id', $c->id)
                 ->select('user_id')
                 ->groupBy('user_id')
@@ -156,7 +91,9 @@ class Cursos extends Component
                 'fecha_inicio' => $c->fecha_inicio,
                 'fecha_fin' => $c->fecha_fin,
                 'activo' => $c->activo,
-
+                'nota_minima' => $c->nota_minima,
+                'tiempo_minutos' => $c->tiempo_minutos,
+                'max_intentos' => $c->max_intentos,
                 'inscritos' => $inscritos,
                 'aprobados' => $aprobados,
                 'reprobados' => $reprobados,

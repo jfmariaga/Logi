@@ -14,7 +14,7 @@
 @endphp
 
 <div class="tpslider__area fix">
-    <div class="hero-wrapp">
+    <div class="hero-wrapp" id="inicio">
         <div class="tpslider__item tpslider__height d-flex align-items-center p-relative fix"
             style="
                 background-image: url('{{ $background }}');

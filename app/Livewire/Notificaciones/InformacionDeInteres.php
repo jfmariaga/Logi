@@ -19,7 +19,7 @@ class InformacionDeInteres extends Component
 
     public function getNotas(){
         $hoy_menos30 = date('Y-m-d', strtotime( ' - 30 day' ));
-        $this->notas = Notificacion::where('fecha_expired', '>=', $hoy_menos30)->orderBy('id', 'desc')->get()->toArray();
+        $this->notas = Notificacion::where('fecha_expired', '>=', $hoy_menos30)->with('rol')->orderBy('id', 'desc')->get()->toArray();
     }
 
     public function eliminar( $id ){

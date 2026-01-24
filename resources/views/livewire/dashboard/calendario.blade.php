@@ -124,7 +124,11 @@
                                                         <div class="item_calendario">
                                                             <b>{{ $persona['name'] }} {{ $persona['last_name'] }}</b>
                                                             <div> {{ $programacion['sede']['nombre'] }} </div>
-                                                            <div> {{ date( 'h:i A', strtotime( $programacion['hora_entrada'] ) ) }} - {{ date( 'h:i A', strtotime( $programacion['hora_salida'] ) ) }} </div>
+                                                            @if ( $programacion['hora_entrada'] )
+                                                                <div> {{ date( 'h:i A', strtotime( $programacion['hora_entrada'] ) ) }} - {{ date( 'h:i A', strtotime( $programacion['hora_salida'] ) ) }} </div>
+                                                            @else
+                                                                <div>No se registró horario</div>
+                                                            @endif
                                                         </div>
                                                     @endforeach
                                                 @endif             

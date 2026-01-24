@@ -3011,7 +3011,8 @@ only screen and (min-width: 768px) and (max-width: 991px) {
   background: var(--tp-theme-1);
   color: var(--tp-heading-1);
   padding: 15px 21px;
-  font-size: 20px;
+  /* font-size: 20px; */
+  padding: 9px 21px;
 }
 
 .main-logo::before {

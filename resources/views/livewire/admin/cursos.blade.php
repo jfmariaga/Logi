@@ -38,7 +38,7 @@
                         <tr>
                             <th>Título</th>
                             <th>Nota mínima</th>
-                            <th>Tiempo</th>
+                            <th>Tiempo en minutos</th>
                             <th>Intentos</th>
                             <th>Inicio</th>
                             <th>Fin</th>

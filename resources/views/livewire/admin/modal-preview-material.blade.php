@@ -4,7 +4,7 @@
         📖 Vista previa del material
     </x-slot>
 
-    @if ($previewMaterial)
+    @if ($previewMaterial && $previewMaterial->id)
 
         <div class="mb-2">
             <h5>{{ $previewMaterial->titulo }}</h5>

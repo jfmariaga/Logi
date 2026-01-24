@@ -16,7 +16,7 @@
         <div class="row">
             <div class="col-md-12 mt-1">
                 <x-select model="$wire.form.sede_id" label="Sede de trabajo" id="sede_id" required="true">
-                    <option value="0">Seleccionar...</option>
+                    <option value="" sleetced disabled>Seleccionar...</option>
                     @foreach ($sedes as $item)
                         <option value="{{ $item->id }}">{{ $item->nombre }}</option>
                     @endforeach

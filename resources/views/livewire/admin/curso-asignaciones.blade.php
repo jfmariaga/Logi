@@ -22,8 +22,20 @@
                         </a>
                     </div>
                 @endif
-                <div class="row">
+                @if (!$tieneMateriales || !$tienePreguntas)
+                    <div class="alert alert-warning mb-3">
 
+                        @if (!$tieneMateriales && !$tienePreguntas)
+                            ⚠️ Debes cargar <b>materiales</b> y <b>preguntas</b> antes de asignar este curso.
+                        @elseif (!$tieneMateriales)
+                            ⚠️ Debes cargar <b>materiales</b> antes de asignar este curso.
+                        @elseif (!$tienePreguntas)
+                            ⚠️ Debes cargar <b>preguntas</b> antes de asignar este curso.
+                        @endif
+
+                    </div>
+                @endif
+                <div class="row">
                     <div class="col-md-4">
                         <label>Tipo</label>
                         <select class="form-control" wire:model="tipo">
@@ -63,7 +75,9 @@
                     </div>
 
                     <div class="col-md-2 d-flex align-items-end">
-                        <button class="btn btn-dark w-100" @click="saveFront()">Asignar</button>
+                        @if ($tieneMateriales && $tienePreguntas)
+                            <button class="btn btn-dark w-100" @click="saveFront()">Asignar</button>
+                        @endif
                     </div>
 
                 </div>

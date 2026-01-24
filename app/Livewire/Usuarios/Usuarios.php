@@ -17,6 +17,7 @@ class Usuarios extends Component
     public $users = [];
     public $roles;
     public $user_id, $status, $document, $name, $last_name, $email, $phone, $user_name, $password, $picture, $role_id, $change_picture = false;
+    public $reset_password;
 
     public function mount()
     {
@@ -36,13 +37,20 @@ class Usuarios extends Component
 
     public function save()
     {
+
+        if( $this->user_id ){
+            $required_pass = 'nullable';
+        }else{
+            $required_pass = 'required|min:8';
+        }
+
         $this->validate([
             'document'  => 'required',
             'name'      => 'required',
             'last_name' => 'required',
             'user_name' => 'required|min:1',
-            'password'  => 'required|min:8',
-            'email'     => 'required|email|unique:users,email,' . $this->user_id,
+            'password'  => $required_pass,
+            'email'     => 'nullable|email|unique:users,email,' . $this->user_id,
             'role_id'   => 'required',
             ]);
             //'password'  => $this->user_id
@@ -76,8 +84,8 @@ class Usuarios extends Component
                 ];
 
                 // Solo actualizar la contraseña si se ha proporcionado una nueva
-                if (!empty($this->password)) {
-                    $dataToUpdate['password'] = bcrypt($this->password);
+                if (!empty($this->reset_password)) {
+                    $dataToUpdate['password'] = bcrypt($this->reset_password);
                 }
 
                 $user->update($dataToUpdate);

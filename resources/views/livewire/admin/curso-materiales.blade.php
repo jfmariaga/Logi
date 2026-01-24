@@ -5,7 +5,7 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h4 class="mb-0">📚 Materiales — {{ $curso->titulo }}</h4>
                 <div class="d-flex gap-2">
-                    <button class="btn btn-dark mr-1" @click="openForm()">
+                    <button type="button" class="btn btn-dark mr-1" @click="openForm()">
                         Nuevo material
                     </button>
                     <a href="{{ route('cursos') }}" class="btn btn-secondary">
@@ -32,11 +32,9 @@
             </div>
         </div>
 
-        {{-- MODAL --}}
+        {{-- MODALES --}}
         @include('livewire.admin.form-materiales')
         @include('livewire.admin.modal-preview-material')
-
-
 
         @script
             <script>
@@ -47,6 +45,10 @@
 
                     init() {
                         this.getMateriales();
+
+                        $('#tipo').change(() => {
+                            @this.tipo = $('#tipo').val()
+                        })
                     },
 
                     async getMateriales() {
@@ -70,26 +72,25 @@
                         if (!is_update) tr += `<tr id="mat_${m.id}">`;
 
                         tr += `
-                    <td>${m.orden}</td>
-                    <td>${m.titulo}</td>
-                    <td>${m.tipo}</td>
-                    <td>
-                        <div class="d-flex">
-                            <x-buttonsm click="openPreview('${m.id}')" color="info">
-                                <i class="la la-eye"></i>
-                            </x-buttonsm>
+                        <td>${m.orden}</td>
+                        <td>${m.titulo}</td>
+                        <td>${m.tipo}</td>
+                        <td>
+                            <div class="d-flex">
+                                <x-buttonsm click="openPreview('${m.id}')" color="info">
+                                    <i class="la la-eye"></i>
+                                </x-buttonsm>
 
-                            <x-buttonsm click="openForm('${m.id}')">
-                                <i class="la la-edit"></i>
-                            </x-buttonsm>
+                                <x-buttonsm click="openForm('${m.id}')">
+                                    <i class="la la-edit"></i>
+                                </x-buttonsm>
 
-                            <x-buttonsm click="confirmDelete('${m.id}')" color="danger">
-                                <i class="la la-trash"></i>
-                            </x-buttonsm>
-                        </div>
-                    </td>
-
-                `;
+                                <x-buttonsm click="event.preventDefault(); confirmDelete('${m.id}')" color="danger">
+                                    <i class="la la-trash"></i>
+                                </x-buttonsm>
+                            </div>
+                        </td>
+                    `;
 
                         if (!is_update) {
                             tr += `</tr>`;
@@ -106,6 +107,14 @@
 
                         if (material) {
 
+                            // 🔥 actualizar array local
+                            if (is_update) {
+                                const i = this.materiales.findIndex(x => x.id == material.id);
+                                if (i !== -1) this.materiales[i] = material;
+                            } else {
+                                this.materiales.unshift(material);
+                            }
+
                             this.addRow(material, is_update);
                             $('#form_materiales').modal('hide');
 
@@ -115,6 +124,14 @@
 
                     openForm(id = null) {
 
+                        // ✅ NUEVO
+                        if (!id) {
+                            @this.limpiar();
+                            setTimeout(() => $('#form_materiales').modal('show'), 120);
+                            return;
+                        }
+
+                        // ✅ EDITAR
                         let m = this.materiales.find(x => x.id == id) ?? {};
 
                         @this.material_id = m.id ?? null;
@@ -122,8 +139,11 @@
                         @this.titulo = m.titulo ?? null;
                         @this.url = m.url ?? null;
                         @this.orden = m.orden ?? 1;
+                        @this.archivo_actual = m.archivo_path ?? null;
 
-                        $('#form_materiales').modal('show');
+                        setTimeout(() => {
+                            $('#form_materiales').modal('show');
+                        }, 150);
                     },
 
                     confirmDelete(id) {
@@ -139,20 +159,22 @@
                                 const res = await @this.eliminar(id);
 
                                 if (res) {
+                                    this.materiales = this.materiales.filter(x => x.id != id);
                                     $(`#mat_${id}`).remove();
                                     toastRight('error', 'Material eliminado');
                                 }
                             }
                         );
                     },
+
                     openPreview(id) {
                         @this.preview(id);
                         $('#modal_preview_material').modal('show');
                     },
+
                 }))
             </script>
         @endscript
 
     </div>
-
 </div>

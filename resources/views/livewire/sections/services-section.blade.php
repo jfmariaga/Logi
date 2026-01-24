@@ -3,7 +3,7 @@
         $items = $data['items'] ?? [];
     @endphp
 
-    <div class="services-area tp-services__ptb pt-120 pb-90 p-relative fix background_grey">
+    <div class="services-area tp-services__ptb pt-120 pb-90 p-relative fix background_grey" id="servicios">
         <div class="container">
             <div class="row">
                 <div class="col-12">

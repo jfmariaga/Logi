@@ -49,6 +49,7 @@
                 users: [],
                 roles: @json($roles),
                 loading: true,
+                loading_form: false,
 
                 init() {
                     this.getUsers();
@@ -95,7 +96,7 @@
                             <td>${user.name} ${user.last_name}</td>
                             <td>${print(user.phone)}</td>
                             <td>${roles ? roles : ''}</td>
-                            <td>${user.status == 1 ?  '<span style="color: green;">✔</span>' : '<span style="color: red;">✘</span>'}</td>
+                            <td>${user.status == 1 ?  '<span class="badge badge-success text-white" >Activo</span>' : '<span class="badge badge-danger text-white" >Inactivo</span>'}</td>
                             <td>
                                 <div class="d-flex">
                                         <x-buttonsm click="openForm('${user.id}')"><i class="la la-edit"></i></x-buttonsm>
@@ -123,6 +124,7 @@
                 },
 
                 async saveFront() {
+                    this.loading_form = true;
                     const is_update = @this.user_id ? true : false;
                     const user = await @this.save();
                     if (user) {
@@ -140,6 +142,9 @@
                             toastRight('success', 'Usuario registrado con éxito');
                         }
                     }
+
+                    this.loading_form = false;
+
                 },
 
                 openForm(user_id = null) {
