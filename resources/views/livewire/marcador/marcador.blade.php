@@ -64,21 +64,22 @@
                     </div>
 
                 </div>
+
                 <x-modal id="modal_selfie" size="md">
                     <x-slot name="title">📸 Verificación de Identidad</x-slot>
 
                     <div class="text-center">
-
                         <video id="video" autoplay playsinline width="100%" class="rounded"></video>
                         <canvas id="canvas" class="d-none"></canvas>
 
-                        <img id="previewSelfie" class="img-fluid rounded mt-2 d-none" />
-
-                        <input type="file" id="selfieInput" class="d-none" wire:model="selfie">
-
                         <div class="mt-3">
-                            <button type="button" class="btn btn-primary" id="btnFoto">Tomar Foto</button>
-                            <button type="button" class="btn btn-success d-none" id="btnUsar">Usar Foto</button>
+                            <button type="button" class="btn btn-primary" id="btnFoto">
+                                📸 Tomar Foto
+                            </button>
+
+                            <div id="estadoProceso" class="mt-3 text-muted d-none">
+                                ⏳ Procesando marcación...
+                            </div>
                         </div>
 
                         @error('selfie')
@@ -115,7 +116,7 @@
             });
         }
     </script>
-    <script>
+    {{-- <script>
         let stream = null;
         let tipoMarcacion = null;
 
@@ -123,59 +124,163 @@
 
             tipoMarcacion = e.detail.tipo;
 
-            $('#modal_selfie').modal('show');
+            $('#modal_selfie').modal({
+                backdrop: 'static',
+                keyboard: false,
+                show: true
+            });
 
             navigator.mediaDevices.getUserMedia({
-                    video: {
-                        facingMode: "user"
-                    }
-                })
-                .then(s => {
-                    stream = s;
-                    document.getElementById('video').srcObject = s;
-                });
+                video: {
+                    facingMode: "user"
+                }
+            }).then(s => {
+                stream = s;
+                document.getElementById('video').srcObject = s;
+            }).catch(() => {
+                alert('No se pudo acceder a la cámara');
+                Livewire.dispatch('liberar-boton');
+            });
         });
 
         document.getElementById('btnFoto').addEventListener('click', () => {
 
             const video = document.getElementById('video');
             const canvas = document.getElementById('canvas');
-            const img = document.getElementById('previewSelfie');
 
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
 
             canvas.getContext('2d').drawImage(video, 0, 0);
 
-            const data = canvas.toDataURL('image/jpeg');
+            canvas.toBlob(blob => {
 
-            img.src = data;
-            img.classList.remove('d-none');
+                if (!blob) {
+                    alert('No se pudo capturar la foto');
+                    return;
+                }
 
-            document.getElementById('btnUsar').classList.remove('d-none');
-
-            fetch(data)
-                .then(res => res.blob())
-                .then(blob => {
-                    const file = new File([blob], "selfie.jpg", {
-                        type: "image/jpeg"
-                    });
-                    const dt = new DataTransfer();
-                    dt.items.add(file);
-                    document.getElementById('selfieInput').files = dt.files;
-                    document.getElementById('selfieInput').dispatchEvent(new Event('change'));
+                // 🔥 AQUÍ ESTÁ LA CLAVE
+                const file = new File([blob], 'selfie.jpg', {
+                    type: 'image/jpeg'
                 });
+
+                @this.upload(
+                    'selfie',
+                    file,
+                    () => {
+                        if (stream) stream.getTracks().forEach(t => t.stop());
+                        $('#modal_selfie').modal('hide');
+
+                        Livewire.dispatch('selfie-capturada', {
+                            tipo: tipoMarcacion
+                        });
+                    },
+                    error => {
+                        console.error(error);
+                        alert('Error subiendo la foto');
+                        Livewire.dispatch('liberar-boton');
+                    }
+                );
+
+            }, 'image/jpeg', 0.9);
+        });
+    </script> --}}
+
+    <script>
+        let stream = null;
+        let tipoMarcacion = null;
+        let procesandoFoto = false;
+
+        window.addEventListener('abrir-selfie', e => {
+
+            tipoMarcacion = e.detail.tipo;
+            procesandoFoto = false;
+
+            $('#estadoProceso').addClass('d-none');
+
+            const btn = document.getElementById('btnFoto');
+            btn.disabled = false;
+            btn.innerText = '📸 Tomar Foto';
+
+            $('#modal_selfie').modal({
+                backdrop: 'static',
+                keyboard: false,
+                show: true
+            });
+
+            navigator.mediaDevices.getUserMedia({
+                video: {
+                    facingMode: "user"
+                }
+            }).then(s => {
+                stream = s;
+                document.getElementById('video').srcObject = s;
+            }).catch(() => {
+                alert('No se pudo acceder a la cámara');
+                Livewire.dispatch('liberar-boton');
+            });
         });
 
-        document.getElementById('btnUsar').addEventListener('click', () => {
+        document.getElementById('btnFoto').addEventListener('click', () => {
 
-            if (stream) stream.getTracks().forEach(t => t.stop());
+            if (procesandoFoto) return;
+            procesandoFoto = true;
 
-            $('#modal_selfie').modal('hide');
+            const btn = document.getElementById('btnFoto');
+            btn.disabled = true;
+            btn.innerText = '⏳ Procesando...';
 
-            Livewire.dispatch('selfie-capturada', {
-                tipo: tipoMarcacion
-            });
+            document.getElementById('estadoProceso').classList.remove('d-none');
+
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            canvas.getContext('2d').drawImage(video, 0, 0);
+
+            canvas.toBlob(blob => {
+
+                if (!blob) {
+                    alert('No se pudo capturar la foto');
+                    procesandoFoto = false;
+                    btn.disabled = false;
+                    btn.innerText = '📸 Tomar Foto';
+                    document.getElementById('estadoProceso').classList.add('d-none');
+                    return;
+                }
+
+                const file = new File([blob], 'selfie.jpg', {
+                    type: 'image/jpeg'
+                });
+
+                @this.upload(
+                    'selfie',
+                    file,
+                    () => {
+                        if (stream) stream.getTracks().forEach(t => t.stop());
+                        $('#modal_selfie').modal('hide');
+
+                        Livewire.dispatch('selfie-capturada', {
+                            tipo: tipoMarcacion
+                        });
+                    },
+                    error => {
+                        console.error(error);
+                        alert('Error subiendo la foto');
+
+                        procesandoFoto = false;
+                        btn.disabled = false;
+                        btn.innerText = '📸 Tomar Foto';
+                        document.getElementById('estadoProceso').classList.add('d-none');
+
+                        Livewire.dispatch('liberar-boton');
+                    }
+                );
+
+            }, 'image/jpeg', 0.9);
         });
     </script>
 
@@ -185,7 +290,7 @@
         window.addEventListener('capturar-ubicacion', event => {
 
             const tipo = event.detail.tipo;
-            
+
             navigator.geolocation.getCurrentPosition(
                 pos => {
 

@@ -99,9 +99,11 @@ class Marcador extends Component
     #[On('selfie-capturada')]
     public function selfieCapturada($tipo)
     {
+
         $this->validate([
             'selfie' => 'required|image|max:4096'
         ]);
+
         /** 👉 GPS igual que antes */
         $this->dispatch('capturar-ubicacion', tipo: $tipo);
     }
