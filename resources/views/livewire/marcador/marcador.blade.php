@@ -64,6 +64,33 @@
                     </div>
 
                 </div>
+                <x-modal id="modal_selfie" size="md">
+                    <x-slot name="title">📸 Verificación de Identidad</x-slot>
+
+                    <div class="text-center">
+
+                        <video id="video" autoplay playsinline width="100%" class="rounded"></video>
+                        <canvas id="canvas" class="d-none"></canvas>
+
+                        <img id="previewSelfie" class="img-fluid rounded mt-2 d-none" />
+
+                        <input type="file" id="selfieInput" class="d-none" wire:model="selfie">
+
+                        <div class="mt-3">
+                            <button type="button" class="btn btn-primary" id="btnFoto">Tomar Foto</button>
+                            <button type="button" class="btn btn-success d-none" id="btnUsar">Usar Foto</button>
+                        </div>
+
+                        @error('selfie')
+                            <div class="text-danger mt-2">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <x-slot name="footer">
+                        <button class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    </x-slot>
+                </x-modal>
+
             </div>
         @endif
 
@@ -88,13 +115,77 @@
             });
         }
     </script>
+    <script>
+        let stream = null;
+        let tipoMarcacion = null;
+
+        window.addEventListener('abrir-selfie', e => {
+
+            tipoMarcacion = e.detail.tipo;
+
+            $('#modal_selfie').modal('show');
+
+            navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: "user"
+                    }
+                })
+                .then(s => {
+                    stream = s;
+                    document.getElementById('video').srcObject = s;
+                });
+        });
+
+        document.getElementById('btnFoto').addEventListener('click', () => {
+
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const img = document.getElementById('previewSelfie');
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            canvas.getContext('2d').drawImage(video, 0, 0);
+
+            const data = canvas.toDataURL('image/jpeg');
+
+            img.src = data;
+            img.classList.remove('d-none');
+
+            document.getElementById('btnUsar').classList.remove('d-none');
+
+            fetch(data)
+                .then(res => res.blob())
+                .then(blob => {
+                    const file = new File([blob], "selfie.jpg", {
+                        type: "image/jpeg"
+                    });
+                    const dt = new DataTransfer();
+                    dt.items.add(file);
+                    document.getElementById('selfieInput').files = dt.files;
+                    document.getElementById('selfieInput').dispatchEvent(new Event('change'));
+                });
+        });
+
+        document.getElementById('btnUsar').addEventListener('click', () => {
+
+            if (stream) stream.getTracks().forEach(t => t.stop());
+
+            $('#modal_selfie').modal('hide');
+
+            Livewire.dispatch('selfie-capturada', {
+                tipo: tipoMarcacion
+            });
+        });
+    </script>
+
 
     {{-- GPS --}}
     <script>
         window.addEventListener('capturar-ubicacion', event => {
 
             const tipo = event.detail.tipo;
-
+            
             navigator.geolocation.getCurrentPosition(
                 pos => {
 

@@ -11,19 +11,22 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class Marcador extends Component
 {
+    use WithFileUploads;
+
     public $documento = '';
     public $usuario = null;
-    public $latitud;
-    public $longitud;
     public $estadoActual = 'libre';
     public $modoTerminal = true;
     public $mensaje = null;
     public $ultimaEntradaFecha = null;
-
     public $registrando = false;
+
+    /** 📸 selfie */
+    public $selfie;
 
     public function mount()
     {
@@ -34,9 +37,7 @@ class Marcador extends Component
         }
     }
 
-    /**
-     * 🔎 Búsqueda automática por documento
-     */
+    /** 🔎 búsqueda por documento */
     public function updatedDocumento($value)
     {
         if (strlen($value) < 4) {
@@ -52,7 +53,6 @@ class Marcador extends Component
         }
 
         $this->mensaje = null;
-
         $this->cargarEstadoUsuario();
     }
 
@@ -74,34 +74,39 @@ class Marcador extends Component
         $this->ultimaEntradaFecha = $ultimaEntrada?->fecha_hora;
     }
 
-
-    /*
-     *  Click botón
-     */
+    /** 👉 click botón */
     public function marcar($tipo)
     {
         if (!$this->usuario || $this->registrando) return;
 
-        // VALIDACIONES DE ESTADO (CLAVE)
         if ($tipo === 'entrada' && $this->estadoActual === 'trabajando') {
             $this->dispatch('toast-ok', msg: 'Ya tienes una jornada activa');
-            $this->registrando = false;
             return;
         }
 
         if ($tipo === 'salida' && $this->estadoActual === 'libre') {
             $this->dispatch('toast-ok', msg: 'No hay jornada activa para cerrar');
-            $this->registrando = false;
             return;
         }
 
         $this->registrando = true;
+
+        /** 👉 primero selfie */
+        $this->dispatch('abrir-selfie', tipo: $tipo);
+    }
+
+    /** 📸 selfie confirmada → pedir GPS */
+    #[On('selfie-capturada')]
+    public function selfieCapturada($tipo)
+    {
+        $this->validate([
+            'selfie' => 'required|image|max:4096'
+        ]);
+        /** 👉 GPS igual que antes */
         $this->dispatch('capturar-ubicacion', tipo: $tipo);
     }
 
-    /**
-     * Recibe GPS desde JS
-     */
+    /** 📍 validar GPS */
     #[On('validar-ubicacion')]
     public function validarUbicacion($lat, $lng, $tipo)
     {
@@ -127,8 +132,8 @@ class Marcador extends Component
         $enSitio = $distanciaMinima <= $sedeCercana->radio_metros;
 
         if (!$enSitio) {
-
             $this->registrando = false;
+
             $this->dispatch(
                 'confirmar-fuera-sede',
                 lat: $lat,
@@ -143,9 +148,7 @@ class Marcador extends Component
         $this->registrar($lat, $lng, $tipo);
     }
 
-    /**
-     *  Confirmado desde SweetAlert
-     */
+    /** confirmado fuera de sede */
     #[On('ubicacion-capturada')]
     public function ubicacionCapturada($lat, $lng, $tipo)
     {
@@ -158,13 +161,10 @@ class Marcador extends Component
         $this->registrando = false;
     }
 
-
-    /**
-     * Guardar marcación
-     */
-
+    /** guardar */
     private function registrar($lat, $lng, $tipo)
     {
+        // dd($tipo);
         $sedes = Sede::where('activo', true)->get();
 
         $sedeCercana = null;
@@ -186,9 +186,9 @@ class Marcador extends Component
 
         $enSitio = $distanciaMinima <= $sedeCercana->radio_metros;
 
-        /* ============================
-       ✅ 1. GUARDAR MARCACIÓN (igual que antes)
-       ============================ */
+        /** 📸 guardar selfie */
+        $fotoPath = $this->selfie->store('marcaciones/selfies', 'public');
+
         Marcacion::create([
             'user_id' => $this->usuario->id,
             'sede_id' => $sedeCercana->id,
@@ -197,18 +197,15 @@ class Marcador extends Component
             'longitud' => $lng,
             'distancia_metros' => round($distanciaMinima),
             'en_sitio' => $enSitio,
+            'foto' => $fotoPath,
             'ip' => request()->ip(),
             'user_agent' => request()->userAgent(),
             'fecha_hora' => now(),
         ]);
 
-        /* ============================
-       ✅ 2. MANEJO DE JORNADAS (NUEVO)
-       ============================ */
-
+        /** jornadas */
         if ($tipo === 'entrada') {
 
-            // crear nueva jornada
             Jornada::create([
                 'user_id' => $this->usuario->id,
                 'sede_id' => $sedeCercana->id,
@@ -222,7 +219,6 @@ class Marcador extends Component
 
         if ($tipo === 'salida') {
 
-            // cerrar última jornada abierta
             $jornada = Jornada::where('user_id', $this->usuario->id)
                 ->where('cerrada', false)
                 ->latest('inicio')
@@ -231,8 +227,6 @@ class Marcador extends Component
             if ($jornada) {
 
                 $minutos = Carbon::parse($jornada->inicio)->diffInMinutes(now());
-
-                // 👇 VALIDAR SI SALE EN OTRA SEDE
                 $saleEnOtraSede = $jornada->sede_id != $sedeCercana->id;
 
                 $jornada->update([
@@ -245,10 +239,6 @@ class Marcador extends Component
             }
         }
 
-        /* ============================
-       ✅ 3. ESTADO + MENSAJE (igual que antes)
-       ============================ */
-
         $this->estadoActual = $tipo === 'entrada' ? 'trabajando' : 'libre';
 
         $this->dispatch(
@@ -259,13 +249,13 @@ class Marcador extends Component
         );
 
         $this->registrando = false;
+        $this->reset('selfie');
 
         if ($this->modoTerminal) {
             $this->cargarEstadoUsuario();
             $this->reset(['documento', 'usuario']);
         }
     }
-
 
     public function render()
     {

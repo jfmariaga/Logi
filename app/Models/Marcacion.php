@@ -21,6 +21,7 @@ class Marcacion extends Model
         'ip',
         'user_agent',
         'fecha_hora',
+        'foto',
     ];
 
     protected $casts = [

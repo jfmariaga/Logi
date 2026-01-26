@@ -150,173 +150,6 @@
     @endif
 
     {{-- ===== REPORTE HORAS-HOMBRE ===== --}}
-    {{-- <div x-data="nominaTable" wire:ignore>
-
-        <div class="card shadow-sm mb-4">
-
-            <div class="card-header sede-header d-flex justify-content-between align-items-center">
-                💼 Resumen Horas por empleado
-
-                <div class="row g-2 align-items-end">
-
-                    <div class="col-md-3">
-                        <input type="date" class="form-control form-control-sm" x-model="desde">
-                    </div>
-
-                    <div class="col-md-3">
-                        <input type="date" class="form-control form-control-sm" x-model="hasta">
-                    </div>
-
-                    <div class="col-md-3">
-                        <select class="form-control form-control-sm" x-model="user_id">
-                            <option value="">Todos</option>
-                            @foreach ($empleados as $e)
-                                <option value="{{ $e->id }}">
-                                    {{ $e->name }} {{ $e->last_name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="col-md-2">
-                        <select class="form-control form-control-sm" x-model="sede_id">
-                            <option value="">Todas las sedes</option>
-                            @foreach ($sedes as $s)
-                                <option value="{{ $s->id }}">{{ $s->nombre }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="col-md-1">
-                        <button class="btn btn-sm btn-light w-100" @click="getData()" title="Filtrar">
-                            <i class="la la-filter"></i>
-                        </button>
-                    </div>
-
-                </div>
-            </div>
-
-            <div class="card-body table-responsive">
-
-                <div x-show="!loading">
-
-                    <table id="table_nomina" class="table table-sm table-bordered">
-                        <thead class="thead-light">
-                            <tr>
-                                <th>Empleado</th>
-                                <th>Fecha</th>
-                                <th>Sede</th>
-                                <th>Horas</th>
-                            </tr>
-                        </thead>
-                        <tbody id="body_table_nomina"></tbody>
-                    </table>
-
-                </div>
-
-                <div x-show="loading">
-                    <x-spinner />
-                </div>
-
-            </div>
-            @script
-                <script>
-                    Alpine.data('nominaTable', () => ({
-
-                        loading: true,
-                        desde: null,
-                        hasta: null,
-                        user_id: '',
-                        sede_id: '',
-
-                        init() {
-                            const hoy = new Date().toISOString().substr(0, 10);
-                            this.desde = hoy;
-                            this.hasta = hoy;
-                            this.getData();
-                        },
-
-                        async getData() {
-
-                            this.loading = true;
-
-                            const filtros = {
-                                desde: this.desde,
-                                hasta: this.hasta,
-                                user_id: this.user_id,
-                                sede_id: this.sede_id,
-                            };
-
-                            const data = await @this.call('getNomina', filtros);
-
-                            // destruir DataTable
-                            if ($.fn.DataTable.isDataTable('#table_nomina')) {
-                                $('#table_nomina').DataTable().clear().destroy();
-                            }
-
-                            $('#body_table_nomina').html('');
-
-                            for (const r of data) {
-                                this.addRow(r);
-                            }
-
-                            setTimeout(() => {
-
-                                $('#table_nomina').DataTable({
-                                    order: [
-                                        [0, 'asc']
-                                    ],
-                                    rowGroup: {
-                                        dataSrc: 0,
-                                        startRender: null, // 👈 QUITA encabezado por empleado
-
-                                        endRender: function(rows, group) {
-
-                                            let total = rows
-                                                .data()
-                                                .pluck(3)
-                                                .reduce((a, b) => a + parseFloat(b), 0);
-
-                                            return $('<tr/>')
-                                                .append(
-                                                    '<td colspan="3" class="text-right font-weight-bold">Total ' +
-                                                    group + '</td>')
-                                                .append('<td class="font-weight-bold">' + total
-                                                    .toFixed(2) + '</td>');
-                                        }
-                                    }
-                                });
-
-
-                                this.loading = false;
-
-                            }, 150);
-                        },
-
-                        addRow(r) {
-
-                            const tr = `
-            <tr>
-                <td>${r.empleado}</td>
-                <td>${r.fecha}</td>
-                <td>${r.sede}</td>
-                <td>${r.horas}</td>
-            </tr>`;
-
-                            $('#body_table_nomina').append(tr);
-                        }
-
-                    }))
-                </script>
-            @endscript
-
-        </div>
-
-
-
-    </div> --}}
-
-    {{-- ===== REPORTE HORAS-HOMBRE ===== --}}
     <div class="accordion" id="accordionReportes">
 
         <div x-data="nominaTable" wire:ignore>
@@ -463,7 +296,7 @@
         </div>
 
         {{-- ===== MARCACIONES RECIENTES ===== --}}
-        <div x-data="marcacionesTable" wire:ignore>
+        {{-- <div x-data="marcacionesTable" wire:ignore>
             <div class="card">
                 <div class="card-header sede-header d-flex justify-content-between align-items-center">
                     🧾 Marcaciones
@@ -599,6 +432,170 @@
                 </script>
             @endscript
 
+        </div> --}}
+        <div x-data="marcacionesTable" wire:ignore>
+
+            <div class="card">
+                <div class="card-header sede-header d-flex justify-content-between align-items-center">
+                    🧾 Marcaciones
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-2">
+                            <input type="date" class="form-control form-control-sm" x-model="desde">
+                        </div>
+                        <div class="col-md-2">
+                            <input type="date" class="form-control form-control-sm" x-model="hasta">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-control form-control-sm" x-model="user_id">
+                                <option value="">Todos</option>
+                                @foreach ($empleados as $e)
+                                    <option value="{{ $e->id }}">
+                                        {{ $e->name }} {{ $e->last_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-control form-control-sm" x-model="sede_id">
+                                <option value="">Todas las sedes</option>
+                                @foreach ($sedes as $s)
+                                    <option value="{{ $s->id }}">
+                                        {{ $s->nombre }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-control form-control-sm" x-model="estado">
+                                <option value="">Todos</option>
+                                <option value="1">En sede</option>
+                                <option value="0">Fuera</option>
+                            </select>
+                        </div>
+                        <div class="col-md-1 d-flex gap-1">
+                            <button class="btn btn-sm btn-light w-100 d-flex align-items-center justify-content-center"
+                                @click="getData()" title="Filtrar">
+                                <i class="la la-filter"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body table-responsive">
+                    <div x-show="!loading">
+                        <x-table id="table_marcaciones">
+                            <tr>
+                                <th>Empleado</th>
+                                <th>Sede</th>
+                                <th>Tipo</th>
+                                <th>Fecha</th>
+                                <th>Distancia</th>
+                                <th>Estado</th>
+                                <th>Selfie</th>
+                            </tr>
+                        </x-table>
+                    </div>
+
+                    <div x-show="loading">
+                        <x-spinner />
+                    </div>
+                </div>
+            </div>
+
+            {{-- MODAL SELFIE --}}
+            <x-modal id="modal_foto_marcacion" size="md">
+                <x-slot name="title">📸 Selfie de Marcación</x-slot>
+
+                <div class="text-center">
+                    <img id="fotoMarcacionPreview" class="img-fluid rounded shadow mb-2">
+                    <a id="downloadFoto" class="btn btn-sm btn-outline-primary" download>
+                        Descargar
+                    </a>
+                </div>
+
+                <x-slot name="footer">
+                    <button class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </x-slot>
+            </x-modal>
+
+            @script
+                <script>
+                    Alpine.data('marcacionesTable', () => ({
+
+                        loading: true,
+                        desde: null,
+                        hasta: null,
+                        user_id: '',
+                        sede_id: '',
+                        estado: '',
+                        rows: [],
+
+                        init() {
+                            const hoy = new Date().toISOString().substr(0, 10);
+                            this.desde = hoy;
+                            this.hasta = hoy;
+                            this.getData();
+                        },
+
+                        async getData() {
+                            this.loading = true;
+
+                            const filtros = {
+                                desde: this.desde,
+                                hasta: this.hasta,
+                                user_id: this.user_id,
+                                sede_id: this.sede_id,
+                                estado: this.estado,
+                            };
+
+                            this.rows = await @this.call('getMarcaciones', filtros);
+
+                            if ($.fn.DataTable.isDataTable('#table_marcaciones')) {
+                                $('#table_marcaciones').DataTable().clear().destroy();
+                            }
+
+                            $('#body_table_marcaciones').html('');
+
+                            for (const r of this.rows) {
+                                this.addRow(r);
+                            }
+
+                            setTimeout(() => {
+                                initDataTableSpanish('#table_marcaciones', {
+                                    order: [
+                                        [3, 'desc']
+                                    ]
+                                });
+                                this.loading = false;
+                            }, 150);
+                        },
+
+                        addRow(r) {
+
+                            let fotoHtml = r.foto ?
+                                `<button class="btn btn-sm btn-outline-primary"
+                            onclick="verFotoMarcacion('${r.foto}')">
+                            <i class="la la-camera"></i>
+                       </button>` :
+                                '—';
+
+                            const tr = `
+                    <tr>
+                        <td>${r.user}</td>
+                        <td>${r.sede}</td>
+                        <td>${r.tipo}</td>
+                        <td>${r.fecha}</td>
+                        <td>${r.distancia} m</td>
+                        <td>${r.estado}</td>
+                        <td class="text-center">${fotoHtml}</td>
+                    </tr>`;
+
+                            $('#body_table_marcaciones').append(tr);
+                        }
+
+                    }));
+                </script>
+            @endscript
         </div>
     </div>
 
@@ -628,6 +625,14 @@
                 ...baseOptions,
                 ...extraOptions
             });
+        }
+    </script>
+    {{-- JS GLOBAL PARA MODAL SELFIE --}}
+    <script>
+        function verFotoMarcacion(url) {
+            document.getElementById('fotoMarcacionPreview').src = url;
+            document.getElementById('downloadFoto').href = url;
+            $('#modal_foto_marcacion').modal('show');
         }
     </script>
 

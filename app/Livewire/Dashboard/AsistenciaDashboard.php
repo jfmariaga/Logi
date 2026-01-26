@@ -92,6 +92,9 @@ class AsistenciaDashboard extends Component
                 'fecha' => $m->fecha_hora->format('d/m/Y H:i:s'),
                 'distancia' => $m->distancia_metros,
                 'estado' => $m->en_sitio ? 'En sede' : 'Fuera',
+                'foto' => $m->foto
+                    ? asset('storage/' . $m->foto)
+                    : null,
             ])
             ->toArray();
     }
