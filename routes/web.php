@@ -42,7 +42,8 @@ Route::get('/login', Login::class)->name('login');
 Route::get('/marcacion', Marcador::class)->name('marcacion');
 
 Route::middleware([AuthGuard::class])->group(function () {
-    Route::get('/dashboard', Dashboard::class)->name('dashboard')->middleware('permission:ver dashboard');
+    // Route::get('/dashboard', Dashboard::class)->name('dashboard')->middleware('permission:ver dashboard');
+    Route::get('/dashboard', Dashboard::class)->name('dashboard')->middleware();
     Route::get('/usuarios', Usuarios::class)->name('usuarios')->middleware('permission:ver usuarios');
     Route::get('/categorias', Categorias::class)->name('categorias')->middleware('permission:ver categorias'); // se queda por si despues se necesita
     Route::get('/proveedores', Proveedores::class)->name('proveedores')->middleware('permission:ver proveedores'); // se queda por si depsues se necesita

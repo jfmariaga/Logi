@@ -131,13 +131,26 @@ class PageEditor extends Component
     {
         unset($this->settings['items'][$index]);
         $this->settings['items'] = array_values($this->settings['items']);
+
+        if (isset($this->settings['_temp_images'][$index])) {
+            unset($this->settings['_temp_images'][$index]);
+            $this->settings['_temp_images'] = array_values($this->settings['_temp_images']);
+        }
+
+        if (isset($this->clientImages[$index])) {
+            unset($this->clientImages[$index]);
+            $this->clientImages = array_values($this->clientImages);
+        }
     }
 
     public function updatedClientImages($value, $key)
     {
+        // archivo real para guardar luego
+        $this->clientImages[$key] = $value;
+
+        // preview inmediato
         $this->settings['_temp_images'][$key] = $value->temporaryUrl();
     }
-
 
     public function saveSection()
     {
@@ -155,10 +168,6 @@ class PageEditor extends Component
 
         unset($this->settings['_temp_image']);
 
-        $this->editingSection->update([
-            'settings' => $this->settings,
-        ]);
-
         if ($this->editingType === 'clients' && !empty($this->clientImages)) {
 
             foreach ($this->clientImages as $index => $image) {
@@ -171,8 +180,12 @@ class PageEditor extends Component
 
         unset($this->settings['_temp_images']);
 
+        $this->editingSection->update([
+            'settings' => $this->settings,
+        ]);
 
-        $this->reset(['editingSection', 'editingType', 'settings', 'heroBackground','featureImage','clientImages']);
+
+        $this->reset(['editingSection', 'editingType', 'settings', 'heroBackground', 'featureImage', 'clientImages']);
         $this->refreshSections();
     }
 

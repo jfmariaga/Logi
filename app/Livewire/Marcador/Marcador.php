@@ -24,8 +24,6 @@ class Marcador extends Component
     public $mensaje = null;
     public $ultimaEntradaFecha = null;
     public $registrando = false;
-
-    /** 📸 selfie */
     public $selfie;
 
     public function mount()
@@ -74,7 +72,7 @@ class Marcador extends Component
         $this->ultimaEntradaFecha = $ultimaEntrada?->fecha_hora;
     }
 
-    /** 👉 click botón */
+    /** click botón */
     public function marcar($tipo)
     {
         if (!$this->usuario || $this->registrando) return;
@@ -91,11 +89,11 @@ class Marcador extends Component
 
         $this->registrando = true;
 
-        /** 👉 primero selfie */
+        /** primero selfie */
         $this->dispatch('abrir-selfie', tipo: $tipo);
     }
 
-    /** 📸 selfie confirmada → pedir GPS */
+    /** selfie confirmada → pedir GPS */
     #[On('selfie-capturada')]
     public function selfieCapturada($tipo)
     {
@@ -108,7 +106,7 @@ class Marcador extends Component
         $this->dispatch('capturar-ubicacion', tipo: $tipo);
     }
 
-    /** 📍 validar GPS */
+    /** validar GPS */
     #[On('validar-ubicacion')]
     public function validarUbicacion($lat, $lng, $tipo)
     {
@@ -188,7 +186,7 @@ class Marcador extends Component
 
         $enSitio = $distanciaMinima <= $sedeCercana->radio_metros;
 
-        /** 📸 guardar selfie */
+        /** guardar selfie */
         $fotoPath = $this->selfie->store('marcaciones/selfies', 'public');
 
         Marcacion::create([

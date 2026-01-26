@@ -18,7 +18,7 @@ class Calendario extends Component
     public $anoActual;
     public $diasDelMes;
     public $fecha;
-    public $user_id;
+    public $user, $user_id;
     public $sedes = [], $usuarios = [];
 
     // filtros
@@ -36,6 +36,7 @@ class Calendario extends Component
             $this->anoActual = date('Y');
         }
 
+        $this->user = auth()->user();
         $this->user_id = auth()->user()->id;
 
         // asi solo lo llenamos una vez
@@ -67,6 +68,12 @@ class Calendario extends Component
         $this->sedes = Sede::where('activo', 1)->orderBy('nombre')->get();
         $this->usuarios = User::where('status', 1)->orderBy('name')->get();
 
+        // sino tiene permiso del filtro de programación, solo ve los suyos
+        if( !$this->user->can('dashboard programación') ){
+            $this->filtro_tipo = 1;
+            $this->filtro_usuario = $this->user_id;
+        }
+
         $this->actualizarDiasDelMes();
     }
 
@@ -89,7 +96,7 @@ class Calendario extends Component
             }
      
             // aplicamos filtro de usuario
-            if( $this->filtro_tipo && $this->filtro_usuario ){
+            if( $this->filtro_tipo == 1 && $this->filtro_usuario ){
                 $usuario_asignado = ProgramacionPorUsuario::where('programacion_id', $p['id'])->where('user_id', $this->filtro_usuario)->first();
                 if( !isset( $usuario_asignado->id ) ){ // si esta programación no tiene al usuario se omite
                     continue;
@@ -105,9 +112,17 @@ class Calendario extends Component
                 // los sacamos a parte, por si esta en varias sedes ese mismo dia solo mostrarlo una vez
                 if( isset( $p['personal'] ) && $p['personal'] ){
                     foreach( $p['personal'] as $operador ){
-                        $this->programaciones[ $desde_tmp ][ 'personal' ][ $operador['id'] ] = $operador;
+                        if( $this->filtro_tipo == 1 && $this->filtro_usuario ){
+                            if( $this->filtro_usuario == $operador['id'] ){
+                                $this->programaciones[ $desde_tmp ][ 'personal' ][ $operador['id'] ] = $operador;
+                            }
+                        }else{
+                            $this->programaciones[ $desde_tmp ][ 'personal' ][ $operador['id'] ] = $operador;
+                        }
                     }
                 }
+
+                $p['personal'] = $this->programaciones[ $desde_tmp ][ 'personal' ] ?? [];
 
                 $this->programaciones[ $desde_tmp ]['programaciones'][] = $p;
                 // aumentamos el dia, para seguir validando
