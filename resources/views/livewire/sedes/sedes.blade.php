@@ -1,17 +1,20 @@
 <div x-data="data_sedes">
-     <div class="app-content content">
+    <div class="app-content content">
         <div class="content-wrapper">
             <div class="content-header row">
                 <div class="content-header-left col-md-6 col-12 mb-2 breadcrumb-new">
                     <h3 class="content-header-title mb-0 d-inline-block br_none">Sedes de trabajo</h3>
                 </div>
-                <div class="content-header-right col-md-6 col-12">
-                    <div class="btn-group float-md-right">
-                        <a href="javascript:" x-on:click="openForm()" id="btn_form_sede" class="btn btn-dark"> 
-                            Nuevo
-                        </a>
+                @can('crear sedes')
+                    <div class="content-header-right col-md-6 col-12">
+                        <div class="btn-group float-md-right">
+                            <a href="javascript:" x-on:click="openForm()" id="btn_form_sede" class="btn btn-dark">
+                                Nuevo
+                            </a>
+                        </div>
                     </div>
-                </div>
+                @endcan
+
             </div>
 
             <div class="content-body">
@@ -41,14 +44,14 @@
     @include('livewire.sedes.form-sede')
 
 
-     @script
+    @script
         <script>
             Alpine.data('data_sedes', () => ({
                 data: [],
                 loading: true,
                 loading_form: false,
 
-                init(){
+                init() {
 
                     this.getItems();
 
@@ -72,7 +75,7 @@
                 },
 
                 async addItem(item, is_update = false) {
-                    
+
                     let tr = ``;
 
                     if (!is_update) {
@@ -88,11 +91,13 @@
                             <td class="d-none">${print( item.longitud )}</td>
                             <td class="d-none">${print( item.radio_metros )}</td>
                             <td>
-                                <div class="d-flex">
+                                @can('editar sedes')
+                                  <div class="d-flex">
                                     <x-buttonsm click="openForm('${item.id}')"><i class="la la-edit"></i></x-buttonsm>
-                                </div>
+                                  </div>
+                                @endcan   
                             </td>`;
-      
+
                     if (!is_update) {
                         tr += `</tr>`;
                         $('#body_table_sedes').prepend(tr);
@@ -100,7 +105,7 @@
                         $(`#sede_${item.id}`).html(tr);
                     }
                 },
-              
+
                 async saveFront() {
 
                     this.loading_form = true
@@ -108,13 +113,13 @@
                     const is_update = typeof @this.form_old.id !== 'undefined' ? true : false;
                     const new_item = await @this.save();
                     if (new_item) {
-                        if( is_update ){
+                        if (is_update) {
                             for (const key in this.data) {
                                 if (this.data[key].id == new_item.id) {
                                     this.data[key] = new_item;
                                 }
                             }
-                        }else{
+                        } else {
                             this.data.push(new_item);
 
                         }
@@ -127,21 +132,21 @@
 
                 },
 
-                openForm( item_id = null ) {
+                openForm(item_id = null) {
 
                     this.loading_form = false
 
                     let item_old = this.data.find((i) => i.id == item_id);
                     item_old = item_old ?? {};
 
-                    @this.form_old          = item_old;
-                    @this.form.nombre       = item_old ? item_old.nombre : '';
-                    @this.form.direccion    = item_old ? item_old.direccion : '';
-                    @this.form.contacto     = item_old ? item_old.contacto : '';
+                    @this.form_old = item_old;
+                    @this.form.nombre = item_old ? item_old.nombre : '';
+                    @this.form.direccion = item_old ? item_old.direccion : '';
+                    @this.form.contacto = item_old ? item_old.contacto : '';
                     @this.form.telefono_contacto = item_old ? item_old.telefono_contacto : '';
-                    @this.form.activo       = item_old ? item_old.activo : 1;
-                    @this.form.latitud      = item_old ? item_old.latitud : '';
-                    @this.form.longitud     = item_old ? item_old.longitud : '';
+                    @this.form.activo = item_old ? item_old.activo : 1;
+                    @this.form.latitud = item_old ? item_old.latitud : '';
+                    @this.form.longitud = item_old ? item_old.longitud : '';
                     @this.form.radio_metros = item_old ? item_old.radio_metros : 150;
 
                     setTimeout(() => {

@@ -8,13 +8,15 @@
                 <div class="content-header-left col-md-6 col-12 mb-2 breadcrumb-new">
                     <h3 class="content-header-title mb-0 d-inline-block br_none">Personal</h3>
                 </div>
-                <div class="content-header-right col-md-6 col-12">
-                    <div class="btn-group float-md-right">
-                        <a href="javascript:" x-on:click="openForm()" id="btn_form_personal" class="btn btn-dark"> 
-                            Nuevo
-                        </a>
+                @can('crear usuarios')
+                    <div class="content-header-right col-md-6 col-12">
+                        <div class="btn-group float-md-right">
+                            <a href="javascript:" x-on:click="openForm()" id="btn_form_personal" class="btn btn-dark">
+                                Nuevo
+                            </a>
+                        </div>
                     </div>
-                </div>
+                @endcan
             </div>
 
             <div class="content-body">
@@ -99,8 +101,12 @@
                             <td>${user.status == 1 ?  '<span class="badge badge-success text-white" >Activo</span>' : '<span class="badge badge-danger text-white" >Inactivo</span>'}</td>
                             <td>
                                 <div class="d-flex">
+                                    @can('editar usuarios')
                                         <x-buttonsm click="openForm('${user.id}')"><i class="la la-edit"></i></x-buttonsm>
+                                    @endcan
+                                    @can('eliminar usuarios')
                                         <x-buttonsm click="confirmDelete('${user.id}')" color="danger"><i class="la la-trash"></i></x-buttonsm>
+                                    @endcan        
                                 </div>
                             </td>`;
 

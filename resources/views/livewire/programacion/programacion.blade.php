@@ -1,15 +1,17 @@
 <div x-data="data_programacion">
-     <div class="app-content content">
+    <div class="app-content content">
         <div class="content-wrapper">
             <div class="content-header row">
                 <div class="content-header-left col-md-6 col-12 mb-2 breadcrumb-new">
                     <h3 class="content-header-title mb-0 d-inline-block br_none">Programación</h3>
                 </div>
-                <div class="content-header-right col-md-6 col-12">
+                @can('crear programación')
+                    <div class="content-header-right col-md-6 col-12">
 
-                    @livewire('programacion.form-programacion')
+                        @livewire('programacion.form-programacion')
 
-                </div>
+                    </div>
+                @endcan
             </div>
 
             <div class="card m-0">
@@ -34,9 +36,11 @@
                                 <div class="m-1">
                                     <label for="filtro_programaciones">Sede específica</label>
                                     <select class="form-control select2" id="filtro_sede">
-                                        <option @if( !$filtro_sede ) selected @endif value="0">Todas las sedes</option>
+                                        <option @if (!$filtro_sede) selected @endif value="0">Todas
+                                            las sedes</option>
                                         @foreach ($sedes as $item)
-                                            <option @if( $filtro_sede == $item->id ) selected @endif value="{{ $item->id }}">{{ $item->nombre }}</option> 
+                                            <option @if ($filtro_sede == $item->id) selected @endif
+                                                value="{{ $item->id }}">{{ $item->nombre }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -45,9 +49,12 @@
                                 <div class="m-1">
                                     <label for="filtro_programaciones">Usuario específico</label>
                                     <select class="form-control select2" id="filtro_usuario">
-                                        <option @if( !$filtro_usuario ) selected @endif value="0">Todos los usuarios</option>
+                                        <option @if (!$filtro_usuario) selected @endif value="0">Todos
+                                            los usuarios</option>
                                         @foreach ($usuarios as $item)
-                                            <option @if( $filtro_usuario == $item->id ) selected @endif value="{{ $item->id }}">{{ $item->name }} {{ $item->last_name }}</option> 
+                                            <option @if ($filtro_usuario == $item->id) selected @endif
+                                                value="{{ $item->id }}">{{ $item->name }} {{ $item->last_name }}
+                                            </option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -55,7 +62,9 @@
                             <div class="col-md-1">
                                 <div class="mt-1">
                                     <label for="">&nbsp;</label>
-                                    <button class="btn btn-sm btn-light d-flex align-items-center justify-content-center" x-on:click="$wire.getProgramaciones()" title="Filtrar">
+                                    <button
+                                        class="btn btn-sm btn-light d-flex align-items-center justify-content-center"
+                                        x-on:click="$wire.getProgramaciones()" title="Filtrar">
                                         <i class="la la-filter text-white"></i>
                                     </button>
                                 </div>
@@ -70,12 +79,13 @@
 
                 <div class="content-body">
                     <div class="card mb-1 mt-1 p-0">
-                        <div class="card-header card-head-inverse bg_menu br_10" >
+                        <div class="card-header card-head-inverse bg_menu br_10">
                             <h5 x-text="__formatDate(fecha)"></h5>
                         </div>
                     </div>
 
-                    <div x-show=" data.operadores && Object.keys(data.operadores).length > 0" class="bs-callout-warning callout-border-left mt-1 p-1">
+                    <div x-show=" data.operadores && Object.keys(data.operadores).length > 0"
+                        class="bs-callout-warning callout-border-left mt-1 p-1">
                         <strong>Operadores disponibles para este día!</strong>
                         <template x-for="operador in data.operadores">
                             <div>
@@ -92,12 +102,18 @@
                                     <div class="card-content">
                                         <div class="card-body">
                                             <div class="f-right">
-                                                <button type="button" x-on:click="confirmDelete( programacion.id )" class="btn btn-sm bg-danger white f-right ml-1"> 
-                                                    <i class="la la-trash text-white"></i>
-                                                </button>
-                                                <button type="button" x-on:click="editProgramacion( programacion )" class="btn btn-sm btn-info f-right ml-1">
-                                                    <i class="la la-edit text-white"></i>
-                                                </button>
+                                                @can('eliminar programación')
+                                                    <button type="button" x-on:click="confirmDelete( programacion.id )"
+                                                        class="btn btn-sm bg-danger white f-right ml-1">
+                                                        <i class="la la-trash text-white"></i>
+                                                    </button>
+                                                @endcan
+                                                @can('editar programación')
+                                                    <button type="button" x-on:click="editProgramacion( programacion )"
+                                                        class="btn btn-sm btn-info f-right ml-1">
+                                                        <i class="la la-edit text-white"></i>
+                                                    </button>
+                                                @endcan
                                             </div>
                                             <h5 class=" mb-1">
                                                 <b x-text="programacion.sede.nombre"></b>
@@ -131,10 +147,15 @@
                                                         <template x-for="usuario in programacion.personal">
                                                             <div class="col-md-4 mb-1">
                                                                 <span>
-                                                                    <img class="avatar_table" :src="`storage/avatars/${usuario.picture ?? 'default.png' }`" onerror="this.onerror=null;this.src='img/default.png';" alt="avatar">
+                                                                    <img class="avatar_table"
+                                                                        :src="`storage/avatars/${usuario.picture ?? 'default.png' }`"
+                                                                        onerror="this.onerror=null;this.src='img/default.png';"
+                                                                        alt="avatar">
                                                                 </span>
-                                                                <span x-text="`${usuario.name} ${usuario.last_name}`" class="ml-1"></span>
-                                                                <span x-show="usuario.phone" x-text="` - ${usuario.phone}`"></span>
+                                                                <span x-text="`${usuario.name} ${usuario.last_name}`"
+                                                                    class="ml-1"></span>
+                                                                <span x-show="usuario.phone"
+                                                                    x-text="` - ${usuario.phone}`"></span>
                                                             </div>
                                                         </template>
                                                     </div>
@@ -151,11 +172,11 @@
         </div>
     </div>
 
-     @script
+    @script
         <script>
             Alpine.data('data_programacion', () => ({
 
-                init(){
+                init() {
                     $('#filtro_sede').change(() => {
                         @this.filtro_sede = $('#filtro_sede').val()
                     })
@@ -164,11 +185,11 @@
                     })
                 },
 
-                get getData(){
+                get getData() {
                     return @this.programaciones
                 },
 
-                editProgramacion( item_old = null ) {
+                editProgramacion(item_old = null) {
 
                     Livewire.dispatch('edit_form_programacion', item_old)
 

@@ -5,13 +5,15 @@
                 <div class="content-header-left col-md-6 col-12 mb-2 breadcrumb-new">
                     <h3 class="content-header-title mb-0 d-inline-block br_none">Gestión de Roles</h3>
                 </div>
-                <div class="content-header-right col-md-6 col-12">
-                    <div class="btn-group float-md-right">
+                @can('crear roles')
+                    <div class="content-header-right col-md-6 col-12">
+                        <div class="btn-group float-md-right">
                             <a href="javascript:" x-on:click="openForm()" id="btn_form_role" class="btn btn-dark">
                                 <i class="la la-plus"></i> Nuevo Rol
                             </a>
+                        </div>
                     </div>
-                </div>
+                @endcan
             </div>
             <div class="content-body">
                 <div class="card">
@@ -73,8 +75,12 @@
                         <td>${categorias.join(', ')}</td>
                         <td>
                             <div class="d-flex">
-                                <x-buttonsm click="openForm(${role.id})"><i class="la la-edit"></i></x-buttonsm>
-                                <x-buttonsm click="confirmDelete(${role.id})" color="danger"><i class="la la-trash"></i></x-buttonsm>
+                                @can('editar roles')
+                                  <x-buttonsm click="openForm(${role.id})"><i class="la la-edit"></i></x-buttonsm>
+                                @endcan
+                                @can('eliminar roles')
+                                  <x-buttonsm click="confirmDelete(${role.id})" color="danger"><i class="la la-trash"></i></x-buttonsm>
+                                @endcan   
                             </div>
                         </td>`;
 
@@ -88,33 +94,130 @@
 
                 // Función que agrupa los permisos por categoría
                 getPermisosPorCategoria(permissions) {
+                    // const categorias = {
+                    //     "Dashboard": ["ver dashboard"],
+                    //     "Usuarios": ["ver usuarios", "crear usuarios", "editar usuarios", "eliminar usuarios"],
+                    //     "Categorías": ["ver categorias", "crear categorias", "editar categorias",
+                    //         "eliminar categorias"
+                    //     ],
+                    //     "Productos": ["ver productos", "crear productos", "editar productos",
+                    //         "eliminar productos"
+                    //     ],
+                    //     "Proveedores": ["ver proveedores", "crear proveedores", "editar proveedores",
+                    //         "eliminar proveedores"
+                    //     ],
+                    //     "Cuentas": ["ver cuentas", "crear cuentas", "editar cuentas", "eliminar cuentas"],
+                    //     "Cierre de Caja": ["ver cierre-caja", "crear cierre-caja", "editar cierre-caja",
+                    //         "eliminar cierre-caja"
+                    //     ],
+                    //     "Compras": ["ver compras", "crear compras", "editar compras", "eliminar compras"],
+                    //     "Ventas": ["ver ventas", "crear ventas", "editar ventas", "eliminar ventas"],
+                    //     "Ajuste de Inventario": ["ver ajuste-inventario", "crear ajuste-inventario",
+                    //         "editar ajuste-inventario", "eliminar ajuste-inventario"
+                    //     ],
+                    //     "Movimientos": ["ver movimientos", "crear movimientos", "editar movimientos",
+                    //         "eliminar movimientos"
+                    //     ],
+                    //     "Roles": ["ver roles", "crear roles", "editar roles", "eliminar roles"],
+                    //     "Creditos": ["ver creditos", "crear creditos", "editar creditos", "eliminar creditos"]
+                    // };
+
                     const categorias = {
-                        "Dashboard": ["ver dashboard"],
-                        "Usuarios": ["ver usuarios", "crear usuarios", "editar usuarios", "eliminar usuarios"],
-                        "Categorías": ["ver categorias", "crear categorias", "editar categorias",
-                            "eliminar categorias"
+
+                        "Dashboard": [
+                            "ver dashboard",
+                            "dashboard programación"
                         ],
-                        "Productos": ["ver productos", "crear productos", "editar productos",
-                            "eliminar productos"
+
+                        "Personal": [
+                            "ver Sección personal"
                         ],
-                        "Proveedores": ["ver proveedores", "crear proveedores", "editar proveedores",
+
+                        "Empresas": [
+                            "ver Sección Empresas"
+                        ],
+
+                        "Página Web": [
+                            "ver Sección página web"
+                        ],
+
+                        "Programación": [
+                            "ver programación",
+                            "crear programación",
+                            "editar programación",
+                            "eliminar programación"
+                        ],
+
+                        "Marcaciones": [
+                            "ver marcaciones"
+                        ],
+
+                        "Capacitaciones": [
+                            "ver capacitaciones",
+                            "crear capacitaciones",
+                            "editar capacitaciones",
+                            "eliminar capacitaciones"
+                        ],
+
+                        "Cursos": [
+                            "ver materiales",
+                            "ver preguntas",
+                            "ver asignaciones",
+                            "ver resultados",
+                            "ver mis cursos"
+                        ],
+
+                        "Información de Interés": [
+                            "ver información de interes",
+                            "crear información de interes",
+                            "editar información de interes",
+                            "eliminar información de interes"
+                        ],
+
+                        "Usuarios": [
+                            "ver usuarios",
+                            "crear usuarios",
+                            "editar usuarios",
+                            "eliminar usuarios"
+                        ],
+
+                        "Sedes": [
+                            "ver sedes",
+                            "crear sedes",
+                            "editar sedes",
+                            "eliminar sedes"
+                        ],
+
+                        "Gestión Documental": [
+                            "ver gestión documental",
+                            "crear gestión documental",
+                            "editar gestión documental",
+                            "eliminar gestión documental"
+                        ],
+
+                        "Roles": [
+                            "ver roles",
+                            "crear roles",
+                            "editar roles",
+                            "eliminar roles"
+                        ],
+
+                        "Proveedores": [
+                            "ver proveedores",
+                            "crear proveedores",
+                            "editar proveedores",
                             "eliminar proveedores"
                         ],
-                        "Cuentas": ["ver cuentas", "crear cuentas", "editar cuentas", "eliminar cuentas"],
-                        "Cierre de Caja": ["ver cierre-caja", "crear cierre-caja", "editar cierre-caja",
-                            "eliminar cierre-caja"
+
+                        "Repositorio": [
+                            "ver repositorio",
+                            "crear repositorio",
+                            "editar repositorio",
+                            "eliminar repositorio"
                         ],
-                        "Compras": ["ver compras", "crear compras", "editar compras", "eliminar compras"],
-                        "Ventas": ["ver ventas", "crear ventas", "editar ventas", "eliminar ventas"],
-                        "Ajuste de Inventario": ["ver ajuste-inventario", "crear ajuste-inventario",
-                            "editar ajuste-inventario", "eliminar ajuste-inventario"
-                        ],
-                        "Movimientos": ["ver movimientos", "crear movimientos", "editar movimientos",
-                            "eliminar movimientos"
-                        ],
-                        "Roles": ["ver roles", "crear roles", "editar roles", "eliminar roles"],
-                        "Creditos": ["ver creditos", "crear creditos", "editar creditos", "eliminar creditos"]
+
                     };
+
 
                     // Filtrar las categorías con permisos seleccionados
                     let categoriasSeleccionadas = [];

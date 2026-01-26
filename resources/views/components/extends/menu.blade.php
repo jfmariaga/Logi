@@ -10,78 +10,102 @@
                 </a>
             </li>
             <li class="dropdown nav-item" data-menu="dropdown">
-                <a class="dropdown-toggle nav-link
-                {{ Route::is('usuarios') ? 'active' : '' }}    
-                {{ Route::is('roles') ? 'active' : '' }}    
-                {{ Route::is('programacion') ? 'active' : '' }}    
-                {{ Route::is('asistencia') ? 'active' : '' }}    
-                " href="#" data-toggle="dropdown">
-                    <i class="la la-users"></i><span>Personal</span>
-                </a>
+                @can('ver Sección personal')
+                    <a class="dropdown-toggle nav-link
+                    {{ Route::is('usuarios') ? 'active' : '' }}    
+                    {{ Route::is('roles') ? 'active' : '' }}    
+                    {{ Route::is('programacion') ? 'active' : '' }}    
+                    {{ Route::is('asistencia') ? 'active' : '' }}    
+                    " href="#" data-toggle="dropdown">
+                        <i class="la la-users"></i><span>Personal</span>
+                    </a>
+                @endcan
                 <ul class="dropdown-menu">
-                    <li>
-                        <a class="dropdown-item block-page" href="{{ route('programacion') }}">
-                            <span>Programación</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item block-page" href="{{ route('asistencia') }}">
-                            <span>Marcaciones</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item block-page" href="{{ route('cursos') }}">
-                            <span>Capacitaciones</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item block-page" href="{{ route('mis-cursos') }}">
-                            <span>Mis cursos</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item block-page" href="{{ route('informacion_de_interes') }}">
-                            <span>Información de interés</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item block-page" href="{{ route('usuarios') }}">
-                            <span>Lista de usuarios</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item block-page" href="{{ route('roles') }}">
-                            <span data-i18n="Horizontal">Roles y permisos</span>
-                        </a>
-                    </li>
+                    @can('ver programación')
+                        <li>
+                            <a class="dropdown-item block-page" href="{{ route('programacion') }}">
+                                <span>Programación</span>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('ver marcaciones')
+                        <li>
+                            <a class="dropdown-item block-page" href="{{ route('asistencia') }}">
+                                <span>Marcaciones</span>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('ver capacitaciones')
+                        <li>
+                            <a class="dropdown-item block-page" href="{{ route('cursos') }}">
+                                <span>Capacitaciones</span>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('ver mis cursos')
+                        <li>
+                            <a class="dropdown-item block-page" href="{{ route('mis-cursos') }}">
+                                <span>Mis cursos</span>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('ver información de interes')
+                         <li>
+                            <a class="dropdown-item block-page" href="{{ route('informacion_de_interes') }}">
+                                <span>Información de interés</span>
+                            </a>
+                         </li>
+                    @endcan
+                    @can('ver usuarios')
+                        <li>
+                            <a class="dropdown-item block-page" href="{{ route('usuarios') }}">
+                                <span>Lista de usuarios</span>
+                            </a>
+                        </li>
+                    @endcan     
+                    @can('ver roles')
+                        <li>
+                            <a class="dropdown-item block-page" href="{{ route('roles') }}">
+                                <span data-i18n="Horizontal">Roles y permisos</span>
+                            </a>
+                        </li>
+                    @endcan
                 </ul>
             </li>
             <li class="dropdown nav-item" data-menu="dropdown">
-                <a class="dropdown-toggle nav-link 
+                @can('ver Sección Empresas')
+                     <a class="dropdown-toggle nav-link 
                     {{ Route::is('gestion-documental') ? 'active' : '' }}
                     {{ Route::is('sedes') ? 'active' : '' }}
                         " href="#" data-toggle="dropdown">
                     <i class="la la-bar-chart"></i><span>Empresa</span>
-                </a>
+                    </a>
+                @endcan             
                 <ul class="dropdown-menu">
-                    <li>
-                        <a class="dropdown-item block-page" href="{{ route('sedes') }}">
-                            <span>Sedes de Trabajo</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item block-page" href="{{ route('gestion-documental') }}">
-                            <span data-i18n="Horizontal">Gestión documental</span>
-                        </a>
-                    </li>
+                    @can('ver sedes')
+                        <li>
+                            <a class="dropdown-item block-page" href="{{ route('sedes') }}">
+                                <span>Sedes de Trabajo</span>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('ver gestión documental')
+                       <li>
+                            <a class="dropdown-item block-page" href="{{ route('gestion-documental') }}">
+                                <span data-i18n="Horizontal">Gestión documental</span>
+                            </a>
+                        </li> 
+                    @endcan
                 </ul>
             </li>
-            <li class="nav-item">
-                <a class="nav-link block-page {{ request()->routeIs('admin.pages.edit') ? 'active' : '' }}"
-                    href="{{ route('admin.pages.edit', 'home') }}">
-                    <i class="la la-list-alt"></i> Página web
-                </a>
-            </li>
+            @can('ver Sección página web')
+                <li class="nav-item">
+                    <a class="nav-link block-page {{ request()->routeIs('admin.pages.edit') ? 'active' : '' }}"
+                        href="{{ route('admin.pages.edit', 'home') }}">
+                        <i class="la la-list-alt"></i> Página web
+                    </a>
+                </li>  
+            @endcan
             <li class="nav-item show_responsive">
                 <a class="nav-link c_red" href="javascript:" onclick="$('#submitLogout').submit()">
                     <i class="la la-power-off c_red"></i> Cerrar sesión

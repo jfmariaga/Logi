@@ -6,155 +6,136 @@
 
     <div class="row">
         <div class="col-md-12 mt-1">
-            <x-input model="$wire.name" type="text" label="Nombre del Rol" required="true"></x-input>
+            <x-input model="$wire.name" type="text" label="Nombre del Rol" required="true" />
         </div>
 
         <div class="col-md-12 mt-3">
-            <label for="permisos">Permisos</label>
+            <label>Permisos</label>
 
             <div class="row">
+
+                {{-- COLUMNA 1 --}}
                 <div class="col-md-4">
-                    <h5 class="text-uppercase text-primary">Dashboard</h5>
-                    <div class="form-group">
-                        @foreach ($allPermissions->whereIn('name', ['ver dashboard']) as $permission)
-                            <div class="form-check">
-                                <input type="checkbox" wire:model="selectedPermissions" value="{{ $permission->name }}" class="form-check-input" id="permiso_{{ $permission->id }}">
-                                <label class="form-check-label" for="permiso_{{ $permission->id }}">{{ $permission->name }}</label>
-                            </div>
-                        @endforeach
-                    </div>
-                    <h5 class="text-uppercase text-primary mt-3">Usuarios</h5>
-                    <div class="form-group">
-                        @foreach ($allPermissions->whereIn('name', ['ver usuarios', 'crear usuarios', 'editar usuarios', 'eliminar usuarios']) as $permission)
-                            <div class="form-check">
-                                <input type="checkbox" wire:model="selectedPermissions" value="{{ $permission->name }}" class="form-check-input" id="permiso_{{ $permission->id }}">
-                                <label class="form-check-label" for="permiso_{{ $permission->id }}">{{ $permission->name }}</label>
-                            </div>
-                        @endforeach
-                    </div>
 
-                    <h5 class="text-uppercase text-primary mt-3">Categorías</h5>
-                    <div class="form-group">
-                        @foreach ($allPermissions->whereIn('name', ['ver categorias', 'crear categorias', 'editar categorias', 'eliminar categorias']) as $permission)
-                            <div class="form-check">
-                                <input type="checkbox" wire:model="selectedPermissions" value="{{ $permission->name }}" class="form-check-input" id="permiso_{{ $permission->id }}">
-                                <label class="form-check-label" for="permiso_{{ $permission->id }}">{{ $permission->name }}</label>
-                            </div>
-                        @endforeach
-                    </div>
+                    <h6 class="text-uppercase text-primary">Dashboard</h6>
+                    @foreach ($allPermissions->whereIn('name', ['ver dashboard','dashboard programación']) as $p)
+                        @include('admin.roles.checkbox', ['p' => $p])
+                    @endforeach
 
-                    <h5 class="text-uppercase text-primary mt-3">Ajuste de Inventario</h5>
-                    <div class="form-group">
-                        @foreach ($allPermissions->whereIn('name', ['ver ajuste-inventario', 'crear ajuste-inventario', 'editar ajuste-inventario', 'eliminar ajuste-inventario']) as $permission)
-                            <div class="form-check">
-                                <input type="checkbox" wire:model="selectedPermissions" value="{{ $permission->name }}" class="form-check-input" id="permiso_{{ $permission->id }}">
-                                <label class="form-check-label" for="permiso_{{ $permission->id }}">{{ $permission->name }}</label>
-                            </div>
-                        @endforeach
-                    </div>
+                    <h6 class="text-uppercase text-primary mt-3">Personal</h6>
+                    @foreach ($allPermissions->whereIn('name', ['ver Sección personal']) as $p)
+                        @include('admin.roles.checkbox', ['p' => $p])
+                    @endforeach
+
+                    <h6 class="text-uppercase text-primary mt-3">Empresas</h6>
+                    @foreach ($allPermissions->whereIn('name', ['ver Sección Empresas']) as $p)
+                        @include('admin.roles.checkbox', ['p' => $p])
+                    @endforeach
+
+                    <h6 class="text-uppercase text-primary mt-3">Página Web</h6>
+                    @foreach ($allPermissions->whereIn('name', ['ver Sección página web']) as $p)
+                        @include('admin.roles.checkbox', ['p' => $p])
+                    @endforeach
+
+                    <h6 class="text-uppercase text-primary mt-3">Marcaciones</h6>
+                    @foreach ($allPermissions->whereIn('name', ['ver marcaciones']) as $p)
+                        @include('admin.roles.checkbox', ['p' => $p])
+                    @endforeach
+
+                    <h6 class="text-uppercase text-primary mt-3">Programación</h6>
+                    @foreach ($allPermissions->whereIn('name', [
+                        'ver programación','crear programación','editar programación','eliminar programación'
+                    ]) as $p)
+                        @include('admin.roles.checkbox', ['p' => $p])
+                    @endforeach
+
                 </div>
 
+                {{-- COLUMNA 2 --}}
                 <div class="col-md-4">
-                    <h5 class="text-uppercase text-primary">Productos</h5>
-                    <div class="form-group">
-                        @foreach ($allPermissions->whereIn('name', ['ver productos', 'crear productos', 'editar productos', 'eliminar productos']) as $permission)
-                            <div class="form-check">
-                                <input type="checkbox" wire:model="selectedPermissions" value="{{ $permission->name }}" class="form-check-input" id="permiso_{{ $permission->id }}">
-                                <label class="form-check-label" for="permiso_{{ $permission->id }}">{{ $permission->name }}</label>
-                            </div>
-                        @endforeach
-                    </div>
 
-                    <h5 class="text-uppercase text-primary mt-3">Proveedores</h5>
-                    <div class="form-group">
-                        @foreach ($allPermissions->whereIn('name', ['ver proveedores', 'crear proveedores', 'editar proveedores', 'eliminar proveedores']) as $permission)
-                            <div class="form-check">
-                                <input type="checkbox" wire:model="selectedPermissions" value="{{ $permission->name }}" class="form-check-input" id="permiso_{{ $permission->id }}">
-                                <label class="form-check-label" for="permiso_{{ $permission->id }}">{{ $permission->name }}</label>
-                            </div>
-                        @endforeach
-                    </div>
+                    <h6 class="text-uppercase text-primary">Capacitaciones</h6>
+                    @foreach ($allPermissions->whereIn('name', [
+                        'ver capacitaciones','crear capacitaciones','editar capacitaciones','eliminar capacitaciones'
+                    ]) as $p)
+                        @include('admin.roles.checkbox', ['p' => $p])
+                    @endforeach
 
-                    <h5 class="text-uppercase text-primary mt-3">Cuentas</h5>
-                    <div class="form-group">
-                        @foreach ($allPermissions->whereIn('name', ['ver cuentas', 'crear cuentas', 'editar cuentas', 'eliminar cuentas']) as $permission)
-                            <div class="form-check">
-                                <input type="checkbox" wire:model="selectedPermissions" value="{{ $permission->name }}" class="form-check-input" id="permiso_{{ $permission->id }}">
-                                <label class="form-check-label" for="permiso_{{ $permission->id }}">{{ $permission->name }}</label>
-                            </div>
-                        @endforeach
-                    </div>
+                    <h6 class="text-uppercase text-primary mt-3">Cursos</h6>
+                    @foreach ($allPermissions->whereIn('name', [
+                        'ver materiales','ver preguntas','ver asignaciones','ver resultados','ver mis cursos'
+                    ]) as $p)
+                        @include('admin.roles.checkbox', ['p' => $p])
+                    @endforeach
 
-                    <h5 class="text-uppercase text-primary mt-3">Movimientos</h5>
-                    <div class="form-group">
-                        @foreach ($allPermissions->whereIn('name', ['ver movimientos', 'crear movimientos', 'editar movimientos', 'eliminar movimientos']) as $permission)
-                            <div class="form-check">
-                                <input type="checkbox" wire:model="selectedPermissions" value="{{ $permission->name }}" class="form-check-input" id="permiso_{{ $permission->id }}">
-                                <label class="form-check-label" for="permiso_{{ $permission->id }}">{{ $permission->name }}</label>
-                            </div>
-                        @endforeach
-                    </div>
+                    <h6 class="text-uppercase text-primary mt-3">Información de Interés</h6>
+                    @foreach ($allPermissions->whereIn('name', [
+                        'ver información de interes','crear información de interes',
+                        'editar información de interes','eliminar información de interes'
+                    ]) as $p)
+                        @include('admin.roles.checkbox', ['p' => $p])
+                    @endforeach
+
+                    <h6 class="text-uppercase text-primary mt-3">Usuarios</h6>
+                    @foreach ($allPermissions->whereIn('name', [
+                        'ver usuarios','crear usuarios','editar usuarios','eliminar usuarios'
+                    ]) as $p)
+                        @include('admin.roles.checkbox', ['p' => $p])
+                    @endforeach
+
                 </div>
 
+                {{-- COLUMNA 3 --}}
                 <div class="col-md-4">
-                    <h5 class="text-uppercase text-primary">Cierre de Caja</h5>
-                    <div class="form-group">
-                        @foreach ($allPermissions->whereIn('name', ['ver cierre-caja', 'crear cierre-caja', 'editar cierre-caja', 'eliminar cierre-caja']) as $permission)
-                            <div class="form-check">
-                                <input type="checkbox" wire:model="selectedPermissions" value="{{ $permission->name }}" class="form-check-input" id="permiso_{{ $permission->id }}">
-                                <label class="form-check-label" for="permiso_{{ $permission->id }}">{{ $permission->name }}</label>
-                            </div>
-                        @endforeach
-                    </div>
 
-                    <h5 class="text-uppercase text-primary mt-3">Compras</h5>
-                    <div class="form-group">
-                        @foreach ($allPermissions->whereIn('name', ['ver compras', 'crear compras', 'editar compras', 'eliminar compras']) as $permission)
-                            <div class="form-check">
-                                <input type="checkbox" wire:model="selectedPermissions" value="{{ $permission->name }}" class="form-check-input" id="permiso_{{ $permission->id }}">
-                                <label class="form-check-label" for="permiso_{{ $permission->id }}">{{ $permission->name }}</label>
-                            </div>
-                        @endforeach
-                    </div>
+                    <h6 class="text-uppercase text-primary">Sedes</h6>
+                    @foreach ($allPermissions->whereIn('name', [
+                        'ver sedes','crear sedes','editar sedes','eliminar sedes'
+                    ]) as $p)
+                        @include('admin.roles.checkbox', ['p' => $p])
+                    @endforeach
 
-                    <h5 class="text-uppercase text-primary mt-3">Ventas</h5>
-                    <div class="form-group">
-                        @foreach ($allPermissions->whereIn('name', ['ver ventas', 'crear ventas', 'editar ventas', 'eliminar ventas']) as $permission)
-                            <div class="form-check">
-                                <input type="checkbox" wire:model="selectedPermissions" value="{{ $permission->name }}" class="form-check-input" id="permiso_{{ $permission->id }}">
-                                <label class="form-check-label" for="permiso_{{ $permission->id }}">{{ $permission->name }}</label>
-                            </div>
-                        @endforeach
-                    </div>
+                    <h6 class="text-uppercase text-primary mt-3">Gestión Documental</h6>
+                    @foreach ($allPermissions->whereIn('name', [
+                        'ver gestión documental','crear gestión documental',
+                        'editar gestión documental','eliminar gestión documental'
+                    ]) as $p)
+                        @include('admin.roles.checkbox', ['p' => $p])
+                    @endforeach
 
-                    <h5 class="text-uppercase text-primary mt-3">Roles</h5>
-                    <div class="form-group">
-                        @foreach ($allPermissions->whereIn('name', ['ver roles', 'crear roles', 'editar roles', 'eliminar roles']) as $permission)
-                            <div class="form-check">
-                                <input type="checkbox" wire:model="selectedPermissions" value="{{ $permission->name }}" class="form-check-input" id="permiso_{{ $permission->id }}">
-                                <label class="form-check-label" for="permiso_{{ $permission->id }}">{{ $permission->name }}</label>
-                            </div>
-                        @endforeach
-                    </div>
+                    <h6 class="text-uppercase text-primary mt-3">Roles</h6>
+                    @foreach ($allPermissions->whereIn('name', [
+                        'ver roles','crear roles','editar roles','eliminar roles'
+                    ]) as $p)
+                        @include('admin.roles.checkbox', ['p' => $p])
+                    @endforeach
 
-                    <h5 class="text-uppercase text-primary mt-3">Créditos</h5>
-                    <div class="form-group">
-                        @foreach ($allPermissions->whereIn('name', ['ver creditos', 'crear creditos', 'editar creditos', 'eliminar creditos']) as $permission)
-                            <div class="form-check">
-                                <input type="checkbox" wire:model="selectedPermissions" value="{{ $permission->name }}" class="form-check-input" id="permiso_{{ $permission->id }}">
-                                <label class="form-check-label" for="permiso_{{ $permission->id }}">{{ $permission->name }}</label>
-                            </div>
-                        @endforeach
-                    </div>
+                    {{-- <h6 class="text-uppercase text-primary mt-3">Proveedores</h6>
+                    @foreach ($allPermissions->whereIn('name', [
+                        'ver proveedores','crear proveedores','editar proveedores','eliminar proveedores'
+                    ]) as $p)
+                        @include('admin.roles.checkbox', ['p' => $p])
+                    @endforeach --}}
+
+                    <h6 class="text-uppercase text-primary mt-3">Repositorio</h6>
+                    @foreach ($allPermissions->whereIn('name', [
+                        'ver repositorio','crear repositorio','editar repositorio','eliminar repositorio'
+                    ]) as $p)
+                        @include('admin.roles.checkbox', ['p' => $p])
+                    @endforeach
+
                 </div>
+
             </div>
         </div>
     </div>
 
     <x-slot name="footer">
-        <span>
-            <button type="button" class="btn grey btn-outline-secondary" x-on:click="closeModal()" data-dismiss="modal">Cancelar</button>
-            <button type="button" class="btn btn-outline-primary" x-on:click="saveFront()">Guardar</button>
-        </span>
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
+            Cancelar
+        </button>
+        <button type="button" class="btn btn-outline-primary" x-on:click="saveFront()">
+            Guardar
+        </button>
     </x-slot>
 </x-modal>

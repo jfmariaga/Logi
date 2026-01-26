@@ -42,26 +42,26 @@ Route::get('/login', Login::class)->name('login');
 Route::get('/marcacion', Marcador::class)->name('marcacion');
 
 Route::middleware([AuthGuard::class])->group(function () {
-    Route::get('/dashboard', Dashboard::class)->name('dashboard');
-    Route::get('/usuarios', Usuarios::class)->name('usuarios');
+    Route::get('/dashboard', Dashboard::class)->name('dashboard')->middleware('permission:ver dashboard');
+    Route::get('/usuarios', Usuarios::class)->name('usuarios')->middleware('permission:ver usuarios');
     Route::get('/categorias', Categorias::class)->name('categorias')->middleware('permission:ver categorias'); // se queda por si despues se necesita
     Route::get('/proveedores', Proveedores::class)->name('proveedores')->middleware('permission:ver proveedores'); // se queda por si depsues se necesita
-    Route::get('/repositorio', Repositorio::class)->name('repositorio'); // en pausa, queda para la ultima fase, la que es con edición de documentos
-    Route::get('/gestion-documental', GestionDocumental::class)->name('gestion-documental'); // en pausa, queda para la ultima fase, la que es con edición de documentos
-    Route::get('/admin/pages/{slug}', PageEditor::class)->name('admin.pages.edit');
-    Route::get('/sedes', Sedes::class)->name('sedes');
-    Route::get('/roles', Roles::class)->name('roles');
-    Route::get('/dashboard-asistencia', AsistenciaDashboard::class)->name('asistencia');
-    Route::get('/programacion', Programacion::class)->name('programacion');
-    Route::get('/admin/cursos', Cursos::class)->name('cursos');
-    Route::get('/admin/cursos/{curso_id}/materiales',CursoMateriales::class)->name('admin.cursos.materiales');
-    Route::get('/admin/cursos/{curso_id}/preguntas', CursoPreguntas::class)->name('admin.cursos.preguntas');
-    Route::get('/admin/cursos/{curso}/asignaciones', CursoAsignaciones::class)->name('admin.cursos.asignaciones');
-    Route::get('/mis-cursos', MisCursos::class)->name('mis-cursos');
+    Route::get('/repositorio', Repositorio::class)->name('repositorio')->middleware('permission:ver repositorio'); // en pausa, queda para la ultima fase, la que es con edición de documentos
+    Route::get('/gestion-documental', GestionDocumental::class)->name('gestion-documental')->middleware('permission:ver gestión documental'); // en pausa, queda para la ultima fase, la que es con edición de documentos
+    Route::get('/admin/pages/{slug}', PageEditor::class)->name('admin.pages.edit')->middleware('permission:ver Sección página web');
+    Route::get('/sedes', Sedes::class)->name('sedes')->middleware('permission:ver sedes');
+    Route::get('/roles', Roles::class)->name('roles')->middleware('permission:ver roles');
+    Route::get('/dashboard-asistencia', AsistenciaDashboard::class)->name('asistencia')->middleware('permission:ver marcaciones');
+    Route::get('/programacion', Programacion::class)->name('programacion')->middleware('permission:ver programación');
+    Route::get('/admin/cursos', Cursos::class)->name('cursos')->middleware('permission:ver capacitaciones');
+    Route::get('/admin/cursos/{curso_id}/materiales',CursoMateriales::class)->name('admin.cursos.materiales')->middleware('permission:ver materiales');
+    Route::get('/admin/cursos/{curso_id}/preguntas', CursoPreguntas::class)->name('admin.cursos.preguntas')->middleware('permission:ver preguntas');
+    Route::get('/admin/cursos/{curso}/asignaciones', CursoAsignaciones::class)->name('admin.cursos.asignaciones')->middleware('permission:ver asignaciones');
+    Route::get('/admin/cursos/{curso}/resultados',CursoResultados::class)->name('admin.cursos.resultados')->middleware('permission:ver resultados');
+    Route::get('/mis-cursos', MisCursos::class)->name('mis-cursos')->middleware('permission:ver mis cursos');
     Route::get('/mis-cursos/{curso}', CursoPlayer::class)->name('mis-cursos.player');
     Route::get('/evaluacion/{intento}', CursoEvaluacion::class)->name('mis-cursos.evaluacion');
-    Route::get('/admin/cursos/{curso}/resultados',CursoResultados::class)->name('admin.cursos.resultados');
-    Route::get('/informacion-de-interes',InformacionDeInteres::class)->name('informacion_de_interes');
+    Route::get('/informacion-de-interes',InformacionDeInteres::class)->name('informacion_de_interes')->middleware('permission:ver información de interes');
 }); 
 
 Route::post('logout', function () {

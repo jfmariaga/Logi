@@ -30,7 +30,9 @@
         <div class="content-wrapper p-3">
             <div class="d-flex justify-content-between mb-3">
                 <h4>🎓 Cursos de Capacitación</h4>
-                <button class="btn btn-dark" @click="openForm()">Nuevo</button>
+                @can('crear capacitaciones')
+                    <button class="btn btn-dark" @click="openForm()">Nuevo</button>
+                @endcan
             </div>
             <div class="card">
                 <div x-show="!loading">
@@ -146,24 +148,36 @@
                             </td>
                             <td>
                                 <div class="d-flex">
-                                    <x-buttonsm click="openForm('${curso.id}')" title="Editar curso">
-                                        <i class="la la-edit"></i>
-                                    </x-buttonsm>
-                                    <x-buttonsm click="goMateriales('${curso.id}')" color="info" title="Materiales">
-                                        <i class="la la-book"></i>
-                                    </x-buttonsm>
-                                    <x-buttonsm click="goPreguntas('${curso.id}')" color="warning" title="Preguntas">
-                                        <i class="la la-question-circle"></i>
-                                    </x-buttonsm>
-                                    <x-buttonsm click="goAsignaciones('${curso.id}')" color="secondary" title="Asignaciones">
-                                        <i class="la la-users"></i>
-                                    </x-buttonsm>
-                                    <x-buttonsm click="goResultados('${curso.id}')" color="success" title="Resultados">
-                                        <i class="la la-bar-chart"></i>
-                                    </x-buttonsm>
-                                    <x-buttonsm click="confirmDelete('${curso.id}')" color="danger" title="Desactivar">
-                                        <i class="la la-trash"></i>
-                                    </x-buttonsm>
+                                    @can('editar capacitaciones')
+                                        <x-buttonsm click="openForm('${curso.id}')" title="Editar curso">
+                                            <i class="la la-edit"></i>
+                                        </x-buttonsm>
+                                    @endcan
+                                    @can('ver materiales')
+                                        <x-buttonsm click="goMateriales('${curso.id}')" color="info" title="Materiales">
+                                          <i class="la la-book"></i>
+                                        </x-buttonsm>
+                                    @endcan  
+                                    @can('ver preguntas')
+                                        <x-buttonsm click="goPreguntas('${curso.id}')" color="warning" title="Preguntas">
+                                          <i class="la la-question-circle"></i>
+                                        </x-buttonsm>
+                                    @endcan  
+                                    @can('ver asignaciones')
+                                         <x-buttonsm click="goAsignaciones('${curso.id}')" color="secondary" title="Asignaciones">
+                                           <i class="la la-users"></i>
+                                         </x-buttonsm>
+                                    @endcan
+                                    @can('ver resultados')
+                                         <x-buttonsm click="goResultados('${curso.id}')" color="success" title="Resultados">
+                                            <i class="la la-bar-chart"></i>
+                                         </x-buttonsm>
+                                    @endcan    
+                                    @can('eliminar capacitaciones')
+                                        <x-buttonsm click="confirmDelete('${curso.id}')" color="danger" title="Desactivar">
+                                         <i class="la la-trash"></i>
+                                        </x-buttonsm>
+                                    @endcan                                  
                                 </div>
                             </td>
                         `;
