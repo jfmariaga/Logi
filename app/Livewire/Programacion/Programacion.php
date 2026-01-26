@@ -29,7 +29,7 @@ class Programacion extends Component
         // identificamos los operadores
         $usuarios_array = $this->usuarios->toArray();
         foreach( $usuarios_array as $u ){
-            if( isset( $u['roles'][0]['id'] ) && $u['roles'][0]['id'] == '8' ){
+            if( isset( $u['roles'][0]['id'] ) && $u['roles'][0]['id'] == '3' ){
                 $this->operadores[ $u['id'] ] = [
                     'id'        => $u['id'],
                     'name'      => $u['name'],

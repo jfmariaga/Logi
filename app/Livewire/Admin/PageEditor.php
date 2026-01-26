@@ -59,7 +59,6 @@ class PageEditor extends Component
         $this->editingSection = $section;
         $this->editingType = $section->type;
         $this->settings = $section->settings ?? [];
-        // dd($this->settings);
     }
 
     // --------------------------visualiza la imagen del banner-------------------------------

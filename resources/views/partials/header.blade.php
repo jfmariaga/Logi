@@ -112,7 +112,7 @@
                                                     <li><a href="#clientes">CLIENTES</a></li>
                                                     <li><a href="#contacto">CONTACTO</a></li>
                                                     <li><a href="{{ route('marcacion') }}">MARCACIÓN</a></li>
-                                                    <li><a href="{{ route('login') }}">ADMIN</a></li>
+                                                    <li><a href="{{ route('login') }}">LOGIN</a></li>
                                                 </ul>
                                             </nav>
                                         </div>
