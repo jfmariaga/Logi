@@ -126,9 +126,9 @@
                                                     </a>
 
                                                     {{-- solo aplica para Excel y Word -- se pone en marcha en prod --}}
-                                                    {{-- <a x-show="getIcon( file.mime_type ).icon == 'spreadsheet' || getIcon( file.mime_type ).icon == 'word'" x-on:click="showDocument( file.url )" data-toggle="modal" data-target="#documentModal" class=" border_none btn btn-sm grey btn-outline-secondary " style="padding: 3px;"> 
+                                                    <a x-show="getIcon( file.mime_type ).icon == 'spreadsheet' || getIcon( file.mime_type ).icon == 'word'|| file.extension == 'pptx'" x-on:click="showDocument( file.url )" data-toggle="modal" data-target="#documentModal" class=" border_none btn btn-sm grey btn-outline-secondary " style="padding: 3px;"> 
                                                         <i class="la la-eye"></i>
-                                                    </a>       --}}
+                                                    </a>      
 
                                                     <a :href="file.url" :download="file.original_name"
                                                         class=" border_none btn btn-sm grey btn-outline-secondary "
@@ -183,11 +183,11 @@
                     </button>
                 </div>
                 <div class="modal-body p-0">
-                    {{-- <iframe :src="`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(documentURL)}`" 
+                    <iframe :src="`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(documentURL)}`" 
                             width="100%" 
                             height="600px" 
                             frameborder="0">
-                    </iframe>  --}}
+                    </iframe> 
                 </div>
             </div>
         </div>
@@ -323,8 +323,13 @@
                 },
 
                 showDocument(url) {
-                    // organizar URL con dominimo cuando ya este en prod
-                    this.documentURL = 'https://cd11.neum.app/publicFTP/templates_excel/cuentas_banco_template.xlsx'
+                    // organizo URL con dominimo, solo funciona con https
+                    const url_completa = `https://logisticarga.com/${url}`;
+                    // console.log({url_completa})
+                    this.documentURL = url_completa
+
+                    // ejemplo de un archivo ya expuesto en https
+                    // this.documentURL = 'https://cd11.neum.app/publicFTP/templates_excel/cuentas_banco_template.xlsx'
                 },
 
                 bytesToMB(bytes, decimals = 2) {
