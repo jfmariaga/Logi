@@ -193,6 +193,6 @@ class AsistenciaDashboard extends Component
             'cambioSede' => $cambioSede,
             'empleados' => $empleados,
             'sedes' => $sedes,
-        ]);
+        ])->title('Dashboard Asistencias');
     }
 }

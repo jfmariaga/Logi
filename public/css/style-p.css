@@ -196,6 +196,13 @@ border-radius: 20px !important;
   background: rgb(255, 224, 224) !important;
 }
 
+.bg_grey{
+  background-color: #cacaca !important;
+}
+.bg_grey_suave{
+  background-color: #d8d8d8 !important;
+}
+
 .logo_menu{
   padding: 10px 0;
   display: block;
@@ -864,8 +871,9 @@ border-top: none !important;
     }
 
     .row > [class*="col-"] {
-        padding-left: 0 !important;
-        padding-right: 0 !important;
+        padding-left: 3px !important;
+        padding-right: 3px !important;
+        padding-top: 3px;
     }
 
     .content-header{

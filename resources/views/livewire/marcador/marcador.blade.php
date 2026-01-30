@@ -1,4 +1,9 @@
 <div>
+    {{-- Politica tratamiento de datos --}}
+    @if ($mostrarModalPolitica)
+    @include('livewire.politica-datos')
+    @endif
+
     <div class="container mt-5" style="max-width: 500px">
 
         <h3 class="text-center mb-3">🕒 Terminal de Marcación</h3>

@@ -25,6 +25,9 @@ class Marcador extends Component
     public $ultimaEntradaFecha = null;
     public $registrando = false;
     public $selfie;
+    public $mostrarModalPolitica = false;
+    public $usuarioPolitica = null;
+
 
     public function mount()
     {
@@ -33,6 +36,25 @@ class Marcador extends Component
             $this->usuario = Auth::user();
             $this->cargarEstadoUsuario();
         }
+    }
+
+    public function aceptarPolitica()
+    {
+
+        if ($this->usuario->acepto_politica_datos) {
+            return;
+        }
+
+        $this->usuario->update([
+            'acepto_politica_datos' => true,
+            'fecha_acepto_politica' => now(),
+        ]);
+
+        // 🔑 CERRAR MODAL
+        $this->mostrarModalPolitica = false;
+
+        // Opcional: recargar estado
+        $this->cargarEstadoUsuario();
     }
 
     /** 🔎 búsqueda por documento */
@@ -47,6 +69,11 @@ class Marcador extends Component
 
         if (!$this->usuario) {
             $this->mensaje = 'Documento no encontrado';
+            return;
+        }
+
+        if (!$this->usuario->acepto_politica_datos) {
+            $this->mostrarModalPolitica = true;
             return;
         }
 
@@ -72,9 +99,11 @@ class Marcador extends Component
         $this->ultimaEntradaFecha = $ultimaEntrada?->fecha_hora;
     }
 
+
     /** click botón */
     public function marcar($tipo)
     {
+
         if (!$this->usuario || $this->registrando) return;
 
         if ($tipo === 'entrada' && $this->estadoActual === 'trabajando') {

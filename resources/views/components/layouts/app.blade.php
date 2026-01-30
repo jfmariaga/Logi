@@ -25,9 +25,11 @@
     <link rel="stylesheet" type="text/css"
         href="{{ asset('modernadmin/app-assets/vendors/css/tables/datatable/datatables.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('modernadmin/app-assets/css/app.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('modernadmin/app-assets/css/core/colors/palette-callout.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('modernadmin/app-assets/css/core/menu/menu-types/horizontal-menu.min.css') }}">
-        
+    <link rel="stylesheet" type="text/css"
+        href="{{ asset('modernadmin/app-assets/css/core/colors/palette-callout.min.css') }}">
+    <link rel="stylesheet" type="text/css"
+        href="{{ asset('modernadmin/app-assets/css/core/menu/menu-types/horizontal-menu.min.css') }}">
+
     {{-- <link rel="stylesheet" type="text/css" href="{{ asset('modernadmin/app-assets/css/core/menu/menu-types/vertical-menu-modern.css') }}"> --}}
     <link rel="stylesheet" type="text/css"
         href="{{ asset('modernadmin/app-assets/vendors/css/forms/selects/select2.css') }}">
@@ -37,7 +39,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/toastr/toastr.css') }}">
     <script type="text/javascript" src="{{ asset('assets/toastr/toastr.js') }}"></script>
     <!-- END Custom CSS-->
-    
+
     {{-- mask input --}}
     {{-- <script src="https://jsuites.net/v4/jsuites.js"></script>
     <link rel="stylesheet" href="https://jsuites.net/v4/jsuites.css" type="text/css" />
@@ -47,7 +49,8 @@
 
 </head>
 
-<body class="horizontal-layout horizontal-menu 2-columns  menu-expanded pace-done light-theme menu-hide" data-open="click" data-menu="horizontal-menu" data-col="2-columns">
+<body class="horizontal-layout horizontal-menu 2-columns  menu-expanded pace-done light-theme menu-hide"
+    data-open="click" data-menu="horizontal-menu" data-col="2-columns">
 
     <!-- ===== GIF DE CARGA ===== -->
     <div class="cc-loadingpage"><span class="loader_new"></span></div>
@@ -57,6 +60,12 @@
     <x-extends.nav></x-extends.nav>
 
     <x-extends.menu></x-extends.menu>
+
+    @auth
+        @if (!auth()->user()->acepto_politica_datos)
+            <livewire:politica-datos />
+        @endif
+    @endauth
 
     {{ $slot }}
 

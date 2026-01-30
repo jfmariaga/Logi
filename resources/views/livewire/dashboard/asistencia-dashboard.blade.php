@@ -4,7 +4,7 @@
     <div class="mb-3 d-flex justify-content-between align-items-center">
         <h3 class="mb-0">📊 Dashboard de Asistencia</h3>
 
-        <button class="btn btn-light px-3 py-2 shadow-sm" wire:click="refreshData" wire:loading.attr="disabled">
+        <button class="btn btn-light shadow-sm" wire:click="refreshData" wire:loading.attr="disabled">
             <span wire:loading.remove>
                 <i class="la la-refresh"></i> Actualizar
             </span>
@@ -17,36 +17,36 @@
     {{-- KPI --}}
     <div class="row mb-4">
 
-        <div class="col-md-3">
-            <div class="card card-corp text-center h-100">
-                <div class="card-body">
+        <div class="col-6 col-md-3">
+            <div class="m-1">
+                <div class="card card-corp text-center h-100 mb-0">
                     <small class="text-muted">Trabajando</small>
                     <h2 class="text-corp">{{ $totalTrabajando }}</h2>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-3">
-            <div class="card card-corp text-center h-100">
-                <div class="card-body">
+        <div class="col-6 col-md-3">
+            <div class="m-1">
+                <div class="card card-corp text-center h-100 mb-0">
                     <small class="text-muted">Sedes en operación</small>
                     <h2 class="text-corp">{{ $totalSedes }}</h2>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-3">
-            <div class="card card-corp text-center h-100">
-                <div class="card-body">
+        <div class="col-6 col-md-3">
+            <div class="m-1">
+                <div class="card card-corp text-center h-100 mb-0">
                     <small class="text-muted">Fuera sede hoy</small>
                     <h2 class="text-warning">{{ $fueraHoy }}</h2>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-3">
-            <div class="card card-corp text-center h-100">
-                <div class="card-body">
+        <div class="col-6 col-md-3">
+            <div class="m-1">
+                <div class="card card-corp text-center h-100 mb-0">
                     <small class="text-muted">Marcaciones hoy</small>
                     <h2 class="text-corp">{{ $marcacionesHoy }}</h2>
                 </div>
@@ -61,29 +61,16 @@
             🏢 Operarios por sede
         </div>
 
-        <div class="card-body p-2">
-            <div class="accordion" id="accordionSedes">
 
-                @foreach ($porSede as $sedeId => $lista)
-                    @php $sede = $lista->first()->sede; @endphp
-
-                    <div class="card mb-2">
-
-                        <div class="card-header p-2">
-                            <h6 class="mb-0 d-flex justify-content-between align-items-center">
-                                <button class="btn btn-link text-left" data-toggle="collapse"
-                                    data-target="#collapse{{ $sedeId }}">
-                                    🏢 {{ $sede->nombre ?? 'Sin sede' }}
-                                </button>
-
-                                <span class="badge badge-dark">
-                                    {{ $lista->count() }}
-                                </span>
-                            </h6>
-                        </div>
-
-                        <div id="collapse{{ $sedeId }}" class="collapse" data-parent="#accordionSedes">
-
+        <div class="card default-collapse collapse-icon accordion-icon-rotate" >
+            @php $contador = 0; @endphp
+            @foreach ($porSede as $sedeId => $lista)
+                @php $sede = $lista->first()->sede; @endphp
+                
+                <div class="card-header pointer bg_menu br_10 mt-1 @if(($contador % 2) == 0) bg_grey_suave @else bg_grey @endif collapsed" data-toggle="collapse" href="#collapse{{ $sedeId }}" aria-expanded="false">
+                    {{ $sede->nombre ?? 'Sin sede' }} <strong>( {{ $lista->count() }} Operarios )</strong>
+                </div>
+                <div id="collapse{{ $sedeId }}" role="tabpanel" class="card-collapse collapse" aria-expanded="true"  style="">                    <div class="card-content" >
                             <div class="card-body p-2">
 
                                 @foreach ($lista as $j)
@@ -112,20 +99,19 @@
                                 @endforeach
 
                             </div>
-                        </div>
-
                     </div>
-                @endforeach
+                </div>
+                @php $contador++; @endphp
+            @endforeach
+		</div>
 
-            </div>
-        </div>
     </div>
 
     {{-- ALERTAS --}}
     @if ($alertasLargas->count() || $fueraSede->count() || $cambioSede->count())
         <div class="card alert-corp mb-4">
-            <div class="card-header bg-warning text-dark">
-                ⚠️ Alertas
+            <div class="bs-callout-warning callout-border-left mt-1 p-1" bis_skin_checked="1">
+                <strong>⚠️ Alertas</strong>
             </div>
 
             <div class="card-body">
@@ -155,40 +141,44 @@
         <div x-data="nominaTable" wire:ignore>
             <div class="card shadow-sm mb-4">
                 <div class="card-header sede-header d-flex justify-content-between align-items-center">
-                    💼 Resumen Horas por empleado
-                    <div class="row g-2 align-items-end">
+                    <div class="row w-100">
                         <div class="col-md-3">
-                            <input type="date" class="form-control form-control-sm" x-model="desde">
+                            💼 Resumen Horas por empleado
                         </div>
-                        <div class="col-md-3">
-                            <input type="date" class="form-control form-control-sm" x-model="hasta">
-                        </div>
-                        <div class="col-md-3">
-                            <select class="form-control form-control-sm" x-model="user_id">
-                                <option value="">Todos</option>
-                                @foreach ($empleados as $e)
-                                    <option value="{{ $e->id }}">
-                                        {{ $e->name }} {{ $e->last_name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <select class="form-control form-control-sm" x-model="sede_id">
-                                <option value="">Todas las sedes</option>
-                                @foreach ($sedes as $s)
-                                    <option value="{{ $s->id }}">{{ $s->nombre }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-1">
-                            <button class="btn btn-sm btn-light w-100" @click="getData()" title="Filtrar">
-                                <i class="la la-filter"></i>
-                            </button>
+                        <div class="col-md-9 row g-2 align-items-end">
+                            <div class="col-6 col-md-3">
+                                <input type="date" class="form-control form-control-sm" x-model="desde">
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <input type="date" class="form-control form-control-sm" x-model="hasta">
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <select class="form-control form-control-sm" x-model="user_id">
+                                    <option value="">Todos</option>
+                                    @foreach ($empleados as $e)
+                                        <option value="{{ $e->id }}">
+                                            {{ $e->name }} {{ $e->last_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-6 col-md-2">
+                                <select class="form-control form-control-sm" x-model="sede_id">
+                                    <option value="">Todas las sedes</option>
+                                    @foreach ($sedes as $s)
+                                        <option value="{{ $s->id }}">{{ $s->nombre }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-1">
+                                <button class="btn btn-sm btn-light w-100" @click="getData()" title="Filtrar">
+                                    <i class="la la-filter"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="card-body table-responsive">
+                <div class="table-responsive">
                     <div x-show="!loading">
                         <div x-show="!loading">
                             <x-table id="table_nomina">
@@ -300,51 +290,55 @@
 
             <div class="card">
                 <div class="card-header sede-header d-flex justify-content-between align-items-center">
-                    🧾 Marcaciones
-                    <div class="row g-2 align-items-end">
-                        <div class="col-md-2">
-                            <input type="date" class="form-control form-control-sm" x-model="desde">
-                        </div>
-                        <div class="col-md-2">
-                            <input type="date" class="form-control form-control-sm" x-model="hasta">
-                        </div>
+                    <div class="row w-100">
                         <div class="col-md-3">
-                            <select class="form-control form-control-sm" x-model="user_id">
-                                <option value="">Todos</option>
-                                @foreach ($empleados as $e)
-                                    <option value="{{ $e->id }}">
-                                        {{ $e->name }} {{ $e->last_name }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            🧾 Marcaciones
                         </div>
-                        <div class="col-md-2">
-                            <select class="form-control form-control-sm" x-model="sede_id">
-                                <option value="">Todas las sedes</option>
-                                @foreach ($sedes as $s)
-                                    <option value="{{ $s->id }}">
-                                        {{ $s->nombre }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <select class="form-control form-control-sm" x-model="estado">
-                                <option value="">Todos</option>
-                                <option value="1">En sede</option>
-                                <option value="0">Fuera</option>
-                            </select>
-                        </div>
-                        <div class="col-md-1 d-flex gap-1">
-                            <button class="btn btn-sm btn-light w-100 d-flex align-items-center justify-content-center"
-                                @click="getData()" title="Filtrar">
-                                <i class="la la-filter"></i>
-                            </button>
+                        <div class="col-md-9 row g-2 ">
+                            <div class="col-6 col-md-2">
+                                <input type="date" class="form-control form-control-sm" x-model="desde">
+                            </div>
+                            <div class="col-6 col-md-2">
+                                <input type="date" class="form-control form-control-sm" x-model="hasta">
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <select class="form-control form-control-sm" x-model="user_id">
+                                    <option value="">Todos los operadores</option>
+                                    @foreach ($empleados as $e)
+                                        <option value="{{ $e->id }}">
+                                            {{ $e->name }} {{ $e->last_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-6 col-md-2">
+                                <select class="form-control form-control-sm" x-model="sede_id">
+                                    <option value="">Todas las sedes</option>
+                                    @foreach ($sedes as $s)
+                                        <option value="{{ $s->id }}">
+                                            {{ $s->nombre }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-6 col-md-2">
+                                <select class="form-control form-control-sm" x-model="estado">
+                                    <option value="">En sede y fuera de sede</option>
+                                    <option value="1">En sede</option>
+                                    <option value="0">Fuera</option>
+                                </select>
+                            </div>
+                            <div class="col-6 col-md-1 d-flex gap-1">
+                                <button class="btn btn-sm btn-light w-100 d-flex align-items-center justify-content-center"
+                                    @click="getData()" title="Filtrar">
+                                    <i class="la la-filter"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="card-body table-responsive">
+                <div class="table-responsive">
                     <div x-show="!loading">
                         <x-table id="table_marcaciones">
                             <tr>
