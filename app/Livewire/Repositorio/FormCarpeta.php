@@ -5,6 +5,7 @@ namespace App\Livewire\Repositorio;
 use Livewire\Component;
 
 use Illuminate\Support\Facades\Auth;
+use Spatie\Permission\Models\Role;
 
 use App\Models\User;
 use App\Models\Repositorio\Carpeta;
@@ -14,22 +15,19 @@ class FormCarpeta extends Component
 {
 
     public $carpetas_user = [];
-    public $users = [];
+    public $users = [], $roles = [];
 
-    public $carpeta_id      = 0; // 0 es el home, carpeta en la que estoy
-    public $carpeta_edit_id = null; // para editar
+    public $folder_id = 0; // 0 es el home
     public $loading = false;
-    protected $listeners    = [ 'changeCarpeta'];
-
-    public function changeCarpeta( $id = 0 ){
-        $this->carpeta_id = $id;
-    }
 
     // variables add carpeta
     public $form_carpeta = []; 
 
+    protected $listeners = ['changeCarpeta' => 'changeCarpeta'];
+
     public function mount(){
         $this->users = User::where('status', 1)->get();
+        $this->roles = Role::all();
         $this->vaciarFormCarpeta();
     }
 
@@ -39,9 +37,13 @@ class FormCarpeta extends Component
             'parent'        => 0,
             'nombre'        => '',
             'descripcion'   => '',
-            'privada'       => 0,
+            'roles'      => [],
             'usuarios'      => []
         ]; 
+    }
+
+    public function changeCarpeta($id = null, $home = null){
+        $this->folder_id = $id;
     }
 
     public function render()
@@ -56,25 +58,23 @@ class FormCarpeta extends Component
 
         // dd( $this->form_carpeta );
 
-        if( $this->carpeta_edit_id ){ // editar
-            $carpeta = Carpeta::find( $this->carpeta_edit_id );
+        if( $this->form_carpeta['id'] ){ // editar
+            $carpeta = Carpeta::find( $this->form_carpeta['id'] );
 
             $carpeta->nombre        = $this->form_carpeta['nombre'];
             $carpeta->descripcion   = $this->form_carpeta['descripcion'];
-            $carpeta->privada       = $this->form_carpeta['privada'];
-            $carpeta->updated_at    = date('Y-m-d H:i');
+            $carpeta->updated_at    = now();
             $carpeta->save();
 
         }else{ // crear
             $carpeta= Carpeta::create([
-                'parent'            => $this->carpeta_id,
+                'parent'            => $this->folder_id,
                 'nombre'            => $this->form_carpeta['nombre'],
                 'descripcion'       => $this->form_carpeta['descripcion'],
-                'privada'           => $this->form_carpeta['privada'],
                 'user_id'           => Auth::id(),
                 'status'            => 1,
-                'created_at'        => date('Y-m-d H:i'),
-                'updated_at'         => date('Y-m-d H:i')
+                'created_at'        => now(),
+                'updated_at'        => now()
             ]);
         }
 
@@ -84,15 +84,21 @@ class FormCarpeta extends Component
             CarpetaUsuario::where('carpeta_id', $carpeta->id)->delete();
 
             // el propietario siempre tiene acceso
-            if( !isset( $this->form_carpeta['usuarios'][ $carpeta->user_id ] ) ){
-                $this->form_carpeta['usuarios'][] = $carpeta->user_id ;
-            }
+            $this->form_carpeta['usuarios'][] = $carpeta->user_id;
 
-            // cargamos las nuevas relaciones
+            // cargamos las nuevas relaciones a usuarios
             foreach( $this->form_carpeta['usuarios'] as $id_usuario ){
                 CarpetaUsuario::create([
                     'carpeta_id' => $carpeta->id,
                     'user_id'    => $id_usuario
+                ]);
+            }
+
+            // cargamos las nuevas relaciones a roles
+            foreach( $this->form_carpeta['roles'] as $id_role ){
+                CarpetaUsuario::create([
+                    'carpeta_id' => $carpeta->id,
+                    'role_id'    => $id_role
                 ]);
             }
 

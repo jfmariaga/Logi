@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
 use App\Models\Repositorio\Carpeta;
+use App\Models\Repositorio\File;
 use App\Models\Repositorio\CarpetaUsuario;
 
 class User extends Authenticatable
@@ -30,24 +31,19 @@ class User extends Authenticatable
         ];
     }
 
-    // public function movimientos()
-    // {
-    //     return $this->hasMany(Movimiento::class);
-    // }
-
     public function usuario()
     {
         return $this->belongsTo(User::class);
     }
 
-    // public function ventas()
-    // {
-    //     return $this->hasMany(Venta::class);
-    // }
-
     public function carpetasCompartidas()
     {
         return $this->belongsToMany(Carpeta::class, 'carpetas_por_usuarios', 'user_id', 'carpeta_id');
+    }
+
+    public function filesCompartidos()
+    {
+        return $this->belongsToMany(File::class, 'file_por_usuarios', 'user_id', 'file_id');
     }
 
     public function jornadas()
@@ -70,4 +66,8 @@ class User extends Authenticatable
         return $this->hasMany(CursoIntento::class);
     }
 
+    public function entregas()
+    {
+        return $this->hasMany(Entrega::class, 'usuario_id');
+    }
 }

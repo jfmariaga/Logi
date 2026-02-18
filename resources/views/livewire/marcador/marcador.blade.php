@@ -1,7 +1,7 @@
 <div>
     {{-- Politica tratamiento de datos --}}
     @if ($mostrarModalPolitica)
-    @include('livewire.politica-datos')
+        @include('livewire.politica-datos')
     @endif
 
     <div class="container mt-5" style="max-width: 500px">

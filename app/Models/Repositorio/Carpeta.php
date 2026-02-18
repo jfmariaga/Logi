@@ -30,6 +30,11 @@ class Carpeta extends Model
     {
         return $this->hasMany(CarpetaUsuario::class, 'carpeta_id');
     }
+  
+    public function roles()
+    {
+        return $this->hasMany(CarpetaUsuario::class, 'carpeta_id');
+    }
     
     // Todas las subcarpetas recursivamente
     public function subcarpetasRecursivas()

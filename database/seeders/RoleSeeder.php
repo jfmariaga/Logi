@@ -71,13 +71,13 @@ class RoleSeeder extends Seeder
         Permission::create(['name' => 'editar información de interes'])->syncRoles([$roleSuperAdmin]);
         Permission::create(['name' => 'eliminar información de interes'])->syncRoles([$roleSuperAdmin]);
 
-         // Crear permisos para  usuarios (CRUD completo)
+        // Crear permisos para  usuarios (CRUD completo)
         Permission::create(['name' => 'ver usuarios'])->syncRoles([$roleSuperAdmin]);
         Permission::create(['name' => 'crear usuarios'])->syncRoles([$roleSuperAdmin]);
         Permission::create(['name' => 'editar usuarios'])->syncRoles([$roleSuperAdmin]);
         Permission::create(['name' => 'eliminar usuarios'])->syncRoles([$roleSuperAdmin]);
 
-         // Crear permisos para  sedes (CRUD completo)
+        // Crear permisos para  sedes (CRUD completo)
         Permission::create(['name' => 'ver sedes'])->syncRoles([$roleSuperAdmin]);
         Permission::create(['name' => 'crear sedes'])->syncRoles([$roleSuperAdmin]);
         Permission::create(['name' => 'editar sedes'])->syncRoles([$roleSuperAdmin]);
@@ -95,7 +95,7 @@ class RoleSeeder extends Seeder
         Permission::create(['name' => 'editar roles'])->syncRoles([$roleSuperAdmin]);
         Permission::create(['name' => 'eliminar roles'])->syncRoles([$roleSuperAdmin]);
 
-         // Crear permisos para proveedores (CRUD completo)
+        // Crear permisos para proveedores (CRUD completo)
         Permission::create(['name' => 'ver proveedores'])->syncRoles([$roleSuperAdmin]);
         Permission::create(['name' => 'crear proveedores'])->syncRoles([$roleSuperAdmin]);
         Permission::create(['name' => 'editar proveedores'])->syncRoles([$roleSuperAdmin]);
@@ -106,5 +106,11 @@ class RoleSeeder extends Seeder
         Permission::create(['name' => 'crear repositorio'])->syncRoles([$roleSuperAdmin]);
         Permission::create(['name' => 'editar repositorio'])->syncRoles([$roleSuperAdmin]);
         Permission::create(['name' => 'eliminar repositorio'])->syncRoles([$roleSuperAdmin]);
+
+        // Crear permisos para debida diligencia (ver y aprobar )
+        Permission::create(['name' => 'ver listado'])->syncRoles([$roleSuperAdmin]);
+        Permission::create(['name' => 'ver formularios'])->syncRoles([$roleSuperAdmin]);
+        Permission::create(['name' => 'aprobar formularios'])->syncRoles([$roleSuperAdmin]);
+        Permission::create(['name' => 'modificar notificaciones'])->syncRoles([$roleSuperAdmin]);
     }
 }

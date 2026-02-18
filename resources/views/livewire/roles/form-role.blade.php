@@ -110,12 +110,12 @@
                         @include('admin.roles.checkbox', ['p' => $p])
                     @endforeach
 
-                    {{-- <h6 class="text-uppercase text-primary mt-3">Proveedores</h6>
+                    <h6 class="text-uppercase text-primary mt-3">Debida Diligencia</h6>
                     @foreach ($allPermissions->whereIn('name', [
-                        'ver proveedores','crear proveedores','editar proveedores','eliminar proveedores'
+                        'ver listado','ver formularios','aprobar formularios','modificar notificaciones'
                     ]) as $p)
                         @include('admin.roles.checkbox', ['p' => $p])
-                    @endforeach --}}
+                    @endforeach
 
                     <h6 class="text-uppercase text-primary mt-3">Repositorio</h6>
                     @foreach ($allPermissions->whereIn('name', [
@@ -123,7 +123,6 @@
                     ]) as $p)
                         @include('admin.roles.checkbox', ['p' => $p])
                     @endforeach
-
                 </div>
 
             </div>

@@ -25,42 +25,12 @@ class File extends Model
         return $this->belongsTo(Folder::class);
     }
 
-    // Obtener tamaño formateado
-    public function getFormattedSizeAttribute(): string
+    public function usuarios()
     {
-        $size = $this->size;
-        $units = ['KB', 'MB', 'GB', 'TB'];
-
-        for ($i = 0; $size >= 1024 && $i < count($units) - 1; $i++) {
-            $size /= 1024;
-        }
-
-        return round($size, 2) . ' ' . $units[$i];
+        return $this->hasMany(FileUsuario::class, 'file_id');
     }
-
-    // Obtener icono según extensión
-    public function getIconAttribute(): string
+    public function roles()
     {
-        $icons = [
-            'pdf' => 'fa-file-pdf',
-            'doc' => 'fa-file-word',
-            'docx' => 'fa-file-word',
-            'xls' => 'fa-file-excel',
-            'xlsx' => 'fa-file-excel',
-            'ppt' => 'fa-file-powerpoint',
-            'pptx' => 'fa-file-powerpoint',
-            'jpg' => 'fa-file-image',
-            'jpeg' => 'fa-file-image',
-            'png' => 'fa-file-image',
-            'gif' => 'fa-file-image',
-            'mp4' => 'fa-file-video',
-            'mov' => 'fa-file-video',
-            'avi' => 'fa-file-video',
-            'mp3' => 'fa-file-audio',
-            'zip' => 'fa-file-archive',
-            'rar' => 'fa-file-archive',
-        ];
-
-        return $icons[$this->extension] ?? 'fa-file';
+        return $this->hasMany(FileUsuario::class, 'file_id');
     }
 }

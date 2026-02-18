@@ -116,11 +116,11 @@
 
             <div class="card-body">
                 @foreach ($alertasLargas as $j)
-                    <div>⏰ Jornada larga: <b>{{ $j->user->name }}</b></div>
+                    <div>⏰ Jornada larga: <b>{{ $j->user->name }} {{ $j->user->last_name }}</b></div>
                 @endforeach
 
                 @foreach ($fueraSede as $j)
-                    <div>📍 Fuera sede: <b>{{ $j->user->name }}</b></div>
+                    <div>📍 Fuera sede: <b>{{ $j->user->name }} {{ $j->user->last_name }}</b></div>
                 @endforeach
                 @foreach ($cambioSede as $j)
                     <div>

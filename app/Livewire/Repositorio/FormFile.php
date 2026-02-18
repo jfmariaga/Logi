@@ -7,147 +7,146 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 use App\Models\User;
 use App\Models\Repositorio\File;
 use App\Models\Repositorio\Carpeta;
 use App\Models\Repositorio\CarpetaUsuario;
+use App\Models\Repositorio\FileUsuario;
 
 class FormFile extends Component
 {
     use WithFileUploads;
 
     public $files = [];
-    public $folderId = null;
-    public $uploadProgress = 0;
+    public $folder_id = null;
     public $isUploading = false;
     public $maxFileSize = 10240; // 10MB en KB
-    public $allowedExtensions = [
-        'jpg', 'jpeg', 'png', 'gif', 'pdf',
-        'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',
-        'txt', 'zip', 'rar', 'mp4', 'mp3'
-    ];
-    
-    protected $listeners = ['folderSelected' => 'setFolder'];
 
-    public $users = [];
+    public $form_file = [];
+    public $loading_file;
+    
+    protected $listeners = ['changeCarpeta' => 'changeCarpeta'];
+
+    public $users = [], $roles = [];
     public $file, $loading;
 
     public function mount(){
         $this->users = User::where('status', 1)->get();
+        $this->roles = Role::all();
+
+        $this->vaciarFormFile();
     }
 
-    public function setFolder($folderId)
-    {
-        $this->folderId = $folderId;
+    public function vaciarFormFile(){
+        $this->form_file = [
+            'id'            => 0,
+            'file'          => null,
+            'type_tmp'      => null,
+            'name_tmp'      => null,
+            'nombre'        => '',
+            'roles'         => [],
+            'usuarios'      => []
+        ]; 
+    }
+
+    public function changeCarpeta($id = null, $home = null){
+        $this->folder_id = $id;
     }
 
     public function save()
     {
-        $this->validate([
-            'file.*' => [
-                'max:' . $this->maxFileSize,
-                function ($attribute, $value, $fail) {
-                    $extension = $value->getClientOriginalExtension();
-                    if (!in_array(strtolower($extension), $this->allowedExtensions)) {
-                        $fail("La extensión .$extension no está permitida.");
-                    }
-                }
-            ]
-        ]);
 
-        // $this->uploadFiles();
-        // $this->saveFile($this->file);
+        if( $this->form_file['id'] ){
 
-    }
+            $file_item = File::find($this->form_file['id']);
 
-    public function uploadFiles()
-    {
-        $this->isUploading = true;
-        $this->uploadProgress = 0;
+            if( isset( $file_item->id ) ){
+
+                // actualizamos los datos del archivo
+                $file_item->update([
+                    'name'        => $this->form_file['nombre'] ?? $file_item->name,
+                    'updated_at'  => now()
+                ]);
+            }
+
+        }else{
+
+            $this->validate([
+                'form_file.file' => 'required|file',
+                'form_file.nombre' => 'nullable|string|max:255',
+            ], [
+                'form_file.file.required' => 'El archivo es obligatorio.',
+                'form_file.file.file' => 'El campo debe ser un archivo válido.',
+                'form_file.file.max' => 'El archivo no debe superar los 10MB.',
+                'form_file.file.mimes' => 'Tipo de archivo no permitido.',
+                'form_file.nombre.string' => 'El nombre debe ser una cadena de texto.',
+                'form_file.nombre.max' => 'El nombre no debe superar los 255 caracteres.',
+            ]);
+
+            if( $this->form_file['file'] ){
+                $file = $this->form_file['file'];
+    
+                // guardamos el archivo
+                $path = $file->store('gestion-documental', 'public');
         
-        $totalFiles = count($this->files);
-        $processed = 0;
-
-        foreach ($this->files as $file) {
-            try {
-                $this->saveFile($file);
-                $processed++;
-                $this->uploadProgress = ($processed / $totalFiles) * 100;
-            } catch (\Exception $e) {
-                $this->addError('upload', 'Error al subir: ' . $e->getMessage());
+                // Guardar en base de datos
+                $file_item = File::create([
+    
+                    'name'          => $this->form_file['nombre'] ?? $file->getClientOriginalName(),
+                    'original_name' => $file->hashName(),
+                    'size'          => $file->getSize(),
+                    'mime_type'     => $file->getMimeType(),
+                    'extension'     => $file->getClientOriginalExtension(),
+                    'user_id'       => auth()->id(),
+                    'carpeta_id'    => $this->folder_id ?? null,
+                    'created_at'    => now(),
+                    'updated_at'    => now()
+                ]);
             }
         }
 
-        $this->files = [];
-        $this->isUploading = false;
-        $this->uploadProgress = 0;
-        
-        $this->dispatch('filesUploaded');
-        session()->flash('message', 'Archivos subidos exitosamente.');
-    }
-
-    private function saveFile($uploadedFile)
-    {
-        $originalName = $uploadedFile->getClientOriginalName();
-        $extension = $uploadedFile->getClientOriginalExtension();
-        $fileName = Str::random(40) . '.' . $extension;
-        $fileSize = round($uploadedFile->getSize() / 1024, 2); // Convertir a KB
-        $mimeType = $uploadedFile->getMimeType();
-
-        // Crear estructura de carpetas por año/mes
-        $folderPath = 'uploads/' . date('Y') . '/' . date('m');
-        
-        // Guardar archivo
-        $path = $uploadedFile->storeAs($folderPath, $fileName, 'public');
-
-        // Guardar en base de datos
-        File::create([
-            'name' => $fileName,
-            'original_name' => $originalName,
-            'path' => $path,
-            'extension' => $extension,
-            'mime_type' => $mimeType,
-            'size' => $fileSize,
-            'user_id' => auth()->id(),
-            'folder_id' => $this->folderId,
-        ]);
-    }
-
-    public function removeFile($fileId)
-    {
-        $file = File::find($fileId);
-        
-        if ($file && $file->user_id === auth()->id()) {
-            Storage::disk('public')->delete($file->path);
-            $file->delete();
+        if( isset( $file_item->id ) ){
+            $this->syncFileShares($file_item);
+            $this->vaciarFormFile();
+            $this->dispatch('reloadSubCarpetas');
             
-            $this->dispatch('fileRemoved');
-            session()->flash('message', 'Archivo eliminado exitosamente.');
+            return true;
         }
-    }
 
-    public function downloadFile($fileId)
+    }
+    protected function syncFileShares(File $file_item)
     {
-        $file = File::find($fileId);
-        
-        if ($file && $file->user_id === auth()->id()) {
-            return Storage::disk('public')->download($file->path, $file->original_name);
+        FileUsuario::where('file_id', $file_item->id)->delete();
+        $this->form_file['usuarios'][] = $file_item->user_id;
+        $usuarios = array_unique($this->form_file['usuarios']);
+
+        foreach ($usuarios as $id_usuario) {
+            FileUsuario::create([
+                'file_id' => $file_item->id,
+                'user_id' => $id_usuario
+            ]);
         }
-        
-        abort(404);
+
+        foreach ($this->form_file['roles'] as $id_role) {
+            FileUsuario::create([
+                'file_id' => $file_item->id,
+                'role_id' => $id_role
+            ]);
+        }
     }
 
     public function render()
     {
-        $files = File::where('user_id', auth()->id())
-            ->when($this->folderId, function ($query) {
-                return $query->where('folder_id', $this->folderId);
-            })
-            ->latest()
-            ->paginate(20);
+        // para mostrar la vista temporal
+        if( $this->form_file['file'] ){
+            $this->form_file['type_tmp'] = $this->form_file['file']->getMimeType();
+            $this->form_file['name_tmp'] = $this->form_file['file']->getClientOriginalName();
+        }
 
+        $this->loading_file = false;
 
-        return view('livewire.repositorio.form-file', compact('files'));
+        return view('livewire.repositorio.form-file');
     }
 }

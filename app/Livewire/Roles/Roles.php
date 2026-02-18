@@ -29,6 +29,8 @@ class Roles extends Component
     // Cargar los roles
     public function cargarRoles()
     {
+        // $permissions = Role::with('permissions')->get()->toArray();
+        // dd($permissions);
         return Role::with('permissions')->get()->toArray();
     }
 

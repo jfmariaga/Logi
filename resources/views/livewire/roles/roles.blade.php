@@ -94,34 +94,6 @@
 
                 // Función que agrupa los permisos por categoría
                 getPermisosPorCategoria(permissions) {
-                    // const categorias = {
-                    //     "Dashboard": ["ver dashboard"],
-                    //     "Usuarios": ["ver usuarios", "crear usuarios", "editar usuarios", "eliminar usuarios"],
-                    //     "Categorías": ["ver categorias", "crear categorias", "editar categorias",
-                    //         "eliminar categorias"
-                    //     ],
-                    //     "Productos": ["ver productos", "crear productos", "editar productos",
-                    //         "eliminar productos"
-                    //     ],
-                    //     "Proveedores": ["ver proveedores", "crear proveedores", "editar proveedores",
-                    //         "eliminar proveedores"
-                    //     ],
-                    //     "Cuentas": ["ver cuentas", "crear cuentas", "editar cuentas", "eliminar cuentas"],
-                    //     "Cierre de Caja": ["ver cierre-caja", "crear cierre-caja", "editar cierre-caja",
-                    //         "eliminar cierre-caja"
-                    //     ],
-                    //     "Compras": ["ver compras", "crear compras", "editar compras", "eliminar compras"],
-                    //     "Ventas": ["ver ventas", "crear ventas", "editar ventas", "eliminar ventas"],
-                    //     "Ajuste de Inventario": ["ver ajuste-inventario", "crear ajuste-inventario",
-                    //         "editar ajuste-inventario", "eliminar ajuste-inventario"
-                    //     ],
-                    //     "Movimientos": ["ver movimientos", "crear movimientos", "editar movimientos",
-                    //         "eliminar movimientos"
-                    //     ],
-                    //     "Roles": ["ver roles", "crear roles", "editar roles", "eliminar roles"],
-                    //     "Creditos": ["ver creditos", "crear creditos", "editar creditos", "eliminar creditos"]
-                    // };
-
                     const categorias = {
 
                         "Dashboard": [
@@ -214,6 +186,13 @@
                             "crear repositorio",
                             "editar repositorio",
                             "eliminar repositorio"
+                        ],
+
+                        "Debida Diligencia": [
+                            "ver listado",
+                            "ver formularios",
+                            "aprobar formularios",
+                            "modificar notificaciones"
                         ],
 
                     };

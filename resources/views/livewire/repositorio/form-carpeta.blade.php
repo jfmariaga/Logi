@@ -5,8 +5,8 @@
 
     <x-modal id="form_carpeta">
         <x-slot name="title">
-            <span x-show="!$wire.carpeta_edit_id">Agregar carpeta</span>
-            <span x-show="$wire.carpeta_edit_id">Editar carpeta</span>
+            <span x-show="!$wire.form_carpeta.id">Agregar carpeta</span>
+            <span x-show="$wire.form_carpeta.id">Editar carpeta</span>
         </x-slot>
 
         <div class="row">
@@ -16,13 +16,15 @@
             <div class="col-md-12 mt-1">
                 <x-textarea model="$wire.form_carpeta.descripcion" type="text" label="Descripcion" placeholder="Opcional.."></x-textarea>
             </div>
-            <div class="col-md-6 mt-1">
-                <x-select model="$wire.form_carpeta.privada" label="Carpeta privada" id="privada" no_search="Infinity">
-                    <option value="1">Si</option>
-                    <option value="0">No</option>
+            <div class="col-md-12 mt-1">
+                <x-select model="$wire.form_carpeta.roles" label="Compartir con los sgtes Roles" id="roles" multiple="1">
+                    <option value="0" disabled selected>Agregar roles... </option>
+                    @foreach ( $roles as $role )
+                        <option value="{{ $role->id }}">{{ $role->name }}</option>
+                    @endforeach
                 </x-select>
             </div>
-            <div class="col-md-12 mt-1" x-show="$wire.form_carpeta.privada != 1">
+            <div class="col-md-12 mt-1">
                 <x-select model="$wire.form_carpeta.usuarios" label="Compartir con los sgtes Usuarios" id="usuarios" multiple="1">
                     <option value="0" disabled selected>Agregar usuarios... </option>
                     @foreach ( $users as $user )
@@ -47,26 +49,26 @@
         <script>
             Alpine.data('form_carpeta', () => ({
                 init() {
-                    $('#privada').change(() => {
-                        val = $('#privada').val()
-                        @this.form_carpeta.privada = val
-                    })
-
                     $('#usuarios').change(() => {
                         val = $('#usuarios').val()
                         @this.form_carpeta.usuarios = val
+                    })
+  
+                    $('#roles').change(() => {
+                        val = $('#roles').val()
+                        @this.form_carpeta.roles = val
                     })
 
                     $('#form_carpeta').on('hidden.bs.modal', function (e) {
                         @this.vaciarFormCarpeta()
                         limiparSelect2( 'usuarios' )
+                        limiparSelect2( 'roles' )
                     });
 
                     Livewire.on('editCarpeta', ({ carpeta }) =>{
-                        @this.carpeta_edit_id           = carpeta.id
+                        @this.form_carpeta.id           = carpeta.id
                         @this.form_carpeta.nombre       = carpeta.nombre
                         @this.form_carpeta.descripcion  = carpeta.descripcion
-                        @this.form_carpeta.privada      = carpeta.privada
                         if( carpeta.usuarios ){
                             const usuarios_select = []
                             carpeta.usuarios.map( (u)=>{
@@ -75,6 +77,16 @@
                             setTimeout(() => {             
                                 @this.form_carpeta.usuarios = usuarios_select
                                 $('#usuarios').val( usuarios_select ).select2().trigger('change');
+                            }, 50);
+                        }
+                        if( carpeta.roles ){
+                            const roles_select = []
+                            carpeta.roles.map( (r)=>{
+                                roles_select.push(r.role_id)
+                            })
+                            setTimeout(() => {             
+                                @this.form_carpeta.roles = roles_select
+                                $('#roles').val( roles_select ).select2().trigger('change');
                             }, 50);
                         }
                     })
