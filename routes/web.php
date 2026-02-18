@@ -41,6 +41,11 @@ use App\Livewire\Repositorio\Repositorio;
 use App\Livewire\Sedes\Sedes;
 use App\Livewire\Programacion\Programacion;
 use App\Livewire\Notificaciones\InformacionDeInteres;
+
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\PermissionRegistrar;
+
 // por si se quiere probar cositas
 Route::get('/pruebas', PruebaVelocidad::class);
 
@@ -93,3 +98,37 @@ Route::post('logout', function () {
 
     return redirect('/login');
 })->name('cerrar-sesion');
+
+
+
+
+Route::get('/instalar-permisos', function () {
+
+    // 🔒 protección básica (cambia la clave)
+    abort_if(request('key') !== 'armando123', 403);
+
+    app()[PermissionRegistrar::class]->forgetCachedPermissions();
+
+    $roleSuperAdmin = Role::firstOrCreate([
+        'name' => 'SuperAdmin',
+        'guard_name' => 'web'
+    ]);
+
+    $permisos = [
+        'ver listado',
+        'ver formularios',
+        'aprobar formularios',
+        'modificar notificaciones'
+    ];
+
+    foreach ($permisos as $permiso) {
+        $permission = Permission::firstOrCreate([
+            'name' => $permiso,
+            'guard_name' => 'web'
+        ]);
+
+        $permission->assignRole($roleSuperAdmin);
+    }
+
+    return "Permisos instalados correctamente ✅";
+});
