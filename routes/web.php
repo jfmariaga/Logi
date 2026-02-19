@@ -41,6 +41,7 @@ use App\Livewire\Repositorio\Repositorio;
 use App\Livewire\Sedes\Sedes;
 use App\Livewire\Programacion\Programacion;
 use App\Livewire\Notificaciones\InformacionDeInteres;
+use App\Http\Controllers\UploadVideoController;
 
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -81,6 +82,9 @@ Route::middleware([AuthGuard::class])->group(function () {
     })->name('admin.terceros.auditar')->middleware('permission:ver formularios');
     // Route::get('/admin/productos', Productos::class)->name('productos')->middleware('permission:ver gestión documental');
     // Route::get('/admin/inventario', Inventarios::class)->name('inventario')->middleware('permission:ver gestión documental');
+
+    Route::post('/admin/upload/video', [UploadVideoController::class, 'upload']);
+
 });
 
 Route::prefix('contrapartes')->group(function () {
@@ -102,33 +106,33 @@ Route::post('logout', function () {
 
 
 
-Route::get('/instalar-permisos', function () {
+// Route::get('/instalar-permisos', function () {
 
-    // 🔒 protección básica (cambia la clave)
-    abort_if(request('key') !== 'armando123', 403);
+//     // protección básica (cambia la clave)
+//     abort_if(request('key') !== 'armando123', 403);
 
-    app()[PermissionRegistrar::class]->forgetCachedPermissions();
+//     app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-    $roleSuperAdmin = Role::firstOrCreate([
-        'name' => 'SuperAdmin',
-        'guard_name' => 'web'
-    ]);
+//     $roleSuperAdmin = Role::firstOrCreate([
+//         'name' => 'SuperAdmin',
+//         'guard_name' => 'web'
+//     ]);
 
-    $permisos = [
-        'ver listado',
-        'ver formularios',
-        'aprobar formularios',
-        'modificar notificaciones'
-    ];
+//     $permisos = [
+//         'ver listado',
+//         'ver formularios',
+//         'aprobar formularios',
+//         'modificar notificaciones'
+//     ];
 
-    foreach ($permisos as $permiso) {
-        $permission = Permission::firstOrCreate([
-            'name' => $permiso,
-            'guard_name' => 'web'
-        ]);
+//     foreach ($permisos as $permiso) {
+//         $permission = Permission::firstOrCreate([
+//             'name' => $permiso,
+//             'guard_name' => 'web'
+//         ]);
 
-        $permission->assignRole($roleSuperAdmin);
-    }
+//         $permission->assignRole($roleSuperAdmin);
+//     }
 
-    return "Permisos instalados correctamente ✅";
-});
+//     return "Permisos instalados correctamente ✅";
+// });

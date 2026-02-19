@@ -87,6 +87,7 @@
                 </x-select>
             </div>
 
+            {{-- <span x-text="JSON.stringify($wire.form_file.usuarios)"></span> --}}
 
             <div class="col-md-12 mt-2">
                 <!-- Input file oculto -->
@@ -208,20 +209,6 @@
                     if (new_file) {
                         $('#form_file').modal('hide');
                         toastRight('success', 'Acción realizada con éxito');
-                    }
-                },
-
-                async createBlank(type) {
-                    @this.loading = true;
-                    const res = await @this.createBlank(type);
-                    @this.loading = false;
-
-                    if (res && res.ok) {
-                        $('#form_file').modal('hide');
-                        toastRight('success', 'Documento creado con éxito');
-                        Livewire.dispatch('openOnlyOffice', { fileId: res.file_id, name: res.name });
-                    } else {
-                        toastRight('error', (res && res.message) ? res.message : 'No se pudo crear el documento');
                     }
                 },
 

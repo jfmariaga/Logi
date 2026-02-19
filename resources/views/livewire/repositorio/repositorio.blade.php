@@ -108,8 +108,8 @@
                                                                             <i class="la la-eye"></i>
                                                                         </a>
 
-                                                                        {{-- solo aplica para Excel, Word y PPTX --}}
-                                                                        <a x-show="getIcon( file.mime_type ).icon == 'spreadsheet' || getIcon( file.mime_type ).icon == 'word'|| file.extension == 'pptx'" x-on:click="showDocument( file.id, file.name )" class=" border_none btn btn-sm grey btn-outline-secondary " style="padding: 3px;"> 
+                                                                        {{-- solo aplica para Excel y Word -- se pone en marcha en prod --}}
+                                                                        <a x-show="getIcon( file.mime_type ).icon == 'spreadsheet' || getIcon( file.mime_type ).icon == 'word'|| file.extension == 'pptx'" x-on:click="showDocument( file.name, file.original_name )" class=" border_none btn btn-sm grey btn-outline-secondary " style="padding: 3px;"> 
                                                                             <i class="la la-eye"></i>
                                                                         </a>    
 
@@ -198,16 +198,18 @@
 
                 init() {
                     __resetTableNoPaginate('#table_repositorio');
-
-                    Livewire.on('openOnlyOffice', ({ fileId, name }) => {
-                        this.showDocument(fileId, name);
-                    });
                 },
 
-                showDocument(fileId, name) {
+                showDocument(name, original_name) {
 
                     this.name_file_preview = name
-                    this.url_file_preview = `/onlyoffice/editor/${fileId}`
+                    // organizo URL con dominimo, solo funciona con https
+                    let url_completa = `https://logisticarga.com/storage/gestion-documental/${original_name}`;
+                    // console.log({url_completa})
+                    // url_completa = 'https://cd11.neum.app/publicFTP/templates_excel/cuentas_banco_template.xlsx'
+                    this.url_file_preview = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url_completa)}`
+
+                    // ejemplo de un archivo ya expuesto en https
                 },
                 // paso toda la carpeta, para no tener que volver a consultar
                 openEditCarpeta( carpeta ) {

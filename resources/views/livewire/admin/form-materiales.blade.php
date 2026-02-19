@@ -34,8 +34,45 @@
                 @enderror
             </div>
 
-            {{-- ARCHIVO --}}
-            <div class="col-md-12 mt-1" x-show="['pdf','ppt','video'].includes(tipo)">
+            {{-- ======================= VIDEO (SUBIDA GRANDE) ======================= --}}
+            <div class="col-md-12 mt-1" x-show="tipo === 'video'">
+
+                <label class="form-label">
+                    Video
+                    @if ($material_id)
+                        <small class="text-muted">(sube uno nuevo para reemplazar)</small>
+                    @endif
+                </label>
+
+                <input type="file" id="videoUploader" class="form-control" accept="video/*">
+
+                {{-- progreso --}}
+                <div class="progress mt-2" style="height:8px">
+                    <div id="videoProgress" class="progress-bar bg-success" style="width:0%"></div>
+                </div>
+
+                {{-- video actual --}}
+                @if ($url)
+                    <div class="mt-2 small">
+                        <b>Video actual:</b><br>
+                        <a href="{{ $url }}" target="_blank">🎬 Ver video cargado</a>
+                    </div>
+                @endif
+
+                @error('archivo')
+                    <span class="c_red">{{ $message }}</span>
+                @enderror
+
+                <small class="text-muted d-block mt-1">
+                    El video se subirá antes de guardar el material
+                </small>
+
+            </div>
+            <input type="hidden" wire:model="url" id="videoUrlHidden">
+
+            {{-- ======================= PDF / PPT (LIVEWIRE NORMAL) ======================= --}}
+            <div class="col-md-12 mt-1" x-show="['pdf','ppt'].includes(tipo)">
+
                 <label class="form-label">
                     Archivo
                     @if ($material_id)
@@ -61,7 +98,9 @@
                 <div wire:loading wire:target="archivo" class="text-info mt-1">
                     Subiendo archivo...
                 </div>
+
             </div>
+
 
             {{-- LINK --}}
             <div class="col-md-12 mt-1" x-show="tipo === 'link'">
@@ -98,5 +137,6 @@
         </x-slot>
 
     </div>
+    
 
 </x-modal>

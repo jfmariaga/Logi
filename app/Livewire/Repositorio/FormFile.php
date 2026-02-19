@@ -108,33 +108,36 @@ class FormFile extends Component
         }
 
         if( isset( $file_item->id ) ){
-            $this->syncFileShares($file_item);
+
+            
+            // borramos las relaciones anteriores
+            FileUsuario::where('file_id', $file_item->id)->delete();
+            
+            // el propietario siempre tiene acceso
+            $this->form_file['usuarios'][] = $file_item->user_id ;
+
+            // cargamos las nuevas relaciones
+            foreach( $this->form_file['usuarios'] as $id_usuario ){
+                FileUsuario::create([
+                    'file_id' => $file_item->id,
+                    'user_id' => $id_usuario
+                ]);
+            }
+
+            // cargamos las nuevas relaciones a roles
+            foreach( $this->form_file['roles'] as $id_role ){
+                FileUsuario::create([
+                    'file_id' => $file_item->id,
+                    'role_id' => $id_role
+                ]);
+            }
+
             $this->vaciarFormFile();
             $this->dispatch('reloadSubCarpetas');
             
             return true;
         }
 
-    }
-    protected function syncFileShares(File $file_item)
-    {
-        FileUsuario::where('file_id', $file_item->id)->delete();
-        $this->form_file['usuarios'][] = $file_item->user_id;
-        $usuarios = array_unique($this->form_file['usuarios']);
-
-        foreach ($usuarios as $id_usuario) {
-            FileUsuario::create([
-                'file_id' => $file_item->id,
-                'user_id' => $id_usuario
-            ]);
-        }
-
-        foreach ($this->form_file['roles'] as $id_role) {
-            FileUsuario::create([
-                'file_id' => $file_item->id,
-                'role_id' => $id_role
-            ]);
-        }
     }
 
     public function render()
