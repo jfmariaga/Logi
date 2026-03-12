@@ -141,7 +141,7 @@
                                                                         </a>  
 
                                                                         @can('editar gestión documental')
-                                                                            <a href="javascript:" x-on:click="openEditFile( file )" class=" border_none btn btn-sm grey btn-outline-secondary " style="padding: 3px;"> 
+                                                                            <a href="javascript:" x-show="file.carpeta_id > 0" x-on:click="openEditFile( file )" class=" border_none btn btn-sm grey btn-outline-secondary " style="padding: 3px;"> 
                                                                                 <i class="la la-edit"></i>
                                                                             <a>                                                                           
                                                                         @endcan
