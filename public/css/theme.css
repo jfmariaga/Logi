@@ -2,7 +2,6 @@
   --bg: #fafafa;
   --bg-menu: #dbdbdb;
   --hover-menu: #e5e5e5;
-  /* --hover-menu: #b4bec9; */
   --bg-nav: #fff;
   --bg-white: #fff;
   --bg-input: #fff;
@@ -20,7 +19,6 @@
    --hover-menu: #1a273b;
   --bg-nav: #1a273b;
   --bg-white: #1a273b;
-  /* --bg-input: #fff; */
   --bg-input: #253854;
 
   --color-text: #d6d6d6;
@@ -113,8 +111,6 @@ input {
     background-color: var( --bg-menu ) !important;
 }
 .navbar-horizontal{
-  /* max-width: 1700px;
-  margin: auto; */
   box-shadow: none !important;
 }
 .menu__jota .nav-item a{
@@ -125,11 +121,9 @@ input {
 }
 .menu__jota .nav-item .active{
   background: var(--hover-menu) !important;
-  /* color: #fff !important; */
 }
 .menu__jota .nav-item .active i{
   background: transparent !important;
-  /* color: #fff !important; */
 }
 .light-theme .contenedor-img {
   background-color: var(--color-grey);

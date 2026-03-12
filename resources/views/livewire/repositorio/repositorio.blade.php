@@ -8,9 +8,8 @@
         
     <div class="app-content content">
         <div class="content-wrapper">
-
             {{-- gestor de archivos y carpetas --}}
-            <div class="content-body" x-show="!url_file_preview">
+            <div class="content-body">
                 <div class="row">
                     <div class="col-md-12">
                          <div class="card p-2" style="min-height: 75vh;">
@@ -31,11 +30,20 @@
                                         </h5>
                                     </div>
                                     <div class="col-md-3">
-                                        {{-- formulario nueva carpeta --}}
-                                        @livewire('repositorio.form-carpeta')
-                                       
-                                        {{-- formulario file --}}
-                                        @livewire('repositorio.form-file')
+
+                                        @can('crear gestión documental')                 
+                                            {{-- formulario nueva carpeta --}}
+                                            @livewire('repositorio.form-carpeta')
+                                        
+                                            {{-- formulario file --}}
+                                            @livewire('repositorio.form-file')
+
+                                            {{-- Crear Archivo --}}
+                                            <a class="btn btn-outline-success f_right ml-1" x-on:click="$('#modal_crear_documento').modal('show')">
+                                                Crear Documento
+                                            </a>
+                                        @endcan
+
                                     </div>
                                 </div>
                             </div>
@@ -71,7 +79,7 @@
                                                                 </td>
                                                                 <td>Carpeta</td>
                                                                 <td>
-                                                                    <div class="d-flex">
+                                                                    <div class="d-flex justify-content-end">
                                                                         <a href="javascript:" x-on:click="openEditCarpeta( carpeta )" class=" border_none btn btn-sm grey btn-outline-secondary " style="padding: 3px;"> 
                                                                             <i class="la la-edit"></i>
                                                                         <a>                                                                                                      
@@ -98,7 +106,7 @@
                                                                 </td>
                                                                 <td>Archivo</td>
                                                                 <td>
-                                                                    <div class="d-flex">
+                                                                    <div class="d-flex justify-content-end">
 
                                                                         {{-- fancybox solo aplica para PDF y IMG --}}
                                                                         <a x-show="getIcon( file.mime_type ).icon == 'image' || getIcon( file.mime_type ).icon == 'pdf'"
@@ -108,17 +116,41 @@
                                                                             <i class="la la-eye"></i>
                                                                         </a>
 
-                                                                        {{-- solo aplica para Excel y Word -- se pone en marcha en prod --}}
-                                                                        <a x-show="getIcon( file.mime_type ).icon == 'spreadsheet' || getIcon( file.mime_type ).icon == 'word'|| file.extension == 'pptx'" x-on:click="showDocument( file.name, file.original_name )" class=" border_none btn btn-sm grey btn-outline-secondary " style="padding: 3px;"> 
-                                                                            <i class="la la-eye"></i>
-                                                                        </a>    
+                                                                        @can('editar gestión documental')            
+                                                                            {{-- OnlyOffice para Excel, Word y PowerPoint - Editar --}}
+                                                                            <a x-show="canEditWithOnlyOffice(file.extension)" 
+                                                                                x-on:click="openOnlyOffice(file.id, 'edit')" 
+                                                                                class="border_none btn btn-sm grey btn-outline-secondary" 
+                                                                                style="padding: 3px;"
+                                                                                title="Editar documento">
+                                                                                <i class="la la-pencil"></i>
+                                                                            </a>    
+                                                                        @endcan
 
-                                                                        <a href="javascript:" x-on:click="openEditFile( file )" class=" border_none btn btn-sm grey btn-outline-secondary " style="padding: 3px;"> 
-                                                                            <i class="la la-edit"></i>
-                                                                        <a>                                                                                                      
-                                                                        <a href="javascript:" x-on:click="confirmDeleteFile( file.id )" class=" border_none btn btn-sm grey btn-outline-danger " style="padding: 3px;"> 
-                                                                            <i class="la la-trash"></i>
-                                                                        </a>                                                                    
+                                                                        {{-- OnlyOffice para Excel, Word y PowerPoint - Ver --}}
+                                                                        <a x-show="canOpenWithOnlyOffice(file.extension)" 
+                                                                            x-on:click="openOnlyOffice(file.id, 'view')" 
+                                                                            class="border_none btn btn-sm grey btn-outline-secondary" 
+                                                                            style="padding: 3px;"
+                                                                            title="Ver documento">
+                                                                            <i class="la la-eye"></i>
+                                                                        </a>
+
+                                                                        <a :href="`/storage/gestion-documental/${file.original_name}`" :download="file.name" class=" border_none btn btn-sm grey btn-outline-secondary " style="padding: 3px;"> 
+                                                                            <i class="la la-download"></i>
+                                                                        </a>  
+
+                                                                        @can('editar gestión documental')
+                                                                            <a href="javascript:" x-on:click="openEditFile( file )" class=" border_none btn btn-sm grey btn-outline-secondary " style="padding: 3px;"> 
+                                                                                <i class="la la-edit"></i>
+                                                                            <a>                                                                           
+                                                                        @endcan
+
+                                                                        @can('eliminar gestión documental')           
+                                                                            <a href="javascript:" x-on:click="confirmDeleteFile( file.id )" class=" border_none btn btn-sm grey btn-outline-danger " style="padding: 3px;"> 
+                                                                                <i class="la la-trash"></i>
+                                                                            </a>                                                                    
+                                                                        @endcan
                                                                     </div>
                                                                 </td>
                                                             </tr>
@@ -146,39 +178,78 @@
                     </div>
                 </div>
             </div>
-   
-            {{-- previsuzalizar archivos ( word, excel y ppt ) --}}
-            <div class="content-body" x-show="url_file_preview">
-                <div class="row">
-                    <div class="col-md-12">
-                         <div class="card p-2" style="min-height: 75vh;">
-                            <div class="content-header">
-                                <div class="row">
-                                    <div class="col-md-9">
-                                        <h5 class="content-header-title mb-0 d-inline-block br_none">
-                                            <a href="javascript:" x-on:click="name_file_preview  = null; url_file_preview = null;">
-                                                <i class="la la-arrow-left"></i>
-                                            </a>
-                                            Preview ( <span x-text="name_file_preview"></span> )
-                                        </h5>
+        </div>
+    </div>
+
+    {{-- Modal para crear documento --}}
+    <div class="modal fade" id="modal_crear_documento" tabindex="-1" role="dialog" aria-labelledby="modalCrearDocumentoLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalCrearDocumentoLabel">
+                        Crear Nuevo Documento
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="form_crear_documento">
+                        <div class="form-group">
+                            <label for="doc_nombre">Nombre del documento <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="doc_nombre" name="name" required>
+                        </div>
+                        
+                        <div class="form-group mt-2">
+                            <label>Tipo de documento <span class="text-danger">*</span></label>
+                            <div class="row mt-1">
+                                <div class="col-4">
+                                    <div class="card pointer doc-type-card" data-type="xlsx" style="border: 2px solid #ddd; transition: all 0.3s;">
+                                        <div class="card-body text-center p-0">
+                                            <i class="la la-file-excel-o text-success" style="font-size: 48px;"></i>
+                                            <h6 class="mt-2 mb-0">Excel</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="card pointer doc-type-card" data-type="docx" style="border: 2px solid #ddd; transition: all 0.3s;">
+                                        <div class="card-body text-center p-0">
+                                            <i class="la la-file-word-o text-primary" style="font-size: 48px;"></i>
+                                            <h6 class="mt-2 mb-0">Word</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="card pointer doc-type-card" data-type="pptx" style="border: 2px solid #ddd; transition: all 0.3s;">
+                                        <div class="card-body text-center p-0">
+                                            <i class="la la-file-powerpoint-o text-warning" style="font-size: 48px;"></i>
+                                            <h6 class="mt-2 mb-0">Power Point</h6>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-
-                            {{-- content de archivos --}}
-                            <div class="w-100" style="height:70vh;">
-                                <iframe :src="url_file_preview" 
-                                        width="100%" 
-                                        height="100%" 
-                                        frameborder="0">
-                                </iframe> 
-                            </div>
+                            <input type="hidden" id="doc_type" name="type" value="">
                         </div>
-                    </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn grey btn-outline-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-outline-primary" id="btn_crear_documento" disabled>Crear y Abrir</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <style>
+        .doc-type-card:hover {
+            border-color: #007bff !important;
+            box-shadow: 0 2px 8px rgba(0,123,255,0.2);
+        }
+        .doc-type-card.selected {
+            border-color: #007bff !important;
+            background-color: rgba(0,123,255,0.05);
+        }
+    </style>
 
     <script>
         document.addEventListener('alpine:init', () => {
@@ -188,29 +259,117 @@
                 carpetas: []
             })
         })
+
+        // Funcionalidad del modal crear documento
+        document.addEventListener('DOMContentLoaded', function() {
+            const docTypeCards = document.querySelectorAll('.doc-type-card');
+            const docTypeInput = document.getElementById('doc_type');
+            const docNombre = document.getElementById('doc_nombre');
+            const btnCrear = document.getElementById('btn_crear_documento');
+
+            // Selección de tipo de documento
+            docTypeCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    docTypeCards.forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                    docTypeInput.value = this.dataset.type;
+                    validateForm();
+                });
+            });
+
+            // Validación del formulario
+            docNombre.addEventListener('input', validateForm);
+
+            function validateForm() {
+                const isValid = docNombre.value.trim() !== '' && docTypeInput.value !== '';
+                btnCrear.disabled = !isValid;
+            }
+
+            // Crear documento
+            btnCrear.addEventListener('click', async function() {
+                if (btnCrear.disabled) return;
+
+                const originalText = btnCrear.innerHTML;
+                btnCrear.innerHTML = '<i class="la la-spinner la-spin"></i> Creando...';
+                btnCrear.disabled = true;
+
+                try {
+                    const response = await fetch('/onlyoffice/create-document', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify({
+                            name: docNombre.value.trim(),
+                            type: docTypeInput.value,
+                            folder_id: @this.folder_id || null
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        toastRight('success', 'Documento creado exitosamente');
+                        $('#modal_crear_documento').modal('hide');
+                        
+                        // Limpiar formulario
+                        docNombre.value = '';
+                        docTypeInput.value = '';
+                        docTypeCards.forEach(c => c.classList.remove('selected'));
+                        
+                        // Redirigir al editor
+                        window.location.href = data.redirect_url;
+                    } else {
+                        toastRight('error', data.message || 'Error al crear el documento');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    toastRight('error', 'Error de conexión al crear el documento');
+                } finally {
+                    btnCrear.innerHTML = originalText;
+                    btnCrear.disabled = false;
+                }
+            });
+
+            // Limpiar al cerrar modal
+            $('#modal_crear_documento').on('hidden.bs.modal', function() {
+                docNombre.value = '';
+                docTypeInput.value = '';
+                docTypeCards.forEach(c => c.classList.remove('selected'));
+                btnCrear.disabled = true;
+            });
+        });
     </script>
     @script
         <script>
             Alpine.data('data_repositorio', () => ({
 
-                name_file_preview : null,
-                url_file_preview  : null,
+                // Extensiones soportadas por OnlyOffice
+                onlyoffice_viewable: ['doc', 'docx', 'docm', 'dot', 'dotx', 'dotm', 'odt', 'fodt', 'ott', 'rtf', 'txt', 'djvu', 'fb2', 'epub', 'xps', 'xls', 'xlsx', 'xlsm', 'xlt', 'xltx', 'xltm', 'ods', 'fods', 'ots', 'csv', 'pps', 'ppsx', 'ppsm', 'ppt', 'pptx', 'pptm', 'pot', 'potx', 'potm', 'odp', 'fodp', 'otp'],
+                onlyoffice_editable: ['docx', 'xlsx', 'pptx', 'ppsx', 'odt', 'ods', 'odp', 'csv', 'txt'],
 
                 init() {
                     __resetTableNoPaginate('#table_repositorio');
                 },
 
-                showDocument(name, original_name) {
-
-                    this.name_file_preview = name
-                    // organizo URL con dominimo, solo funciona con https
-                    let url_completa = `https://logisticarga.com/storage/gestion-documental/${original_name}`;
-                    // console.log({url_completa})
-                    // url_completa = 'https://cd11.neum.app/publicFTP/templates_excel/cuentas_banco_template.xlsx'
-                    this.url_file_preview = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url_completa)}`
-
-                    // ejemplo de un archivo ya expuesto en https
+                // Verificar si se puede abrir con OnlyOffice
+                canOpenWithOnlyOffice(extension) {
+                    if (!extension) return false;
+                    return this.onlyoffice_viewable.includes(extension.toLowerCase());
                 },
+
+                // Verificar si se puede editar con OnlyOffice
+                canEditWithOnlyOffice(extension) {
+                    if (!extension) return false;
+                    return this.onlyoffice_editable.includes(extension.toLowerCase());
+                },
+
+                // Abrir documento con OnlyOffice
+                openOnlyOffice(fileId, mode = 'view') {
+                    window.location.href = `/onlyoffice/editor/${fileId}?mode=${mode}`;
+                },
+
                 // paso toda la carpeta, para no tener que volver a consultar
                 openEditCarpeta( carpeta ) {
                     Livewire.dispatch('editCarpeta', { carpeta })
@@ -221,6 +380,7 @@
                     Livewire.dispatch('editFile', { file })
                     $('#form_file').modal('show');
                 },
+                
                 confirmDeleteCarpeta(id) {
                     alertClickCallback('Eliminar',
                         'La carpeta se moverá a la papelera, estará ahí hasta 30 días, pasado este tiempo se eliminará por completo, desea continuar?',
@@ -232,6 +392,7 @@
                             }
                         });
                 },
+
                 confirmDeleteFile(id) {
                     alertClickCallback('Eliminar',
                         'El archivo se moverá a la papelera, estará ahí hasta 30 días, pasado este tiempo se eliminará por completo, desea continuar?',
@@ -243,6 +404,7 @@
                             }
                         });
                 },
+
                 getIcon(mimeType) {
                     mimeType = mimeType.toLowerCase();
 

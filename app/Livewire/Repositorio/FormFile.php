@@ -11,9 +11,8 @@ use Spatie\Permission\Models\Role;
 
 use App\Models\User;
 use App\Models\Repositorio\File;
-use App\Models\Repositorio\Carpeta;
-use App\Models\Repositorio\CarpetaUsuario;
 use App\Models\Repositorio\FileUsuario;
+use App\Models\Repositorio\FileHistoral;
 
 class FormFile extends Component
 {
@@ -60,15 +59,38 @@ class FormFile extends Component
 
         if( $this->form_file['id'] ){
 
+            // dd( $this->form_file );
+
             $file_item = File::find($this->form_file['id']);
 
             if( isset( $file_item->id ) ){
 
+                // solo si se cargo un nuevo documento para actualizar el contenido
+                if( $this->form_file['file'] ){
+                    $file = $this->form_file['file'];
+
+                    // guardamos el archivo
+                    $path = $file->store('gestion-documental', 'public');
+
+                    $file_item->original_name = $file->hashName();
+                    $file_item->size = $file->getSize();
+                    $file_item->mime_type = $file->getMimeType();
+                    $file_item->extension = $file->getClientOriginalExtension();
+                    $file_item->user_id = auth()->id();
+
+                    FileHistoral::create([
+                        'file_id'       => $file_item->id,
+                        'user_id'       => auth()->id(),
+                        'original_name' => $file->hashName(),
+                        'created_at'    => now()
+                    ]);
+            
+                }
+
                 // actualizamos los datos del archivo
-                $file_item->update([
-                    'name'        => $this->form_file['nombre'] ?? $file_item->name,
-                    'updated_at'  => now()
-                ]);
+                $file_item->name = $this->form_file['nombre'] ?? $file_item->name;
+                $file_item->updated_at = now();
+                $file_item->save();
             }
 
         }else{
@@ -94,16 +116,26 @@ class FormFile extends Component
                 // Guardar en base de datos
                 $file_item = File::create([
     
-                    'name'          => $this->form_file['nombre'] ?? $file->getClientOriginalName(),
+                    'name'          => $this->form_file['nombre'] != '' ? $this->form_file['nombre'] : $file->getClientOriginalName(),
                     'original_name' => $file->hashName(),
                     'size'          => $file->getSize(),
                     'mime_type'     => $file->getMimeType(),
                     'extension'     => $file->getClientOriginalExtension(),
                     'user_id'       => auth()->id(),
-                    'carpeta_id'    => $this->folder_id ?? null,
+                    'carpeta_id'    => $this->folder_id > 0 ? $this->folder_id : null,
                     'created_at'    => now(),
                     'updated_at'    => now()
                 ]);
+
+                if( isset( $file_item->id ) ){
+
+                    FileHistoral::create([
+                        'file_id'       => $file_item->id,
+                        'user_id'       => auth()->id(),
+                        'original_name' => $file->hashName(),
+                        'created_at'    => now()
+                    ]);
+                }
             }
         }
 

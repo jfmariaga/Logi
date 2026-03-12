@@ -41,7 +41,10 @@ class Inventarios extends Component
                     'producto' => $i->producto->nombre,
                     'requiere_talla' => $i->producto->requiere_talla,
                     'talla' => $i->producto->talla,
-                    'cantidad' => $i->cantidad,
+
+                    'cantidad_total' => $i->cantidad,
+                    'cantidad_reservada' => $i->cantidad_reservada,
+                    'cantidad_disponible' => $i->cantidad - $i->cantidad_reservada,
 
                     // AQUI VA EL HISTORIAL
                     'movimientos' => $i->movimientos->map(function ($m) {
@@ -99,100 +102,6 @@ class Inventarios extends Component
             })->toArray();
     }
 
-
-    // public function save()
-    // {
-    //     $this->validate();
-
-    //     //  migración automática: producto ahora usa talla pero existía sin talla
-    //     if ($this->talla !== null) {
-
-    //         $sinTalla = Inventario::where('producto_id', $this->producto_id)
-    //             ->whereNull('talla')
-    //             ->first();
-
-    //         if ($sinTalla) {
-
-    //             // mover stock a la nueva talla
-    //             $inventario = Inventario::firstOrCreate([
-    //                 'producto_id' => $this->producto_id,
-    //                 'talla' => $this->talla
-    //             ], [
-    //                 'cantidad' => 0
-    //             ]);
-
-    //             $inventario->cantidad += $sinTalla->cantidad;
-    //             $inventario->save();
-
-    //             // registrar movimiento de migración
-    //             InventarioMovimiento::create([
-    //                 'inventario_id' => $inventario->id,
-    //                 'producto_id' => $this->producto_id,
-    //                 'user_id' => Auth::id(),
-    //                 'tipo' => 'ajuste',
-    //                 'cantidad_anterior' => 0,
-    //                 'cantidad_movimiento' => $sinTalla->cantidad,
-    //                 'cantidad_nueva' => $inventario->cantidad,
-    //                 'descripcion' => 'Migración automática: producto ahora maneja talla'
-    //             ]);
-
-    //             $sinTalla->delete();
-    //         }
-    //     }
-
-    //     $inventario = Inventario::where('producto_id', $this->producto_id)
-    //         ->where('talla', $this->talla)
-    //         ->first();
-
-    //     if (!$inventario) {
-    //         $inventario = Inventario::create([
-    //             'producto_id' => $this->producto_id,
-    //             'talla' => $this->talla,
-    //             'cantidad' => 0,
-    //         ]);
-    //     }
-
-    //     $antes = $inventario->cantidad;
-
-    //     if ($this->modo === 'ajustar') {
-    //         $inventario->cantidad = $this->cantidad;
-    //         $movimiento = $inventario->cantidad - $antes;
-    //         $tipo = 'ajuste';
-    //     } else {
-    //         $inventario->cantidad += $this->cantidad;
-    //         $movimiento = $this->cantidad;
-    //         $tipo = 'entrada';
-    //     }
-
-    //     $inventario->save();
-
-    //     InventarioMovimiento::create([
-    //         'inventario_id' => $inventario->id,
-    //         'producto_id' => $this->producto_id,
-    //         'user_id' => Auth::id(),
-    //         'tipo' => $tipo,
-    //         'cantidad_anterior' => $antes,
-    //         'cantidad_movimiento' => $movimiento,
-    //         'cantidad_nueva' => $inventario->cantidad,
-    //         'descripcion' => $this->modo === 'ajustar'
-    //             ? 'Ajuste manual de inventario'
-    //             : 'Ingreso de stock',
-    //     ]);
-
-    //     $inventario->load('producto');
-
-    //     $this->limpiar();
-
-    //     return [
-    //         'id' => $inventario->id,
-    //         'producto_id' => $inventario->producto_id,
-    //         'producto' => $inventario->producto->nombre,
-    //         'requiere_talla' => $inventario->producto->requiere_talla,
-    //         'talla' => $inventario->talla,
-    //         'cantidad' => $inventario->cantidad,
-    //     ];
-    // }
-
     public function save()
     {
         $this->validate();
@@ -240,10 +149,11 @@ class Inventarios extends Component
             'producto' => $inventario->producto->nombre,
             'requiere_talla' => $inventario->producto->requiere_talla,
             'talla' => $inventario->producto->talla, // <- ahora viene del producto
-            'cantidad' => $inventario->cantidad,
+            'cantidad_total' => $inventario->cantidad,
+            'cantidad_reservada' => $inventario->cantidad_reservada,
+            'cantidad_disponible' => $inventario->cantidad - $inventario->cantidad_reservada,
         ];
     }
-
 
     public function limpiar()
     {
@@ -253,7 +163,6 @@ class Inventarios extends Component
 
         $this->dispatch('reset-inventario-form');
     }
-
 
     public function render()
     {

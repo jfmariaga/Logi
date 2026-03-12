@@ -37,7 +37,7 @@ class Repositorio extends Component
 
     public function render()
     {
-        return view('livewire.repositorio.repositorio')->title('Repositorio');
+        return view('livewire.repositorio.repositorio')->title('Gestión documental');
     }
 
     // carga las carpetas y archivos a los que tiene acceso el usuario
@@ -50,6 +50,7 @@ class Repositorio extends Component
 
         $files_por_mi_user = $usuario->filesCompartidos()->pluck('file_id')->toArray();
         $files_por_mi_rol  = Role::find( $rol_id )->filesCompartidos()->pluck('file_id')->toArray();
+        $files_libres     = File::whereNull('carpeta_id')->whereNull('fecha_delete')->pluck('id')->toArray();
 
         $this->carpetas_user = $carpetas_por_mi_rol;
         foreach( $carpetas_por_mi_user as $key => $c ){
@@ -61,6 +62,13 @@ class Repositorio extends Component
         $this->files_user = $files_por_mi_rol;
         foreach( $files_por_mi_user as $f ){
             if( !in_array($f, $files_por_mi_rol) ){
+                $this->files_user[] = $f;
+            }
+        }
+
+        // archivos que estan directo en el Home, todos los usuarios los podrán visualizar
+        foreach( $files_libres as $f ){
+            if( !in_array($f, $this->files_user) ){
                 $this->files_user[] = $f;
             }
         }

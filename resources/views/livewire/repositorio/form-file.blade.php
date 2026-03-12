@@ -58,12 +58,12 @@
 </style>
 
     <a class="btn btn-outline-dark f_right ml-1" x-on:click="$('#form_file').modal('show')">
-        Agregar archivo
+        Subir archivo
     </a>
 
     <x-modal id="form_file">
         <x-slot name="title">
-            <span>Agregar archivo</span>
+            <span x-text="$wire.form_file.id ? 'Actualizar archivo' : 'Subir archivo'"></span>
         </x-slot>
 
         <div class="row">
@@ -89,7 +89,7 @@
 
             {{-- <span x-text="JSON.stringify($wire.form_file.usuarios)"></span> --}}
 
-            <div class="col-md-12 mt-2">
+            <div class="col-md-12 mt-2" x-show="!$wire.form_file.id">
                 <!-- Input file oculto -->
                 <input type="file" x-ref="fileInput" wire:model="form_file.file" class="d-none">
 
@@ -118,7 +118,7 @@
 
                             <h5 class="mb-2" x-text="$wire.form_file.name_tmp"></h5>
                             <p class="text-muted mb-0" x-show="!$wire.form_file.id">Solo puedes cargar un archivo a la vez</p>
-                            <p class="text-muted mb-0 c_orange" x-show="$wire.form_file.id">No puede editar el archivo cargado, si se equivocó al momento de cargarlo, debe eliminarlo y cargar el correcto</p>
+                            <p class="text-muted mb-0 c_orange" x-show="$wire.form_file.id">Cargar archivo actualizado...</p>
                         </div>
 
                         <!-- Se esta arrastrando -->

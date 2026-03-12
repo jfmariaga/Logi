@@ -35,4 +35,23 @@ return [
         ],
     ],
 
+        /*
+    |--------------------------------------------------------------------------
+    | OnlyOffice DocSpace
+    |--------------------------------------------------------------------------
+    |
+    | Configuración para la integración con OnlyOffice DocSpace (SaaS).
+    | Puedes obtener estas credenciales desde el panel de tu DocSpace.
+    |
+    */
+    'onlyoffice' => [
+        // URL de tu DocSpace (ej: https://tu-empresa.onlyoffice.com)
+        'docspace_url' => env('DOCSPACE_URL', ''),
+        // Usuario administrador o con permisos de API
+        'docspace_user' => env('DOCSPACE_USER', ''),
+        // Contraseña del usuario
+        'docspace_password' => env('DOCSPACE_PASSWORD', ''),
+        // ID del room donde se subirán archivos temporales para edición (opcional)
+        'docspace_room_id' => env('DOCSPACE_ROOM_ID', ''),
+    ],
 ];

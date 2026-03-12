@@ -70,4 +70,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Entrega::class, 'usuario_id');
     }
+
+    public function area()
+    {
+        return $this->belongsTo(Area::class);
+    }
+
+    public function cargo()
+    {
+        return $this->belongsTo(Cargo::class);
+    }
 }

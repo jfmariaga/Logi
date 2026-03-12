@@ -1,5 +1,17 @@
 <div x-data="usuarios">
+    <style>
+        .modal-areas-cargos .modal-dialog {
+            max-width: 90vw;
+        }
 
+        .modal-areas-cargos .modal-body {
+            padding: 30px 40px;
+        }
+
+        .modal-areas-cargos .card {
+            border-radius: 12px;
+        }
+    </style>
     {{-- <span class="loader_new"></span> --}}
 
     <div class="app-content content">
@@ -13,6 +25,10 @@
                         <div class="btn-group float-md-right">
                             <a href="javascript:" x-on:click="openForm()" id="btn_form_personal" class="btn btn-dark">
                                 Nuevo
+                            </a>
+                            <a href="javascript:" data-toggle="modal" data-target="#modalAreasCargos"
+                                class="btn btn-secondary">
+                                Áreas y Cargos
                             </a>
                         </div>
                     </div>
@@ -29,6 +45,8 @@
                                 <th>Nombre</th>
                                 <th>Celular</th>
                                 <th>Rol</th>
+                                <th>Área</th>
+                                <th>Cargo</th>
                                 <th>Estado</th>
                                 <th>Acc</th>
                             </tr>
@@ -44,6 +62,33 @@
 
     {{-- solo lo sacamos para no hacer este tan extenso --}}
     @include('livewire.usuarios.form-usuarios')
+
+    <x-modal id="modalAreasCargos" class="modal-areas-cargos">
+
+        <x-slot name="title">
+            Administrar Áreas y Cargos
+        </x-slot>
+
+        <div class="p-2">
+
+            <livewire:configuracion.areas-cargos />
+
+        </div>
+
+        <x-slot name="footer">
+
+            <div class="alert alert-warning w-100 text-center mb-0">
+
+                <i class="la la-exclamation-triangle"></i>
+
+                Si acabas de crear, modificar o eliminar <b>Áreas</b> o <b>Cargos</b>,
+                por favor refresca la vista de usuarios.
+
+            </div>
+
+        </x-slot>
+
+    </x-modal>
 
     @script
         <script>
@@ -64,6 +109,16 @@
                     $('#status').change(() => {
                         val = $('#status').val()
                         @this.status = val
+                    })
+
+                    $('#area').change(() => {
+                        val = $('#area').val()
+                        @this.area_id = val
+                    })
+
+                    $('#cargo').change(() => {
+                        val = $('#cargo').val()
+                        @this.cargo_id = val
                     })
                 },
 
@@ -98,6 +153,8 @@
                             <td>${user.name} ${user.last_name}</td>
                             <td>${print(user.phone)}</td>
                             <td>${roles ? roles : ''}</td>
+                            <td>${user.area ? user.area.nombre : ''}</td>
+                            <td>${user.cargo ? user.cargo.nombre : ''}</td>
                             <td>${user.status == 1 ?  '<span class="badge badge-success text-white" >Activo</span>' : '<span class="badge badge-danger text-white" >Inactivo</span>'}</td>
                             <td>
                                 <div class="d-flex">
@@ -169,6 +226,8 @@
                         `{{ asset('storage/avatars/${user_edit.picture}') }}` :
                         `{{ asset('storage/avatars/default.png') }}`;
                     @this.role_id = user_edit.roles && user_edit.roles.length > 0 ? user_edit.roles[0].id : '';
+                    @this.area_id = user_edit.area_id ? user_edit.area_id : '';
+                    @this.cargo_id = user_edit.cargo_id ? user_edit.cargo_id : '';
 
                     // @this.password = user_edit ? user_edit.password: null;
                     @this.change_picture = false;
@@ -184,6 +243,16 @@
                         const roleElement = document.getElementById('role');
                         if (roleElement) {
                             $(roleElement).val(@this.role_id).trigger('change');
+                        }
+
+                        const areaElement = document.getElementById('area');
+                        if (areaElement) {
+                            $(areaElement).val(@this.area_id).trigger('change');
+                        }
+
+                        const cargoElement = document.getElementById('cargo');
+                        if (cargoElement) {
+                            $(cargoElement).val(@this.cargo_id).trigger('change');
                         }
                     }, 300);
                 },

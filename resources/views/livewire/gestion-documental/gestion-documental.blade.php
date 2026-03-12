@@ -32,7 +32,7 @@
             <div class="content-header row">
                 <div class="content-header-left col-md-6 col-12 mb-2 breadcrumb-new">
                     <h3 class="content-header-title mb-0 d-inline-block br_none">
-                        Gestión documental
+                        Repositorio
                         <div class="italic_sub">Puede arrastar sus archivos en esta zona para cargarlos</div>
                     </h3>
                 </div>

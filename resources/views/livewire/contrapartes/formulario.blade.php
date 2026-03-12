@@ -2399,53 +2399,6 @@
         </x-layouts.contrapartes-externo>
     </fieldset>
     @if ($modo == 'auditoria')
-        {{-- <div class="card mt-4 shadow-sm">
-            <div class="card-body text-center">
-
-                @if ($tercero->estado == 'enviado')
-                    <h5 class="mb-3">Acciones de Auditoría</h5>
-
-                    <p class="text-muted">
-                        Este formulario se encuentra pendiente de revisión.
-                        Selecciona una acción para continuar.
-                    </p>
-
-                    @can('aprobar formularios')
-                        <div class="d-flex justify-content-center gap-3 mt-3">
-
-                            <button class="btn btn-success btn-lg px-4" wire:click="aprobar">
-                                <i class="la la-check-circle"></i>
-                                Aprobar formulario
-                            </button>
-
-                            <button class="btn btn-danger btn-lg px-4" onclick="motivoRechazo()">
-                                <i class="la la-times-circle"></i>
-                                Rechazar formulario
-                            </button>
-
-                        </div>
-                    @endcan
-                @else
-                    <div class="alert alert-info text-center mb-3">
-
-                        <h5 class="mb-1">Estado del formulario</h5>
-
-                        <p class="mb-0">
-                            Este formulario no se encuentra pendiente de auditoría.
-                            Estado actual:
-                            <strong>{{ ucfirst(str_replace('_', ' ', $tercero->estado)) }}</strong>
-                        </p>
-
-                    </div>
-                @endif
-                <div class="mt-4">
-                    <a href="{{ url('/admin/terceros') }}" class="btn btn-outline-secondary">
-                        ← Volver al listado
-                    </a>
-                </div>
-            </div>
-        </div> --}}
-
         <div class="audit-card">
 
             @if ($tercero->estado == 'enviado')

@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Usuarios;
 
+use App\Models\Area;
+use App\Models\Cargo;
 use Livewire\Component;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
@@ -18,10 +20,16 @@ class Usuarios extends Component
     public $roles;
     public $user_id, $status, $document, $name, $last_name, $email, $phone, $user_name, $password, $picture, $role_id, $change_picture = false;
     public $reset_password;
+    public $areas;
+    public $cargos;
+    public $area_id;
+    public $cargo_id;
 
     public function mount()
     {
         $this->roles = Role::all();
+        $this->areas = Area::orderBy('nombre')->get();
+        $this->cargos = Cargo::orderBy('nombre')->get();
     }
 
     public function selectedRole($role_id)
@@ -32,15 +40,16 @@ class Usuarios extends Component
     public function getUsers()
     {
         $this->skipRender();
-        return User::with('roles')->get();
+        // return User::with('roles')->get();
+        return User::with(['roles', 'area', 'cargo'])->get();
     }
 
     public function save()
     {
 
-        if( $this->user_id ){
+        if ($this->user_id) {
             $required_pass = 'nullable';
-        }else{
+        } else {
             $required_pass = 'required|min:8';
         }
 
@@ -52,10 +61,12 @@ class Usuarios extends Component
             'password'  => $required_pass,
             'email'     => 'nullable|email|unique:users,email,' . $this->user_id,
             'role_id'   => 'required',
-            ]);
-            //'password'  => $this->user_id
-            //    ? 'nullable|min:8|regex:/[A-Z]/|regex:/[a-z]/|regex:/[0-9]/|regex:/[\W_]/'
-             //   : 'required|min:8|regex:/[A-Z]/|regex:/[a-z]/|regex:/[0-9]/|regex:/[\W_]/',
+            'area_id'   => 'required',
+            'cargo_id'  => 'required',
+        ]);
+        //'password'  => $this->user_id
+        //    ? 'nullable|min:8|regex:/[A-Z]/|regex:/[a-z]/|regex:/[0-9]/|regex:/[\W_]/'
+        //   : 'required|min:8|regex:/[A-Z]/|regex:/[a-z]/|regex:/[0-9]/|regex:/[\W_]/',
 
         $role = Role::findById($this->role_id);
 
@@ -81,6 +92,8 @@ class Usuarios extends Component
                     'phone'     => $this->phone,
                     'status'    => $this->status ?? 1,
                     'picture'   => $name_picture ?? $user->picture,
+                    'area_id'   => $this->area_id,
+                    'cargo_id'  => $this->cargo_id,
                 ];
 
                 // Solo actualizar la contraseña si se ha proporcionado una nueva
@@ -103,6 +116,8 @@ class Usuarios extends Component
                 'phone'     => $this->phone,
                 'picture'   => $name_picture,
                 'status'    => 1,
+                'area_id'   => $this->area_id,
+                'cargo_id'  => $this->cargo_id,
             ]);
 
             $user->assignRole($role);

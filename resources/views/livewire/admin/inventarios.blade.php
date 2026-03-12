@@ -99,7 +99,14 @@
                         let rowNode = table.row.add([
                             `<b>${i.producto}</b>`,
                             `${i.requiere_talla ? (i.talla ?? '-') : '-'}`,
-                            `<b>${i.cantidad}</b>`
+                            `
+                            <div>
+                                <span class="text-dark"><b>${i.cantidad_disponible}</b></span>
+                                <small class="text-muted d-block">
+                                    Total: ${i.cantidad_total} | Reservado: ${i.cantidad_reservada}
+                                </small>
+                            </div>
+                            `
                         ]).draw(false).node();
 
                         $(rowNode).addClass('cursor-pointer');
@@ -158,48 +165,6 @@
                         });
                     },
 
-                    // async saveFront() {
-                    //     this.loading_form = true;
-                    //     const inv = await @this.save();
-                    //     if (!inv) return;
-
-                    //     let table = $('#table_inventarios').DataTable();
-
-                    //     let found = false;
-
-                    //     table.rows().every(function() {
-
-                    //         let rowNode = this.node();
-
-                    //         if ($(rowNode).attr('data-id') == inv.id) {
-
-                    //             this.data([
-                    //                 `<b>${inv.producto}</b>`,
-                    //                 `${inv.requiere_talla ? (inv.talla ?? '-') : '-'}`,
-                    //                 `<b>${inv.cantidad}</b>`
-                    //             ]).draw(false);
-
-                    //             found = true;
-                    //         }
-                    //     });
-
-                    //     // si no existe la fila la crea
-                    //     if (!found) {
-
-                    //         let rowNode = table.row.add([
-                    //             `<b>${inv.producto}</b>`,
-                    //             `${inv.requiere_talla ? (inv.talla ?? '-') : '-'}`,
-                    //             `<b>${inv.cantidad}</b>`
-                    //         ]).draw(false).node();
-
-                    //         $(rowNode).attr('data-id', inv.id);
-                    //     }
-
-                    //     $('#form_inventarios').modal('hide');
-                    //     toastRight('success', 'Inventario actualizado');
-                    //     this.loading_form = false;
-                    // },
-
                     async saveFront() {
 
                         this.loading_form = true;
@@ -219,7 +184,14 @@
                                 this.data([
                                     `<b>${inv.producto}</b>`,
                                     `${inv.requiere_talla ? (inv.talla ?? '-') : '-'}`,
-                                    `<b>${inv.cantidad}</b>`
+                                    `
+                                    <div>
+                                        <span class="text-dark"><b>${inv.cantidad_disponible}</b></span>
+                                        <small class="text-muted d-block">
+                                            Total: ${inv.cantidad_total} | Reservado: ${inv.cantidad_reservada}
+                                        </small>
+                                    </div>
+                                    `
                                 ]).draw(false);
 
                                 found = true;
@@ -231,7 +203,14 @@
                             let rowNode = table.row.add([
                                 `<b>${inv.producto}</b>`,
                                 `${inv.requiere_talla ? (inv.talla ?? '-') : '-'}`,
-                                `<b>${inv.cantidad}</b>`
+                                `
+                                    <div>
+                                        <span class="text-dark"><b>${inv.cantidad_disponible}</b></span>
+                                        <small class="text-muted d-block">
+                                            Total: ${inv.cantidad_total} | Reservado: ${inv.cantidad_reservada}
+                                        </small>
+                                    </div>
+                                `
                             ]).draw(false).node();
 
                             $(rowNode).attr('data-id', inv.id);

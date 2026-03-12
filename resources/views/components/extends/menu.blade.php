@@ -49,7 +49,7 @@
                             </a>
                         </li>
                     @endcan
-                    {{-- @can('ver marcaciones')
+                    @can('ver marcaciones')
                         <li class="dropdown dropdown-submenu" data-menu="dropdown-submenu">
                             <a class="dropdown-item dropdown-toggle" href="#" data-toggle="dropdown">
                                 <span>EPP y Dotación</span>
@@ -75,9 +75,26 @@
                                 </li>
                                 @endcan
 
+                                @can('ver marcaciones')
+                                <li>
+                                    <a class="dropdown-item block-page {{ request()->is('admin/entregas*') ? 'active' : '' }}"
+                                    href="{{ route('entregas') }}">
+                                        <span>Entregas</span>
+                                    </a>
+                                </li>
+                                @endcan
+                                @can('ver mis cursos')
+                                <li>
+                                    <a class="dropdown-item block-page {{ request()->is('admin/mis-entregas*') ? 'active' : '' }}"
+                                    href="{{ route('mis.entregas') }}">
+                                        <span>Mis entregas</span>
+                                    </a>
+                                </li>
+                                @endcan
+
                             </ul>
                         </li>
-                    @endcan --}}
+                    @endcan
                     @can('ver información de interes')
                          <li>
                             <a class="dropdown-item block-page" href="{{ route('informacion_de_interes') }}">
@@ -125,6 +142,13 @@
                             </a>
                         </li> 
                     @endcan
+                    {{-- @can('ver gestión documental')
+                       <li>
+                            <a class="dropdown-item block-page" href="{{ route('repositorio') }}">
+                                <span data-i18n="Horizontal">Repositorio</span>
+                            </a>
+                        </li> 
+                    @endcan --}}
                     @can('ver listado')
                        <li>
                             <a class="dropdown-item block-page" href="{{ route('terceros') }}">

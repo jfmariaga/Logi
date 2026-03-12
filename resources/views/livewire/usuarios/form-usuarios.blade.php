@@ -18,7 +18,7 @@
             <x-input model="$wire.user_name" label="Username" required="true"></x-input>
         </div>
         <template x-if="!$wire.user_id">
-            <div class="col-md-6 mt-1" >
+            <div class="col-md-6 mt-1">
                 <x-input type="password" model="$wire.password" label="Contraseña" required="true"
                     placeholder="********"></x-input>
             </div>
@@ -39,6 +39,39 @@
             </x-select>
         </div>
 
+        <div class="col-md-6 mt-1">
+
+            <x-select model="$wire.area_id" label="Área" required="true" id="area">
+
+                <option value="" selected disabled>----Seleccionar----</option>
+
+                @foreach ($areas as $area)
+                    <option value="{{ $area->id }}">
+                        {{ $area->nombre }}
+                    </option>
+                @endforeach
+
+            </x-select>
+
+        </div>
+
+        <div class="col-md-6 mt-1">
+
+            {{-- <x-select model="$wire.cargo_id" label="Cargo" required="true" id="cargo"> --}}
+            <x-select model="$wire.cargo_id" label="Cargo" required="true" id="cargo" :disabled="!$area_id">
+
+                <option value="" selected disabled>----Seleccionar----</option>
+
+                @foreach ($cargos as $cargo)
+                    <option value="{{ $cargo->id }}">
+                        {{ $cargo->nombre }}
+                    </option>
+                @endforeach
+
+            </x-select>
+
+        </div>
+
         <div class="col-md-6 mt-1" x-show="$wire.user_id">
             <x-select model="$wire.status" label="Estado" id="status">
                 <option value="" selected disabled>----Seleccionar----</option>
@@ -50,8 +83,9 @@
         <div class="col-md-6 mt-1">
             <div class="media mb-2">
                 <a class="mr-2" href="#">
-                    <img :src="$wire.picture" onerror="this.onerror=null;this.src='storage/avatars/default.png';" alt="users avatar" class="users-avatar-shadow rounded-circle"
-                        height="64" width="64" style="object-fit: cover;">
+                    <img :src="$wire.picture" onerror="this.onerror=null;this.src='storage/avatars/default.png';"
+                        alt="users avatar" class="users-avatar-shadow rounded-circle" height="64" width="64"
+                        style="object-fit: cover;">
                 </a>
                 <div class="media-body">
                     <label for="">Avatar </label>
@@ -67,19 +101,19 @@
             @enderror
         </div>
         <template x-if="$wire.user_id">
-            <div class="col-md-12" >
+            <div class="col-md-12">
                 <hr>
                 <div class="col-md-6 mt-1">
-                <x-input type="password" model="$wire.reset_password" label="Reestablecer contraseña" required="true"
-                    placeholder="********"></x-input>
-            </div>
+                    <x-input type="password" model="$wire.reset_password" label="Reestablecer contraseña"
+                        required="true" placeholder="********"></x-input>
+                </div>
         </template>
     </div>
 
     <x-slot name="footer">
         <div x-show="!loading_form">
             <button type="button" class="btn grey btn-outline-secondary" data-dismiss="modal">Cancelar</button>
-            <button type="button" class="btn btn-outline-primary" x-on:click="saveFront()">Guardar</button>
+            <button type="button" class="btn btn-outline-primary" x-on:click="saveFront()">Guardar</button> 
         </div>
 
         <div x-show="loading_form">

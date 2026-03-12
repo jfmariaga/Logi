@@ -252,62 +252,6 @@
             </script>
         @endscript
         <script>
-            // window.initVideoUploader = function() {
-
-            //     let input = document.getElementById('videoUploader');
-            //     if (!input) return;
-
-            //     // evitar múltiples listeners
-            //     input.onchange = null;
-
-            //     input.onchange = async function(e) {
-
-            //         let file = e.target.files[0];
-            //         if (!file) return;
-
-            //         let chunkSize = 2 * 1024 * 1024; // 2MB
-            //         let start = 0;
-
-            //         while (start < file.size) {
-
-            //             let chunk = file.slice(start, start + chunkSize);
-            //             let form = new FormData();
-            //             form.append('file', chunk, file.name);
-
-            //             let res = await fetch('/admin/upload/video', {
-            //                 method: 'POST',
-            //                 headers: {
-            //                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            //                 },
-            //                 body: form
-            //             });
-
-            //             let data = await res.json();
-
-            //             if (data.percentage) {
-            //                 document.getElementById('videoProgress').style.width = data.percentage + '%';
-            //             }
-
-            //             if (data.url) {
-
-            //                 document.getElementById('videoUrlHidden').value = data.url;
-
-            //                 // dispara evento input para Livewire
-            //                 document.getElementById('videoUrlHidden').dispatchEvent(new Event('input'));
-
-            //                 window.dispatchEvent(new CustomEvent('video-uploaded'));
-
-            //                 toastRight('success', 'video cargado correctamente ya puedes guardar');
-
-            //                 break;
-            //             }
-
-
-            //             start += chunkSize;
-            //         }
-            //     }
-            // }
-
             window.initVideoUploader = function() {
 
                 let input = document.getElementById('videoUploader');

@@ -42,10 +42,13 @@ use App\Livewire\Sedes\Sedes;
 use App\Livewire\Programacion\Programacion;
 use App\Livewire\Notificaciones\InformacionDeInteres;
 use App\Http\Controllers\UploadVideoController;
-
+use App\Livewire\Admin\Entregas;
+use App\Livewire\Admin\MisEntregas;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
+
+use App\Http\Controllers\OnlyOfficeController;
 
 // por si se quiere probar cositas
 Route::get('/pruebas', PruebaVelocidad::class);
@@ -54,14 +57,19 @@ Route::get('/', Pagina::class)->name('home');
 Route::get('/login', Login::class)->name('login');
 Route::get('/marcacion', Marcador::class)->name('marcacion');
 
+// Callback de OnlyOffice (excluido del CSRF en bootstrap/app.php)
+Route::post('/onlyoffice/callback/{fileId}', [OnlyOfficeController::class, 'callback'])
+    ->name('onlyoffice.callback');
+
 Route::middleware([AuthGuard::class])->group(function () {
     // Route::get('/dashboard', Dashboard::class)->name('dashboard')->middleware('permission:ver dashboard');
     Route::get('/dashboard', Dashboard::class)->name('dashboard')->middleware();
     Route::get('/usuarios', Usuarios::class)->name('usuarios')->middleware('permission:ver usuarios');
     Route::get('/categorias', Categorias::class)->name('categorias')->middleware('permission:ver categorias'); // se queda por si despues se necesita
     Route::get('/proveedores', Proveedores::class)->name('proveedores')->middleware('permission:ver proveedores'); // se queda por si depsues se necesita
-    Route::get('/repositorio', Repositorio::class)->name('repositorio'); // en pausa, queda para la ultima fase, la que es con edición de documentos
-    Route::get('/gestion-documental', GestionDocumental::class)->name('gestion-documental')->middleware('permission:ver gestión documental'); // en pausa, queda para la ultima fase, la que es con edición de documentos
+    // repositorio y gestion documental estan trucados
+    Route::get('/repositorio', GestionDocumental::class)->name('repositorio')->middleware('permission:ver gestión documental');
+    Route::get('/gestion-documental', Repositorio::class)->name('gestion-documental')->middleware('permission:ver gestión documental');
     Route::get('/admin/pages/{slug}', PageEditor::class)->name('admin.pages.edit')->middleware('permission:ver Sección página web');
     Route::get('/sedes', Sedes::class)->name('sedes')->middleware('permission:ver sedes');
     Route::get('/roles', Roles::class)->name('roles')->middleware('permission:ver roles');
@@ -80,10 +88,16 @@ Route::middleware([AuthGuard::class])->group(function () {
     Route::get('/admin/terceros/{id}/auditar', function ($id) {
         return view('admin.auditar-tercero', compact('id'));
     })->name('admin.terceros.auditar')->middleware('permission:ver formularios');
-    // Route::get('/admin/productos', Productos::class)->name('productos')->middleware('permission:ver gestión documental');
-    // Route::get('/admin/inventario', Inventarios::class)->name('inventario')->middleware('permission:ver gestión documental');
-
+    Route::get('/admin/productos', Productos::class)->name('productos')->middleware('permission:ver gestión documental');
+    Route::get('/admin/inventario', Inventarios::class)->name('inventario')->middleware('permission:ver gestión documental');
     Route::post('/admin/upload/video', [UploadVideoController::class, 'upload']);
+    Route::get('/entregas', Entregas::class)->name('entregas')->middleware('permission:ver gestión documental');
+    Route::get('/mis-entregas', MisEntregas::class)->name('mis.entregas')->middleware('permission:ver mis cursos');
+
+    // Rutas de OnlyOffice DocSpace para edición de documentos
+    Route::get('/onlyoffice/editor/{fileId}', [OnlyOfficeController::class, 'editor'])->name('onlyoffice.editor');
+    Route::post('/onlyoffice/upload/{fileId}', [OnlyOfficeController::class, 'uploadToDocSpace'])->name('onlyoffice.upload');
+    Route::post('/onlyoffice/create-document', [OnlyOfficeController::class, 'createDocument'])->name('onlyoffice.create-document');
 
 });
 
@@ -102,8 +116,6 @@ Route::post('logout', function () {
 
     return redirect('/login');
 })->name('cerrar-sesion');
-
-
 
 
 // Route::get('/instalar-permisos', function () {
