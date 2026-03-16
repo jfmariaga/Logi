@@ -2181,6 +2181,60 @@
                                 </button>
 
                             </div>
+
+                            <div class="firma-impresion">
+
+                                <table class="tabla-corporativa mt-4">
+
+                                    <tr class="titulo-seccion">
+                                        <td colspan="2">FIRMA DEL FORMULARIO</td>
+                                    </tr>
+
+                                    <tr>
+
+                                        <td
+                                            style="width:60%; text-align:center; vertical-align:bottom; padding-top:60px">
+
+                                            _________________________________________
+
+                                            <br>
+
+                                            <strong>
+                                                {{ trim(
+                                                    ($datos['rep_primer_nombre'] ?? '') .
+                                                        ' ' .
+                                                        ($datos['rep_segundo_nombre'] ?? '') .
+                                                        ' ' .
+                                                        ($datos['rep_primer_apellido'] ?? '') .
+                                                        ' ' .
+                                                        ($datos['rep_segundo_apellido'] ?? ''),
+                                                ) }}
+                                            </strong>
+
+                                            <br>
+
+                                            Representante Legal
+
+                                            <br>
+
+                                            {{ $datos['rep_tipo_identificacion'] ?? '' }}
+                                            {{ $datos['rep_numero_documento'] ?? '' }}
+
+                                        </td>
+
+                                        <td style="width:40%; text-align:center">
+                                            <div class="huella-box">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" style="text-align:right; padding-top:20px">
+                                            Fecha: _______________________________
+                                        </td>
+                                    </tr>
+                                </table>
+
+                            </div>
                         @else
                             <div class="alert alert-warning mt-3">
 
@@ -2217,107 +2271,7 @@
 
                             </div>
                         @endif
-                        {{-- <div class="firma-impresion">
 
-                            <table class="tabla-corporativa mt-4">
-
-                                <tr class="titulo-seccion">
-                                    <td colspan="2">FIRMA DEL FORMULARIO</td>
-                                </tr>
-
-                                <tr>
-
-                                    <td style="width:60%; height:140px; text-align:center; vertical-align:bottom">
-
-                                        <br><br><br>
-
-                                        _______________________________________
-
-                                        <br>
-                                        Firma
-
-                                        <br>
-
-                                        {{ $tercero->tipo == 'juridica' ? $datos['razon_social'] ?? '' : $datos['nombre_completo'] ?? '' }}
-
-                                        <br>
-
-                                        {{ $tercero->identificacion }}
-
-                                    </td>
-
-                                    <td style="width:40%; text-align:center">
-
-                                        <div class="huella-box">
-
-                                        </div>
-
-                                    </td>
-
-                                </tr>
-
-                                <tr>
-                                    <td colspan="2" style="text-align:right">
-                                        Fecha: ______________________
-                                    </td>
-                                </tr>
-
-                            </table>
-
-                        </div> --}}
-
-                        <div class="firma-impresion">
-
-                            <table class="tabla-corporativa mt-4">
-
-                                <tr class="titulo-seccion">
-                                    <td colspan="2">FIRMA DEL FORMULARIO</td>
-                                </tr>
-
-                                <tr>
-
-                                    <td style="width:60%; text-align:center; vertical-align:bottom; padding-top:60px">
-
-                                        _________________________________________
-
-                                        <br>
-
-                                        <strong>
-                                            {{ trim(
-                                                ($datos['rep_primer_nombre'] ?? '') .
-                                                    ' ' .
-                                                    ($datos['rep_segundo_nombre'] ?? '') .
-                                                    ' ' .
-                                                    ($datos['rep_primer_apellido'] ?? '') .
-                                                    ' ' .
-                                                    ($datos['rep_segundo_apellido'] ?? ''),
-                                            ) }}
-                                        </strong>
-
-                                        <br>
-
-                                        Representante Legal
-
-                                        <br>
-
-                                        {{ $datos['rep_tipo_identificacion'] ?? '' }}
-                                        {{ $datos['rep_numero_documento'] ?? '' }}
-
-                                    </td>
-
-                                    <td style="width:40%; text-align:center">
-                                        <div class="huella-box">
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2" style="text-align:right; padding-top:20px">
-                                        Fecha: _______________________________
-                                    </td>
-                                </tr>
-                            </table>
-
-                        </div>
                     @endif
 
                 </div>
