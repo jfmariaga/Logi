@@ -15,7 +15,7 @@
                          <div class="card p-2" style="min-height: 75vh;">
                             <div class="content-header">
                                 <div class="row">
-                                    <div class="col-md-9">
+                                    <div class="col-md-8">
                                         <h5 class="content-header-title mb-0 d-inline-block br_none">
                                             <a x-on:click="Livewire.dispatch('changeCarpeta', { id: 0, home: 1 })">
                                                 <i class="la la-home"></i>
@@ -29,7 +29,7 @@
                                             </template>
                                         </h5>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-4">
 
                                         @can('crear gestión documental')                 
                                             {{-- formulario nueva carpeta --}}

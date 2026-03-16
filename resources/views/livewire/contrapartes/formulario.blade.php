@@ -107,6 +107,134 @@
         .btn-back:hover {
             background: #e5e7eb;
         }
+
+        @media print {
+
+            /* tamaño de página */
+            @page {
+                size: A4;
+                margin: 10mm;
+            }
+
+            /* reducir tamaño general */
+            body {
+                font-size: 11px !important;
+            }
+
+            /* títulos */
+            h1,
+            h2,
+            h3,
+            h4 {
+                font-size: 14px !important;
+            }
+
+            /* tablas más compactas */
+            table {
+                font-size: 10px !important;
+                border-collapse: collapse;
+            }
+
+            td,
+            th {
+                padding: 3px 6px !important;
+            }
+
+            /* inputs como texto */
+            input,
+            select,
+            textarea {
+                border: none !important;
+                background: none !important;
+                font-size: 10px !important;
+                padding: 0 !important;
+            }
+
+            /* evitar que inputs se corten */
+            input {
+                width: 100% !important;
+            }
+
+            /* quitar botones */
+            button,
+            .btn,
+            .progress-container,
+            .audit-card,
+            .back-container {
+                display: none !important;
+            }
+
+            /* quitar sombras */
+            .form-card {
+                box-shadow: none !important;
+            }
+
+            /* compactar secciones */
+            .section {
+                margin-bottom: 8px !important;
+            }
+
+            /* evitar saltos raros */
+            table,
+            tr,
+            td {
+                page-break-inside: avoid;
+            }
+
+        }
+
+        @media print {
+
+            /* hacer visibles radios y checks */
+            input[type="checkbox"],
+            input[type="radio"] {
+
+                appearance: auto !important;
+                -webkit-appearance: auto !important;
+
+                width: 14px;
+                height: 14px;
+
+                margin-right: 4px;
+
+                transform: scale(1.2);
+            }
+
+            /* evitar que se corran */
+            label {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+            }
+
+        }
+
+        @media print {
+
+            label {
+                white-space: nowrap;
+            }
+
+        }
+
+        .huella-box {
+            border: 2px dashed #000;
+            height: 120px;
+            width: 160px;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        @media print {
+
+            .aviso-descarga {
+                display: none !important;
+            }
+
+        }
     </style>
     <fieldset @if ($this->yaEnviado() || $modo == 'auditoria') disabled @endif>
         <x-layouts.contrapartes-externo>
@@ -115,7 +243,7 @@
                     <!-- HEADER -->
                     <div class="text-center mb-3">
                         <img src="{{ asset('img-logisticarga/logo.png') }}" style="max-width:260px">
-                        <h5 class="mt-3">FORMULARIO DE REGISTRO DE CONTRAPARTES</h5>
+                        <h5 class="mt-3">FORMULARIO DE REGISTRO DE ASOCIADOS DE NEGOCIOS</h5>
                         <p class="info-text">
                             Complete la información solicitada para continuar con el proceso.
                         </p>
@@ -435,7 +563,6 @@
                             <td>
                                 <select class="input-corporativo" wire:model.defer="datos.rep_tipo_identificacion"
                                     wire:change="guardar('rep_tipo_identificacion','select')">
-
                                     <option value="">Seleccionar</option>
                                     <option value="CC">CC</option>
                                     <option value="CE">CE</option>
@@ -443,7 +570,6 @@
                                     <option value="Pasaporte">Pasaporte</option>
                                     <option value="NIT">NIT</option>
                                     <option value="PPT">PPT</option>
-
                                 </select>
                             </td>
 
@@ -2010,358 +2136,193 @@
                         @endforeach
                     </table>
                     <br>
-                    <!-- ==================== SECCIÓN FIRMA ==================== -->
-                    <table class="tabla-corporativa mt-4">
+                    @if ($this->formularioFirmadoCargado())
+                        <div class="alert alert-success text-center mt-4">
 
-                        <tr class="titulo-seccion">
-                            <td colspan="4">
-                                FIRMA DEL FORMULARIO
-                            </td>
-                        </tr>
+                            ✔ El formulario firmado ya fue cargado correctamente.
 
-                        <tr>
-                            <td class="label-td">Documento de Identidad</td>
-                            <td>
-                                <input class="input-corporativo" value="{{ $tercero->identificacion }}" disabled>
-                            </td>
+                            <br><br>
 
-                            <td class="label-td">Nombre Completo</td>
-                            <td>
-                                <input class="input-corporativo"
-                                    value="{{ $tercero->tipo == 'juridica' ? $datos['razon_social'] ?? '' : $datos['nombre_completo'] ?? '' }}"
-                                    disabled>
-                            </td>
-                        </tr>
+                            <button class="btn btn-lg btn-success" wire:click="enviarFormulario"
+                                wire:loading.attr="disabled">
 
-                        <!-- ===================== ESTADO ACTUAL DE FIRMA ===================== -->
+                                <span wire:loading.remove wire:target="enviarFormulario">
+                                    📤 Enviar formulario
+                                </span>
 
-                        {{-- @if ($this->yaFirmado())
+                                <span wire:loading wire:target="enviarFormulario">
+                                    Enviando...
+                                </span>
 
-                            <tr>
-                                <td colspan="4" class="text-center p-4">
+                            </button>
 
-                                    <div class="alert alert-success">
-                                        ✔ Este formulario ya se encuentra firmado correctamente.
-                                    </div>
+                        </div>
+                    @endif
+                    @if (!$this->formularioFirmadoCargado())
+                        @if ($this->puedeImprimirFormulario())
+                            <div class="alert alert-info text-center mt-3 aviso-descarga">
 
-                                    <strong>Tipo de firma registrada:</strong>
-                                    {{ $firmaDigitalActual ? 'Firma Dibujada' : 'Firma Escaneada' }}
+                                <strong>El formulario está listo para firma.</strong>
 
-                                    <div class="mt-3">
+                                <br><br>
 
-                                        @if ($firmaDigitalActual)
-                                            <strong>Firma digital registrada:</strong><br>
-                                            <img src="{{ Storage::url($firmaDigitalActual->archivo) }}"
-                                                style="max-width:400px; border:1px solid #ccc; padding:5px">
-                                            <br>
-                                            <button class="btn btn-danger" wire:click="eliminarFirma('digital')"
-                                                wire:loading.attr="disabled">
-                                                <span wire:loading.remove wire:target="eliminarFirma">
-                                                    Eliminar firma digital
-                                                </span>
-                                                <span wire:loading wire:target="eliminarFirma">
-                                                    Eliminando...
-                                                </span>
-                                            </button>
-                                        @endif
+                                Todos los campos han sido completados y los documentos obligatorios han sido cargados.
 
-                                        @if ($firmaEscaneadaActual)
-                                            <strong>Firma escaneada registrada:</strong><br>
-                                            <img src="{{ Storage::url($firmaEscaneadaActual->archivo) }}"
-                                                style="max-width:400px; border:1px solid #ccc; padding:5px">
-                                            <br>
-                                            <button class="btn btn-danger" wire:click="eliminarFirma('escaneada')"
-                                                wire:loading.attr="disabled">
-                                                <span wire:loading.remove wire:target="eliminarFirma">
-                                                    Eliminar firma escaneada
-                                                </span>
-                                                <span wire:loading wire:target="eliminarFirma">
-                                                    Eliminando...
-                                                </span>
-                                            </button>
-                                        @endif
-                                    </div>
-                                </td>
-                            </tr>
-                        @else --}}
+                                <br><br>
 
-                        @if ($this->yaFirmado())
+                                Ahora debe descargar el formulario, firmarlo y colocar la huella.
+                                Luego deberá subir el documento firmado en la sección de documentos para poder enviarlo
+                                oficialmente.
 
-                            <tr>
-                                <td colspan="4" class="text-center p-4">
+                                <br><br>
 
-                                    <div class="alert alert-success">
-                                        ✔ Este formulario ya se encuentra firmado correctamente.
-                                    </div>
+                                <button type="button" onclick="window.print()" class="btn btn-primary">
+                                    🖨️ Descargar / Imprimir formulario para firma
+                                </button>
 
-                                    <strong>Tipo de firma registrada:</strong>
-                                    {{ $firmaDigitalActual ? 'Firma Dibujada' : 'Firma Escaneada' }}
-
-                                    <div class="mt-3">
-
-                                        @if ($firmaDigitalActual)
-                                            <strong>Firma digital registrada:</strong><br>
-                                            <img src="{{ Storage::url($firmaDigitalActual->archivo) }}"
-                                                style="max-width:400px; border:1px solid #ccc; padding:5px">
-                                            <br>
-
-                                            @if (!$this->yaEnviado())
-                                                <button class="btn btn-danger" wire:click="eliminarFirma('digital')"
-                                                    wire:loading.attr="disabled">
-                                                    <span wire:loading.remove wire:target="eliminarFirma">
-                                                        Eliminar firma digital
-                                                    </span>
-                                                    <span wire:loading wire:target="eliminarFirma">
-                                                        Eliminando...
-                                                    </span>
-                                                </button>
-                                            @endif
-
-                                        @endif
-
-                                        @if ($firmaEscaneadaActual)
-                                            <strong>Firma escaneada registrada:</strong><br>
-                                            <img src="{{ Storage::url($firmaEscaneadaActual->archivo) }}"
-                                                style="max-width:400px; border:1px solid #ccc; padding:5px">
-                                            <br>
-
-                                            @if (!$this->yaEnviado())
-                                                <button class="btn btn-danger" wire:click="eliminarFirma('escaneada')"
-                                                    wire:loading.attr="disabled">
-                                                    <span wire:loading.remove wire:target="eliminarFirma">
-                                                        Eliminar firma escaneada
-                                                    </span>
-                                                    <span wire:loading wire:target="eliminarFirma">
-                                                        Eliminando...
-                                                    </span>
-                                                </button>
-                                            @endif
-
-                                        @endif
-                                    </div>
-                                    {{-- ================= NUEVA SECCIÓN DE ENVÍO ================= --}}
-                                    <br>
-                                    @if (!$this->yaEnviado())
-                                        <div class="alert alert-info mt-4">
-                                            El formulario está firmado pero aún no ha sido enviado oficialmente.
-                                        </div>
-
-                                        <button class="btn btn-lg btn-success mt-2" wire:click="enviarFormulario"
-                                            wire:loading.attr="disabled">
-
-                                            <span wire:loading.remove wire:target="enviarFormulario">
-                                                📤 Enviar Documento
-                                            </span>
-
-                                            <span wire:loading wire:target="enviarFormulario">
-                                                Enviando...
-                                            </span>
-
-                                        </button>
-                                    @else
-                                        <div class="alert alert-primary mt-4">
-                                            📌 Este formulario ya fue ENVIADO oficialmente y se encuentra bloqueado para
-                                            modificaciones.
-                                        </div>
-                                    @endif
-
-                                </td>
-                            </tr>
+                            </div>
                         @else
-                            <!-- ===================== VALIDACIONES PARA PODER FIRMAR ===================== -->
+                            <div class="alert alert-warning mt-3">
 
-                            @if (!$this->puedeFirmar())
+                                <h5 class="text-center mb-3">
+                                    ⚠ Aún no puede descargar el formulario
+                                </h5>
+
+                                <p class="text-center">
+                                    Para habilitar la descarga y firma del formulario debe cumplir los siguientes
+                                    requisitos:
+                                </p>
+
+                                <ul style="max-width:600px;margin:auto">
+
+                                    <li>
+                                        El formulario debe estar completado al <strong>100%</strong>.
+                                    </li>
+
+                                    <li>
+                                        Todos los <strong>documentos obligatorios</strong> deben estar cargados.
+                                    </li>
+
+                                    <li>
+                                        El documento <strong>"Formulario firmado"</strong> se debe cargar únicamente
+                                        después de imprimir el formulario, firmarlo y colocar la huella.
+                                    </li>
+
+                                </ul>
+
+                                <p class="text-center mt-3">
+                                    Una vez cumpla estos requisitos se habilitará automáticamente la opción para
+                                    <strong>descargar el formulario, firmarlo y enviarlo.</strong>
+                                </p>
+
+                            </div>
+                        @endif
+                        {{-- <div class="firma-impresion">
+
+                            <table class="tabla-corporativa mt-4">
+
+                                <tr class="titulo-seccion">
+                                    <td colspan="2">FIRMA DEL FORMULARIO</td>
+                                </tr>
 
                                 <tr>
-                                    <td colspan="4" class="text-center p-4">
 
-                                        <div class="alert alert-warning">
+                                    <td style="width:60%; height:140px; text-align:center; vertical-align:bottom">
 
-                                            Para poder firmar debe cumplir los siguientes requisitos:
+                                        <br><br><br>
 
-                                            <ul class="mt-2 text-start">
-                                                <li>El progreso del formulario debe estar al 100%</li>
-                                                <li>Todos los documentos obligatorios deben estar cargados</li>
-                                            </ul>
+                                        _______________________________________
+
+                                        <br>
+                                        Firma
+
+                                        <br>
+
+                                        {{ $tercero->tipo == 'juridica' ? $datos['razon_social'] ?? '' : $datos['nombre_completo'] ?? '' }}
+
+                                        <br>
+
+                                        {{ $tercero->identificacion }}
+
+                                    </td>
+
+                                    <td style="width:40%; text-align:center">
+
+                                        <div class="huella-box">
 
                                         </div>
 
                                     </td>
+
                                 </tr>
-                            @else
-                                <!-- ===================== SELECCIÓN TIPO FIRMA ===================== -->
 
                                 <tr>
-                                    <td colspan="4" class="text-center p-3">
-                                        <select class="input-corporativo" wire:model.live="tipoFirma"
-                                            style="max-width:300px">
-                                            <option value="">Elija el tipo de firma</option>
-                                            <option value="digital">FIRMA DIBUJO</option>
-                                            <option value="escaneada">FIRMA IMAGEN</option>
-                                        </select>
+                                    <td colspan="2" style="text-align:right">
+                                        Fecha: ______________________
                                     </td>
                                 </tr>
 
-                                <!-- ===================== FIRMA DIBUJADA ===================== -->
+                            </table>
 
-                                @if ($tipoFirma == 'digital')
-                                    <tr>
-                                        <td colspan="4" class="text-center p-3">
+                        </div> --}}
 
-                                            <div wire:ignore>
-                                                <canvas id="canvasFirma"
-                                                    style="border:2px solid #000; width:500px; height:200px;">
-                                                </canvas>
-                                            </div>
+                        <div class="firma-impresion">
 
-                                            <input type="hidden" wire:model="firmaDibujo" id="firmaDibujo">
+                            <table class="tabla-corporativa mt-4">
 
-                                            <div class="mt-2">
-                                                <button type="button" class="btn btn-danger"
-                                                    onclick="limpiarFirma()">
-                                                    Limpiar Firma
-                                                </button>
+                                <tr class="titulo-seccion">
+                                    <td colspan="2">FIRMA DEL FORMULARIO</td>
+                                </tr>
 
-                                                <button type="button" class="btn btn-contacto-agregar"
-                                                    onclick="guardarFirmaCanvas()">
-                                                    Firmar
-                                                </button>
-                                            </div>
-                                            <small class="d-block mt-2 text-muted">
-                                                Dibuje su firma dentro del recuadro y luego presione "Firmar"
-                                            </small>
-                                        </td>
-                                    </tr>
-                                @endif
+                                <tr>
 
-                                <!-- ===================== FIRMA ESCANEADA ===================== -->
+                                    <td style="width:60%; text-align:center; vertical-align:bottom; padding-top:60px">
 
-                                @if ($tipoFirma == 'escaneada')
-                                    <tr>
-                                        <td colspan="4" class="text-center p-3">
-                                            <input type="file" wire:model="firmaImagen" class="input-corporativo"
-                                                accept=".jpg,.jpeg,.png">
-                                            <small class="d-block mt-2 text-muted">
-                                                Archivos permitidos: jpg, jpeg, png
-                                            </small>
-                                            <br>
-                                            <div wire:loading wire:target="firmaImagen" class="text-red mt-2">
-                                                Cargando imagen...
-                                            </div>
-                                            <br>
-                                            <div class="mt-2">
-                                                <button class="btn btn-contacto-agregar"
-                                                    wire:click="guardarFirmaImagen" wire:loading.attr="disabled">
-                                                    <span wire:loading.remove wire:target="guardarFirmaImagen">
-                                                        Guardar Firma
-                                                    </span>
-                                                    <span wire:loading wire:target="guardarFirmaImagen">
-                                                        Guardando...
-                                                    </span>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endif
-                            @endif
-                        @endif
-                    </table>
+                                        _________________________________________
+
+                                        <br>
+
+                                        <strong>
+                                            {{ trim(
+                                                ($datos['rep_primer_nombre'] ?? '') .
+                                                    ' ' .
+                                                    ($datos['rep_segundo_nombre'] ?? '') .
+                                                    ' ' .
+                                                    ($datos['rep_primer_apellido'] ?? '') .
+                                                    ' ' .
+                                                    ($datos['rep_segundo_apellido'] ?? ''),
+                                            ) }}
+                                        </strong>
+
+                                        <br>
+
+                                        Representante Legal
+
+                                        <br>
+
+                                        {{ $datos['rep_tipo_identificacion'] ?? '' }}
+                                        {{ $datos['rep_numero_documento'] ?? '' }}
+
+                                    </td>
+
+                                    <td style="width:40%; text-align:center">
+                                        <div class="huella-box">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="text-align:right; padding-top:20px">
+                                        Fecha: _______________________________
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </div>
+                    @endif
+
                 </div>
                 @push('scripts')
                     <script>
-                        function iniciarCanvasFirma() {
-
-                            let canvas = document.getElementById("canvasFirma");
-
-                            if (!canvas) return;
-
-                            let ctx = canvas.getContext("2d");
-
-                            canvas.width = 500;
-                            canvas.height = 200;
-
-                            ctx.lineWidth = 2;
-                            ctx.lineCap = "round";
-                            ctx.strokeStyle = "#000";
-
-                            let drawing = false;
-
-                            canvas.onmousedown = function(e) {
-                                drawing = true;
-                                ctx.beginPath();
-                                ctx.moveTo(e.offsetX, e.offsetY);
-                            };
-
-                            canvas.onmousemove = function(e) {
-                                if (drawing) {
-                                    ctx.lineTo(e.offsetX, e.offsetY);
-                                    ctx.stroke();
-                                }
-                            };
-
-                            canvas.onmouseup = function() {
-                                drawing = false;
-                            };
-
-                            canvas.onmouseleave = function() {
-                                drawing = false;
-                            };
-                        }
-
-                        function limpiarFirma() {
-
-                            let canvas = document.getElementById("canvasFirma");
-
-                            if (!canvas) return;
-
-                            let ctx = canvas.getContext("2d");
-
-                            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                            document.getElementById("firmaDibujo").value = "";
-                        }
-
-                        function guardarFirmaCanvas() {
-
-                            let canvas = document.getElementById("canvasFirma");
-
-                            if (!canvas) return;
-
-                            let ctx = canvas.getContext("2d");
-
-                            // Verificar si el canvas está en blanco
-                            let blank = document.createElement('canvas');
-                            blank.width = canvas.width;
-                            blank.height = canvas.height;
-
-                            if (canvas.toDataURL() === blank.toDataURL()) {
-                                Swal.fire({
-                                    icon: 'warning',
-                                    text: 'No se identifico la firma',
-                                    timer: 2500,
-                                    showConfirmButton: false
-                                });
-                                return;
-                            }
-
-                            let dataURL = canvas.toDataURL("image/png");
-
-                            document.getElementById("firmaDibujo").value = dataURL;
-
-                            // Enviar directamente el string a Livewire
-                            Livewire.dispatch('setFirmaDibujo', [dataURL]);
-                        }
-
-                        // ===== EVENTOS CORRECTOS PARA LIVEWIRE 3 =====
-
-                        document.addEventListener('livewire:initialized', () => {
-                            iniciarCanvasFirma();
-                        });
-
-                        Livewire.hook('morph.updated', () => {
-                            iniciarCanvasFirma();
-                        });
-
                         window.addEventListener('toast-ok', e => {
                             Swal.fire({
                                 icon: 'success',

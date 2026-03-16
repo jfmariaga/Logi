@@ -131,7 +131,7 @@ class Formulario extends Component
         $this->cargarOperaciones();
         $this->inicializarDocumentos();
         $this->cargarFirmasActuales();
-        $this->puedeFirmar();
+        $this->puedeImprimirFormulario();
     }
 
     // ====================== firma ===============================
@@ -225,31 +225,54 @@ class Formulario extends Component
         $this->firmaEscaneadaActual = $this->firmaActual('escaneada');
     }
 
-    public function puedeFirmar()
+    // public function puedeFirmar()
+    // {
+    //     // 1. Verificar progreso
+    //     if ($this->tercero->progreso < 100) {
+    //         return false;
+    //     }
+
+    //     // 2. Verificar documentos obligatorios
+    //     $pendientes = TerceroDocumento::where('tercero_id', $this->tercero->id)
+    //         ->where('obligatorio', true)
+    //         ->where('cargado', false)
+    //         ->count();
+
+    //     if ($pendientes > 0) {
+    //         return false;
+    //     }
+
+    //     // 3. Verificar si ya existe firma
+    //     $existeFirma = TerceroFirma::where('tercero_id', $this->tercero->id)->exists();
+
+    //     if ($existeFirma) {
+    //         return false;
+    //     }
+
+    //     return true;
+    // }
+
+    public function puedeImprimirFormulario()
     {
-        // 1. Verificar progreso
         if ($this->tercero->progreso < 100) {
             return false;
         }
 
-        // 2. Verificar documentos obligatorios
         $pendientes = TerceroDocumento::where('tercero_id', $this->tercero->id)
             ->where('obligatorio', true)
+            ->where('tipo_documento', '!=', 'Formulario firmado')
             ->where('cargado', false)
             ->count();
 
-        if ($pendientes > 0) {
-            return false;
-        }
+        return $pendientes == 0;
+    }
 
-        // 3. Verificar si ya existe firma
-        $existeFirma = TerceroFirma::where('tercero_id', $this->tercero->id)->exists();
-
-        if ($existeFirma) {
-            return false;
-        }
-
-        return true;
+    public function formularioFirmadoCargado()
+    {
+        return TerceroDocumento::where('tercero_id', $this->tercero->id)
+            ->where('tipo_documento', 'Formulario firmado')
+            ->where('cargado', true)
+            ->exists();
     }
 
     public function yaFirmado()
@@ -268,7 +291,8 @@ class Formulario extends Component
                 'Estados Financieros',
                 'Certificación Bancaria',
                 'Referencias Comerciales',
-                'Fotocopia Cédula Representante Legal'
+                'Fotocopia Cédula Representante Legal',
+                'Formulario firmado'
             ];
         }
 
@@ -279,7 +303,8 @@ class Formulario extends Component
             'Certificación Bancaria',
             'Referencias Comerciales',
             'Fotocopia Cédula Representante Legal',
-            'Declaración de renta del último año'
+            'Declaración de renta del último año',
+            'Formulario firmado'
         ];
     }
 
@@ -1225,10 +1250,24 @@ class Formulario extends Component
 
     public function enviarFormulario()
     {
-        if (!$this->yaFirmado()) {
-            $this->dispatch('toast-error', msg: 'Debe firmar el formulario antes de enviarlo.');
+        $formularioFirmado = TerceroDocumento::where('tercero_id', $this->tercero->id)
+            ->where('tipo_documento', 'Formulario firmado')
+            ->where('cargado', true)
+            ->exists();
+
+        if (!$formularioFirmado) {
+
+            $this->dispatch(
+                'toast-error',
+                msg: 'Debe cargar el formulario firmado antes de enviarlo'
+            );
+
             return;
         }
+        // if (!$this->yaFirmado()) {
+        //     $this->dispatch('toast-error', msg: 'Debe firmar el formulario antes de enviarlo.');
+        //     return;
+        // }
 
         $this->tercero->update([
             'enviado' => true,

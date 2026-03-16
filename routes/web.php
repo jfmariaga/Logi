@@ -98,7 +98,6 @@ Route::middleware([AuthGuard::class])->group(function () {
     Route::get('/onlyoffice/editor/{fileId}', [OnlyOfficeController::class, 'editor'])->name('onlyoffice.editor');
     Route::post('/onlyoffice/upload/{fileId}', [OnlyOfficeController::class, 'uploadToDocSpace'])->name('onlyoffice.upload');
     Route::post('/onlyoffice/create-document', [OnlyOfficeController::class, 'createDocument'])->name('onlyoffice.create-document');
-
 });
 
 Route::prefix('contrapartes')->group(function () {
