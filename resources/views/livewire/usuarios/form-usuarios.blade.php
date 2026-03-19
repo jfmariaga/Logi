@@ -104,7 +104,7 @@
             <div class="col-md-12">
                 <hr>
                 <div class="col-md-6 mt-1">
-                    <x-input type="password" model="$wire.reset_password" label="Reestablecer contraseña"
+                    <x-input type="text" model="$wire.reset_password" label="Reestablecer contraseña"
                         required="true" placeholder="********"></x-input>
                 </div>
         </template>

