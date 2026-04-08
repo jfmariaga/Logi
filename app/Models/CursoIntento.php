@@ -8,7 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class CursoIntento extends Model
 {
     protected $fillable = [
-        'curso_id','user_id','intento_numero','nota','aprobado','fecha_inicio','fecha_fin'
+        'curso_id',
+        'user_id',
+        'intento_numero',
+        'nota',
+        'aprobado',
+        'fecha_inicio',
+        'fecha_fin'
     ];
 
     protected $casts = [
@@ -20,6 +26,11 @@ class CursoIntento extends Model
     public function curso()
     {
         return $this->belongsTo(Curso::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function respuestas()

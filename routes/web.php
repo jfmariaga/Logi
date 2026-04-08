@@ -88,11 +88,11 @@ Route::middleware([AuthGuard::class])->group(function () {
     Route::get('/admin/terceros/{id}/auditar', function ($id) {
         return view('admin.auditar-tercero', compact('id'));
     })->name('admin.terceros.auditar')->middleware('permission:ver formularios');
-    Route::get('/admin/productos', Productos::class)->name('productos')->middleware('permission:ver gestión documental');
-    Route::get('/admin/inventario', Inventarios::class)->name('inventario')->middleware('permission:ver gestión documental');
+    Route::get('/admin/productos', Productos::class)->name('productos')->middleware('permission:Productos');
+    Route::get('/admin/inventario', Inventarios::class)->name('inventario')->middleware('permission:Inventario');
     Route::post('/admin/upload/video', [UploadVideoController::class, 'upload']);
-    Route::get('/entregas', Entregas::class)->name('entregas')->middleware('permission:ver gestión documental');
-    Route::get('/mis-entregas', MisEntregas::class)->name('mis.entregas')->middleware('permission:ver mis cursos');
+    Route::get('/entregas', Entregas::class)->name('entregas')->middleware('permission:Entregas');
+    Route::get('/mis-entregas', MisEntregas::class)->name('mis.entregas')->middleware('permission:Mis entregas');
 
     // Rutas de OnlyOffice DocSpace para edición de documentos
     Route::get('/onlyoffice/editor/{fileId}', [OnlyOfficeController::class, 'editor'])->name('onlyoffice.editor');
@@ -130,10 +130,11 @@ Route::post('logout', function () {
 //     ]);
 
 //     $permisos = [
-//         'ver listado',
-//         'ver formularios',
-//         'aprobar formularios',
-//         'modificar notificaciones'
+//         'EPP y Dotación',
+//         'Productos',
+//         'Inventario',
+//         'Entregas',
+//         'Mis entregas'
 //     ];
 
 //     foreach ($permisos as $permiso) {

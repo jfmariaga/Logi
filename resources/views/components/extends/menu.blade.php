@@ -49,7 +49,7 @@
                             </a>
                         </li>
                     @endcan
-                    @can('ver marcaciones')
+                    @can('EPP y Dotación')
                         <li class="dropdown dropdown-submenu" data-menu="dropdown-submenu">
                             <a class="dropdown-item dropdown-toggle" href="#" data-toggle="dropdown">
                                 <span>EPP y Dotación</span>
@@ -57,7 +57,7 @@
 
                             <ul class="dropdown-menu">
 
-                                @can('ver marcaciones')
+                                @can('Productos')
                                 <li>
                                     <a class="dropdown-item block-page {{ request()->is('admin/productos*') ? 'active' : '' }}"
                                     href="{{ url('/admin/productos') }}">
@@ -66,7 +66,7 @@
                                 </li>
                                 @endcan
 
-                                @can('ver marcaciones')
+                                @can('Inventario')
                                 <li>
                                     <a class="dropdown-item block-page {{ request()->is('admin/inventarios*') ? 'active' : '' }}"
                                     href="{{ route('inventario') }}">
@@ -75,7 +75,7 @@
                                 </li>
                                 @endcan
 
-                                @can('ver marcaciones')
+                                @can('Entregas')
                                 <li>
                                     <a class="dropdown-item block-page {{ request()->is('admin/entregas*') ? 'active' : '' }}"
                                     href="{{ route('entregas') }}">
@@ -83,7 +83,7 @@
                                     </a>
                                 </li>
                                 @endcan
-                                @can('ver mis cursos')
+                                @can('Mis entregas')
                                 <li>
                                     <a class="dropdown-item block-page {{ request()->is('admin/mis-entregas*') ? 'active' : '' }}"
                                     href="{{ route('mis.entregas') }}">

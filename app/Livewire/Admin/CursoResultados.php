@@ -23,21 +23,7 @@ class CursoResultados extends Component
     {
         $this->skipRender();
 
-        // ===== USUARIOS ASIGNADOS =====
-
-        $asignadosUser = CursoAsignacion::where('curso_id', $this->curso->id)
-            ->whereNotNull('user_id')
-            ->pluck('user_id');
-
-        $roles = CursoAsignacion::where('curso_id', $this->curso->id)
-            ->whereNotNull('rol_id')
-            ->pluck('rol_id');
-
-        $usuariosPorRol = User::whereHas('roles', function ($q) use ($roles) {
-            $q->whereIn('id', $roles);
-        })->pluck('id');
-
-        $usuariosIds = $asignadosUser->merge($usuariosPorRol)->unique();
+        $usuariosIds = $this->getUsuariosInscritosIds();
 
         $inscritos = $usuariosIds->count();
 
@@ -75,30 +61,13 @@ class CursoResultados extends Component
         ];
     }
 
-
-    /* ================= TABLA ================= */
+    /* ================= TABLA PRINCIPAL ================= */
 
     public function getResultados()
     {
         $this->skipRender();
 
-        /* ===== MISMA LOGICA DE INSCRITOS ===== */
-
-        $asignadosUser = CursoAsignacion::where('curso_id', $this->curso->id)
-            ->whereNotNull('user_id')
-            ->pluck('user_id');
-
-        $roles = CursoAsignacion::where('curso_id', $this->curso->id)
-            ->whereNotNull('rol_id')
-            ->pluck('rol_id');
-
-        $usuariosPorRol = User::whereHas('roles', function ($q) use ($roles) {
-            $q->whereIn('id', $roles);
-        })->pluck('id');
-
-        $usuariosIds = $asignadosUser->merge($usuariosPorRol)->unique();
-
-        /* ===== TRAER TODOS LOS USUARIOS INSCRITOS ===== */
+        $usuariosIds = $this->getUsuariosInscritosIds();
 
         $usuarios = User::whereIn('id', $usuariosIds)
             ->with([
@@ -110,10 +79,7 @@ class CursoResultados extends Component
             ])
             ->get();
 
-        /* ===== MAPEAR RESULTADOS ===== */
-
         return $usuarios->map(function ($u) {
-
             $intentos = $u->cursoIntentos;
             $ultimo = $intentos->first();
 
@@ -137,9 +103,67 @@ class CursoResultados extends Component
                 'estado' => $estado,
                 'fecha' => $ultimo?->fecha_fin?->format('Y-m-d H:i'),
             ];
-        })->toArray();
+        })->values()->toArray();
     }
 
+    /* ================= AUDITORIA POR USUARIO ================= */
+
+    public function getAuditoriaUsuario($userId)
+    {
+        $this->skipRender();
+
+        $intentos = CursoIntento::where('curso_id', $this->curso->id)
+            ->where('user_id', $userId)
+            ->with([
+                'respuestas.pregunta',
+                'respuestas.respuesta',
+            ])
+            ->orderByDesc('intento_numero')
+            ->get();
+
+        return $intentos->map(function ($intento) {
+            return [
+                'id' => $intento->id,
+                'intento_numero' => $intento->intento_numero,
+                'nota' => $intento->nota,
+                'aprobado' => (bool) $intento->aprobado,
+                'fecha_inicio' => $intento->fecha_inicio?->format('Y-m-d H:i'),
+                'fecha_fin' => $intento->fecha_fin?->format('Y-m-d H:i'),
+                'respuestas' => $intento->respuestas->map(function ($r) {
+                    return [
+                        'id' => $r->id,
+                        'pregunta_id' => $r->pregunta_id,
+                        'pregunta' => $r->pregunta?->pregunta ?? $r->pregunta?->titulo ?? '—',
+                        'respuesta_usuario' => $r->respuesta?->respuesta ?? $r->respuesta?->texto ?? '—',
+                        'es_correcta' => (bool) $r->es_correcta,
+                    ];
+                })->values()->toArray(),
+            ];
+        })->values()->toArray();
+    }
+
+    /* ================= HELPERS ================= */
+
+    private function getUsuariosInscritosIds()
+    {
+        $asignadosUser = CursoAsignacion::where('curso_id', $this->curso->id)
+            ->whereNotNull('user_id')
+            ->pluck('user_id');
+
+        $roles = CursoAsignacion::where('curso_id', $this->curso->id)
+            ->whereNotNull('rol_id')
+            ->pluck('rol_id');
+
+        $usuariosPorRol = collect();
+
+        if ($roles->isNotEmpty()) {
+            $usuariosPorRol = User::whereHas('roles', function ($q) use ($roles) {
+                $q->whereIn('id', $roles);
+            })->pluck('id');
+        }
+
+        return $asignadosUser->merge($usuariosPorRol)->unique()->values();
+    }
 
     public function render()
     {

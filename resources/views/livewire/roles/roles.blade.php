@@ -195,6 +195,14 @@
                             "modificar notificaciones"
                         ],
 
+                        "EPP y Dotación": [
+                            "EPP y Dotación",
+                            "Productos",
+                            "Inventario",
+                            "Entregas",
+                            "Mis entregas"
+                        ],
+
                     };
 
 
