@@ -127,6 +127,11 @@
                                                                             </a>    
                                                                         @endcan
 
+                                                                        {{-- agregamos que se puedann reproducir los videos --}}
+                                                                        <a x-show="getIcon( file.mime_type ).icon == 'video' || getIcon( file.mime_type ).icon == 'audio'" href="javascript:" x-on:click="openMediaPreview(file)" class=" border_none btn btn-sm grey btn-outline-secondary " style="padding: 3px;"> 
+                                                                            <i class="la la-eye"></i>
+                                                                        </a>
+
                                                                         {{-- OnlyOffice para Excel, Word y PowerPoint - Ver --}}
                                                                         <a x-show="canOpenWithOnlyOffice(file.extension)" 
                                                                             x-on:click="openOnlyOffice(file.id, 'view')" 
@@ -176,6 +181,33 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal para previsualización de video/audio --}}
+    <div class="modal fade" id="modal_media_preview" tabindex="-1" role="dialog" aria-labelledby="modalMediaPreviewLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalMediaPreviewLabel" x-text="mediaPreview.title || 'Previsualización'"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" x-on:click="resetMediaPreview()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <template x-if="mediaPreview.type === 'video' && mediaPreview.url">
+                        <video id="preview_video_player" controls autoplay style="width: 100%; max-height: 70vh;" :src="mediaPreview.url">
+                            Tu navegador no soporta video HTML5.
+                        </video>
+                    </template>
+
+                    <template x-if="mediaPreview.type === 'audio' && mediaPreview.url">
+                        <audio id="preview_audio_player" controls autoplay style="width: 100%;" :src="mediaPreview.url">
+                            Tu navegador no soporta audio HTML5.
+                        </audio>
+                    </template>
                 </div>
             </div>
         </div>
@@ -348,9 +380,55 @@
                 // Extensiones soportadas por OnlyOffice
                 onlyoffice_viewable: ['doc', 'docx', 'docm', 'dot', 'dotx', 'dotm', 'odt', 'fodt', 'ott', 'rtf', 'txt', 'djvu', 'fb2', 'epub', 'xps', 'xls', 'xlsx', 'xlsm', 'xlt', 'xltx', 'xltm', 'ods', 'fods', 'ots', 'csv', 'pps', 'ppsx', 'ppsm', 'ppt', 'pptx', 'pptm', 'pot', 'potx', 'potm', 'odp', 'fodp', 'otp'],
                 onlyoffice_editable: ['docx', 'xlsx', 'pptx', 'ppsx', 'odt', 'ods', 'odp', 'csv', 'txt'],
+                mediaPreview: {
+                    type: '',
+                    url: '',
+                    title: '',
+                },
 
                 init() {
                     __resetTableNoPaginate('#table_repositorio');
+
+                    $('#modal_media_preview').on('hidden.bs.modal', () => {
+                        this.resetMediaPreview();
+                    });
+                },
+
+                resetMediaPreview() {
+                    const video = document.getElementById('preview_video_player');
+                    if (video) {
+                        video.pause();
+                        video.removeAttribute('src');
+                        video.load();
+                    }
+
+                    const audio = document.getElementById('preview_audio_player');
+                    if (audio) {
+                        audio.pause();
+                        audio.removeAttribute('src');
+                        audio.load();
+                    }
+
+                    this.mediaPreview = {
+                        type: '',
+                        url: '',
+                        title: '',
+                    };
+                },
+
+                openMediaPreview(file) {
+                    const mediaType = this.getIcon(file.mime_type).icon;
+                    if (!['video', 'audio'].includes(mediaType)) {
+                        return;
+                    }
+
+                    this.mediaPreview = {
+                        type: mediaType,
+                        url: `/storage/gestion-documental/${file.original_name}`,
+                        title: `${file.name}.${file.extension}`,
+                    };
+
+                    $('#modal_media_preview').modal('show');
                 },
 
                 // Verificar si se puede abrir con OnlyOffice

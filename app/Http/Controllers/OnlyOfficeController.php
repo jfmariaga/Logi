@@ -8,11 +8,55 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
+use Throwable;
 use App\Models\Repositorio\File;
 use App\Models\Repositorio\FileHistoral;
 
 class OnlyOfficeController extends Controller
 {
+    /**
+     * Normaliza URL de DocSpace para evitar dobles slashes en endpoints.
+     */
+    protected function getDocSpaceBaseUrl(): string
+    {
+        return rtrim((string) config('services.onlyoffice.docspace_url'), '/');
+    }
+
+    /**
+     * Fuerza renovación del token de DocSpace para el usuario actual.
+     */
+    protected function refreshDocSpaceToken(): ?string
+    {
+        Cache::forget('docspace_token_' . Auth::id());
+        return $this->getDocSpaceToken();
+    }
+
+    /**
+     * Extrae el file ID desde diferentes formatos de respuesta de DocSpace.
+     */
+    protected function extractDocSpaceFileId(array $payload): ?string
+    {
+        $candidates = [
+            data_get($payload, 'response.id'),
+            data_get($payload, 'response.file.id'),
+            data_get($payload, 'response.fileId'),
+            data_get($payload, 'response.files.0.id'),
+            data_get($payload, 'response.0.id'),
+            data_get($payload, 'id'),
+            data_get($payload, 'file.id'),
+            data_get($payload, 'data.id'),
+            data_get($payload, 'response.item.id'),
+        ];
+
+        foreach ($candidates as $candidate) {
+            if (is_scalar($candidate) && (string) $candidate !== '') {
+                return (string) $candidate;
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Tipos de documento soportados
      */
@@ -103,7 +147,7 @@ class OnlyOfficeController extends Controller
             return Cache::get($cacheKey);
         }
         
-        $docspaceUrl = config('services.onlyoffice.docspace_url');
+        $docspaceUrl = $this->getDocSpaceBaseUrl();
         $user = config('services.onlyoffice.docspace_user');
         $password = config('services.onlyoffice.docspace_password');
         
@@ -127,8 +171,12 @@ class OnlyOfficeController extends Controller
                     return $token;
                 }
             }
-        } catch (\Exception $e) {
-            Log::error('Error autenticando en DocSpace', ['error' => $e->getMessage()]);
+        } catch (Throwable $e) {
+            Log::error('Error autenticando en DocSpace', [
+                'error' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+            ]);
         }
         
         return null;
@@ -152,7 +200,7 @@ class OnlyOfficeController extends Controller
             ], 401);
         }
         
-        $docspaceUrl = config('services.onlyoffice.docspace_url');
+        $docspaceUrl = $this->getDocSpaceBaseUrl();
         $roomId = config('services.onlyoffice.docspace_room_id');
         
         if (empty($roomId)) {
@@ -166,9 +214,20 @@ class OnlyOfficeController extends Controller
             // Verificar si el archivo ya tiene un documento en DocSpace
             if ($file->hasDocSpaceDocument()) {
                 // Verificar que el documento aún existe en DocSpace
-                $existsResponse = Http::withHeaders([
-                    'Authorization' => $token,
-                ])->get("{$docspaceUrl}/api/2.0/files/file/{$file->docspace_id}");
+                $existsResponse = Http::withToken($token)
+                    ->acceptJson()
+                    ->get("{$docspaceUrl}/api/2.0/files/file/{$file->docspace_id}");
+
+                // Si el token caducó, renovar y reintentar una vez.
+                if (in_array($existsResponse->status(), [401, 403], true)) {
+                    $renewedToken = $this->refreshDocSpaceToken();
+                    if ($renewedToken) {
+                        $token = $renewedToken;
+                        $existsResponse = Http::withToken($token)
+                            ->acceptJson()
+                            ->get("{$docspaceUrl}/api/2.0/files/file/{$file->docspace_id}");
+                    }
+                }
                 
                 if ($existsResponse->successful()) {
 
@@ -205,6 +264,12 @@ class OnlyOfficeController extends Controller
                         'reused' => true,
                     ]);
                 } else {
+                    Log::warning('DocSpace: documento existente no disponible, se limpia relación local', [
+                        'fileId' => $fileId,
+                        'docspace_id' => $file->docspace_id,
+                        'status' => $existsResponse->status(),
+                        'body' => $existsResponse->body(),
+                    ]);
                     $file->clearDocSpaceData();
                 }
             }
@@ -220,17 +285,45 @@ class OnlyOfficeController extends Controller
             }
             
             // Subir a DocSpace
-            $response = Http::withHeaders([
-                'Authorization' => $token,
-            ])->attach(
+            $response = Http::withToken($token)
+            ->acceptJson()
+            ->attach(
                 'file',
                 file_get_contents($filePath),
                 $file->name . '.' . $file->extension
             )->post("{$docspaceUrl}/api/2.0/files/{$roomId}/upload");
+
+            // Si el token caducó, renovar y reintentar una vez.
+            if (in_array($response->status(), [401, 403], true)) {
+                $renewedToken = $this->refreshDocSpaceToken();
+                if ($renewedToken) {
+                    $token = $renewedToken;
+                    $response = Http::withToken($token)
+                        ->acceptJson()
+                        ->attach(
+                            'file',
+                            file_get_contents($filePath),
+                            $file->name . '.' . $file->extension
+                        )->post("{$docspaceUrl}/api/2.0/files/{$roomId}/upload");
+                }
+            }
             
             if ($response->successful()) {
                 $data = $response->json();
-                $docspaceFileId = $data['response']['id'] ?? null;
+                if (!is_array($data)) {
+                    Log::warning('DocSpace upload respondió contenido no JSON', [
+                        'fileId' => $fileId,
+                        'status' => $response->status(),
+                        'body' => $response->body(),
+                    ]);
+
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'DocSpace devolvió una respuesta no válida al subir el archivo.',
+                    ], 502);
+                }
+
+                $docspaceFileId = $this->extractDocSpaceFileId($data);
                 
                 if ($docspaceFileId) {
                     // Obtener enlace público y requestToken
@@ -283,7 +376,25 @@ class OnlyOfficeController extends Controller
                         'reused' => false,
                     ]);
                 }
+
+                Log::warning('DocSpace upload exitoso pero sin file id reconocible', [
+                    'fileId' => $fileId,
+                    'status' => $response->status(),
+                    'payload' => $data,
+                ]);
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'DocSpace subió el archivo, pero no devolvió un identificador reconocible.',
+                    'details' => $data,
+                ], 502);
             }
+
+            Log::warning('DocSpace upload falló', [
+                'fileId' => $fileId,
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
             
             return response()->json([
                 'success' => false,
@@ -291,12 +402,19 @@ class OnlyOfficeController extends Controller
                 'details' => $response->json()
             ], 500);
             
-        } catch (\Exception $e) {
+            
+        } catch (Throwable $e) {
             Log::error('Error subiendo a DocSpace', [
                 'fileId' => $fileId,
-                'error' => $e->getMessage()
+                'docspaceUrl' => $docspaceUrl,
+                'roomId' => $roomId,
+                'localFilePath' => $filePath ?? null,
+                'localFileExists' => isset($filePath) ? file_exists($filePath) : false,
+                'error' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+                'trace' => $e->getTraceAsString(),
             ]);
-            
             return response()->json([
                 'success' => false,
                 'message' => 'Error: ' . $e->getMessage()
@@ -317,9 +435,9 @@ class OnlyOfficeController extends Controller
         try {
             // Obtener el enlace compartido de la ROOM (no del archivo)
             // Este enlace tiene permisos de edición para todos los archivos en la room
-            $roomLinkResponse = Http::withHeaders([
-                'Authorization' => $token,
-            ])->get("{$docspaceUrl}/api/2.0/files/rooms/{$roomId}/links");
+            $roomLinkResponse = Http::withToken($token)
+                ->acceptJson()
+                ->get("{$docspaceUrl}/api/2.0/files/rooms/{$roomId}/links");
             
             if ($roomLinkResponse->successful()) {
                 $roomData = $roomLinkResponse->json();
@@ -368,9 +486,9 @@ class OnlyOfficeController extends Controller
             }
             
             // Fallback: obtener el link del archivo
-            $getLinksResponse = Http::withHeaders([
-                'Authorization' => $token,
-            ])->get("{$docspaceUrl}/api/2.0/files/file/{$docspaceFileId}/link");
+            $getLinksResponse = Http::withToken($token)
+                ->acceptJson()
+                ->get("{$docspaceUrl}/api/2.0/files/file/{$docspaceFileId}/link");
             
             if ($getLinksResponse->successful()) {
                 $data = $getLinksResponse->json();
@@ -397,10 +515,12 @@ class OnlyOfficeController extends Controller
                 }
             }
             
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
             Log::error('Error obteniendo enlace público en DocSpace', [
                 'fileId' => $docspaceFileId,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
             ]);
         }
         
