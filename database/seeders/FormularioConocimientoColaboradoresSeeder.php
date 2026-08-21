@@ -12,7 +12,7 @@ class FormularioConocimientoColaboradoresSeeder extends Seeder
     {
         $roles = [
             'SuperAdmin' => ['ver formulario colaboradores', 'ver listado colaboradores', 'ver formularios colaboradores', 'aprobar formularios colaboradores'],
-            'Administrativo' => ['ver formulario colaboradores'],
+            'Administrativo' => ['ver formulario colaboradores', 'ver listado colaboradores', 'ver formularios colaboradores'],
             'Operario' => ['ver formulario colaboradores'],
         ];
 

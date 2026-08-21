@@ -11,6 +11,7 @@
         .conocimiento-form .label-td { background: #f5f8fa; color: #34495e; font-weight: 600; width: 25%; }
         .conocimiento-form .input-corporativo { width: 100%; border: 1px solid #b9c7d3; border-radius: 4px; padding: 8px; background: #fff; }
         .conocimiento-form .input-corporativo:focus { border-color: #2f9c95; outline: 0; box-shadow: 0 0 0 2px rgba(47, 156, 149, .15); }
+        .conocimiento-form textarea.input-corporativo { min-height: 110px; resize: vertical; }
         .conocimiento-form .declaracion { text-align: justify; line-height: 1.55; background: #fbfcfd; }
         .conocimiento-form .firma-manuscrita { width: 100%; height: 180px; border: 2px dashed #173f5f; background: #fff; touch-action: none; }
         .conocimiento-form .firma-preview { max-width: 260px; max-height: 100px; border: 1px solid #cbd5df; padding: 8px; }
@@ -69,10 +70,12 @@
 
             <p class="declaracion p-3">El diligenciamiento del presente formulario permite realizar el proceso de conocimiento de la contraparte de colaboradores y la debida diligencia, de acuerdo con el SAGRILAFT y la normativa legal vigente en materia de prevención de Lavado de Activos, Financiación del Terrorismo, Financiación de Proliferación de Armas de Destrucción Masiva, Corrupción, Soborno y Fraude.</p>
 
-            @if ($formulario?->estado === 'aprobado')
+            @if ($formulario?->estado === 'aprobado' && $modo === 'colaborador' && $edicionHabilitada)
+                <div class="alert alert-warning">Está editando un formulario ya aprobado. Al enviarlo quedará nuevamente pendiente de revisión.</div>
+            @elseif ($formulario?->estado === 'aprobado')
                 <div class="alert alert-success d-flex justify-content-between align-items-center flex-wrap gap-2">
-                    <span>Su formulario fue aprobado.@if ($modo === 'colaborador' && !$edicionHabilitada) El formulario está bloqueado para edición.@endif</span>
-                    @if ($modo === 'colaborador' && !$edicionHabilitada)
+                    <span>Su formulario fue aprobado.@if ($modo === 'colaborador') El formulario está bloqueado para edición.@endif</span>
+                    @if ($modo === 'colaborador')
                         <button type="button" class="btn btn-outline-success btn-sm no-print text-dark" x-on:click="await $wire.habilitarEdicion(); await $nextTick(); reinicializarFirma()">Habilitar edición</button>
                     @endif
                 </div>

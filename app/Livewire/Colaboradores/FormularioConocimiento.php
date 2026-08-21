@@ -3,11 +3,14 @@
 namespace App\Livewire\Colaboradores;
 
 use App\Models\FormularioConocimientoColaborador;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use App\Notifications\EstadoFormularioColaborador;
+use App\Notifications\NuevoFormularioColaborador;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -50,7 +53,12 @@ class FormularioConocimiento extends Component
             'telefono' => $user->phone,
             'cargo' => $user->cargo?->nombre,
             'departamento' => $user->area?->nombre,
+            'operaciones_extranjeras' => [],
         ], $this->datos);
+
+        if (!is_array($this->datos['operaciones_extranjeras'])) {
+            $this->datos['operaciones_extranjeras'] = [];
+        }
 
         $this->departamentos = $this->obtenerDepartamentosDesdeApi();
         if (!empty($this->datos['departamento'])) {
@@ -192,6 +200,8 @@ class FormularioConocimiento extends Component
             'autoriza_judiciales' => 'autorización de datos judiciales',
         ]);
 
+        $esActualizacion = FormularioConocimientoColaborador::where('user_id', Auth::id())->exists();
+
         $this->formulario = FormularioConocimientoColaborador::updateOrCreate(
             ['user_id' => Auth::id()],
             [
@@ -205,8 +215,31 @@ class FormularioConocimiento extends Component
             ]
         );
 
+        $this->notificarRevisores($esActualizacion);
+
         $this->dispatch('toast-ok', msg: 'Formulario enviado para revisión.');
         $this->mount();
+    }
+
+    private function notificarRevisores(bool $esActualizacion): void
+    {
+        $revisores = User::role(['SuperAdmin', 'Administrativo'])
+            ->whereNotNull('email')
+            ->where('email', '!=', '')
+            ->get();
+
+        if ($revisores->isEmpty()) {
+            return;
+        }
+
+        try {
+            Notification::send($revisores, new NuevoFormularioColaborador($this->formulario, $esActualizacion));
+        } catch (\Throwable $exception) {
+            Log::error('No se pudo notificar a los revisores sobre el formulario de colaborador', [
+                'formulario_id' => $this->formulario->id,
+                'error' => $exception->getMessage(),
+            ]);
+        }
     }
 
     public function aprobar(): void
