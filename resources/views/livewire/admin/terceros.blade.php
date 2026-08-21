@@ -4,7 +4,7 @@
         <div class="content-wrapper p-3">
 
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4>📄 Gestión de Terceros</h4>
+                <h4>📄 Asociados de negocio</h4>
 
                 @can('modificar notificaciones')
                     <button class="btn btn-outline-dark" onclick="Livewire.dispatch('abrirConfigNotificaciones')">

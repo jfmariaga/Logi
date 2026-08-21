@@ -195,6 +195,13 @@
                             "modificar notificaciones"
                         ],
 
+                        "Conocimiento de colaboradores": [
+                            "ver formulario colaboradores",
+                            "ver listado colaboradores",
+                            "ver formularios colaboradores",
+                            "aprobar formularios colaboradores"
+                        ],
+
                         "EPP y Dotación": [
                             "EPP y Dotación",
                             "Productos",

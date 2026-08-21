@@ -112,5 +112,11 @@ class RoleSeeder extends Seeder
         Permission::create(['name' => 'ver formularios'])->syncRoles([$roleSuperAdmin]);
         Permission::create(['name' => 'aprobar formularios'])->syncRoles([$roleSuperAdmin]);
         Permission::create(['name' => 'modificar notificaciones'])->syncRoles([$roleSuperAdmin]);
+
+        // Crear permisos para el formulario de conocimiento de colaboradores
+        Permission::create(['name' => 'ver formulario colaboradores'])->syncRoles([$roleSuperAdmin, $roleAdministrativo, $roleOperario]);
+        Permission::create(['name' => 'ver listado colaboradores'])->syncRoles([$roleSuperAdmin]);
+        Permission::create(['name' => 'ver formularios colaboradores'])->syncRoles([$roleSuperAdmin]);
+        Permission::create(['name' => 'aprobar formularios colaboradores'])->syncRoles([$roleSuperAdmin]);
     }
 }

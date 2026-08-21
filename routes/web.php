@@ -44,6 +44,8 @@ use App\Livewire\Notificaciones\InformacionDeInteres;
 use App\Http\Controllers\UploadVideoController;
 use App\Livewire\Admin\Entregas;
 use App\Livewire\Admin\MisEntregas;
+use App\Livewire\Admin\FormulariosColaboradores;
+use App\Livewire\Colaboradores\FormularioConocimiento;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
@@ -93,6 +95,9 @@ Route::middleware([AuthGuard::class])->group(function () {
     Route::post('/admin/upload/video', [UploadVideoController::class, 'upload']);
     Route::get('/entregas', Entregas::class)->name('entregas')->middleware('permission:Entregas');
     Route::get('/mis-entregas', MisEntregas::class)->name('mis.entregas')->middleware('permission:Mis entregas');
+    Route::get('/formulario-conocimiento', FormularioConocimiento::class)->name('formulario.conocimiento')->middleware('permission:ver formulario colaboradores');
+    Route::get('/admin/formularios-colaboradores', FormulariosColaboradores::class)->name('formularios.colaboradores')->middleware('permission:ver listado colaboradores');
+    Route::get('/admin/formularios-colaboradores/{id}', FormularioConocimiento::class)->name('formularios.colaboradores.detalle')->middleware('permission:ver formularios colaboradores');
 
     // Rutas de OnlyOffice DocSpace para edición de documentos
     Route::get('/onlyoffice/editor/{fileId}', [OnlyOfficeController::class, 'editor'])->name('onlyoffice.editor');

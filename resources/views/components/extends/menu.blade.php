@@ -109,6 +109,20 @@
                             </a>
                         </li>
                     @endcan     
+                    @can('ver formulario colaboradores')
+                        <li>
+                            <a class="dropdown-item block-page {{ Route::is('formulario.conocimiento') ? 'active' : '' }}" href="{{ route('formulario.conocimiento') }}">
+                                <span>Mi formulario de conocimiento</span>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('ver listado colaboradores')
+                        <li>
+                            <a class="dropdown-item block-page {{ Route::is('formularios.colaboradores*') ? 'active' : '' }}" href="{{ route('formularios.colaboradores') }}">
+                                <span>Formularios de colaboradores</span>
+                            </a>
+                        </li>
+                    @endcan
                     @can('ver roles')
                         <li>
                             <a class="dropdown-item block-page" href="{{ route('roles') }}">
@@ -152,7 +166,7 @@
                     @can('ver listado')
                        <li>
                             <a class="dropdown-item block-page" href="{{ route('terceros') }}">
-                                <span data-i18n="Horizontal">Debida Diligencia</span>
+                                <span data-i18n="Horizontal">Asociados de negocio</span>
                             </a>
                         </li>
                     @endcan

@@ -34,6 +34,7 @@
     <link rel="stylesheet" type="text/css"
         href="{{ asset('modernadmin/app-assets/vendors/css/forms/selects/select2.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/theme.css') }}">
+    @livewireStyles
 
     <script type="text/javascript" src="{{ asset('assets/jquery.min.js') }}"></script>
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/toastr/toastr.css') }}">
@@ -88,6 +89,24 @@
     <script src="{{ asset('js/fancybox4.js') }}" type="text/javascript"></script>
     <script src="{{ asset('js/basic.js') }}" type="text/javascript"></script>
     <script src="https://cdn.jsdelivr.net/npm/resumablejs/resumable.min.js"></script>
+
+    @livewireScripts
+
+    <script>
+        window.motivoRechazoColaborador = function () {
+            Swal.fire({
+                title: 'Motivo del rechazo',
+                input: 'textarea',
+                showCancelButton: true,
+                confirmButtonText: 'Rechazar',
+                cancelButtonText: 'Cancelar'
+            }).then(function (resultado) {
+                if (!resultado || resultado.dismiss) return;
+
+                Livewire.dispatch('rechazar-formulario-colaborador', { motivo: resultado.value || '' });
+            });
+        };
+    </script>
 
     @stack('js_extra')
 

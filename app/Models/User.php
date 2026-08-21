@@ -71,6 +71,11 @@ class User extends Authenticatable
         return $this->hasMany(Entrega::class, 'usuario_id');
     }
 
+    public function formularioConocimiento()
+    {
+        return $this->hasOne(FormularioConocimientoColaborador::class, 'user_id');
+    }
+
     public function area()
     {
         return $this->belongsTo(Area::class);

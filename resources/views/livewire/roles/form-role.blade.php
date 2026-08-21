@@ -101,6 +101,11 @@
                         @include('admin.roles.checkbox', ['p' => $p])
                     @endforeach
 
+                    <h6 class="text-uppercase text-primary mt-3">Conocimiento de colaboradores</h6>
+                    @foreach ($allPermissions->whereIn('name', ['ver formulario colaboradores', 'ver listado colaboradores', 'ver formularios colaboradores', 'aprobar formularios colaboradores']) as $p)
+                        @include('admin.roles.checkbox', ['p' => $p])
+                    @endforeach
+
                     <h6 class="text-uppercase text-primary mt-3">Repositorio</h6>
                     @foreach ($allPermissions->whereIn('name', ['ver repositorio', 'crear repositorio', 'editar repositorio', 'eliminar repositorio']) as $p)
                         @include('admin.roles.checkbox', ['p' => $p])
