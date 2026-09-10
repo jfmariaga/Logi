@@ -92,15 +92,6 @@
 
             <hr>
 
-            <select wire:model="tipo" class="input-modern select-modern">
-                <option value="">Tipo de persona</option>
-                <option value="juridica">Persona Jurídica</option>
-                <option value="natural">Persona Natural</option>
-            </select>
-            @error('tipo')
-                <div class="error-text">{{ $message }}</div>
-            @enderror
-
             <input wire:model="identificacion" class="input-modern" placeholder="Identificación">
 
             @error('identificacion')

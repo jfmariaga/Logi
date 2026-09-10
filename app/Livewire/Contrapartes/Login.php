@@ -11,18 +11,15 @@ class Login extends Component
 {
     public $identificacion;
     public $password;
-    public $tipo;
 
     public $terceroEncontrado = null;
 
     protected $rules = [
-        'tipo' => 'required',
         'identificacion' => 'required',
         'password' => 'required|min:4'
     ];
 
     protected $messages = [
-        'tipo.required' => 'Debe seleccionar el tipo de persona',
         'identificacion.required' => 'Ingrese identificación',
         'password.required' => 'Ingrese una contraseña'
     ];
@@ -41,7 +38,6 @@ class Login extends Component
             $tercero = Tercero::create([
                 'identificacion' => $this->identificacion,
                 'password' => Hash::make($this->password),
-                'tipo' => $this->tipo,
                 'estado' => 'en_proceso'
             ]);
 
@@ -105,7 +101,6 @@ class Login extends Component
         $nuevoTercero = Tercero::create([
             'identificacion' => $this->identificacion,
             'password' => Hash::make($this->password),
-            'tipo' => $this->tipo,
             'estado' => 'en_proceso'
         ]);
 

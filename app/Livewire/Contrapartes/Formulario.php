@@ -32,6 +32,7 @@ class Formulario extends Component
     public $actividades = [];
     public $operaciones = [];
     public $operaciones_extranjeras = [];
+    public $certificados_seguridad = [];
     public $paisesVerificacion = [];
     public $departamentosVerificacion = [];
     public $ciudadesVerificacion = [];
@@ -108,6 +109,12 @@ class Formulario extends Component
             $this->operaciones_extranjeras = [];
         }
 
+        if (!empty($this->datos['certificados_seguridad'])) {
+            $this->certificados_seguridad = explode(',', $this->datos['certificados_seguridad']);
+        } else {
+            $this->certificados_seguridad = [];
+        }
+
         // Cargar departamentos desde API estable
         $this->departamentos = $this->obtenerDepartamentosDesdeApi();
 
@@ -130,8 +137,27 @@ class Formulario extends Component
         $this->cargarAccionistas();
         $this->cargarOperaciones();
         $this->inicializarDocumentos();
+        $this->limpiarFormularioFirmadoLegado();
         $this->cargarFirmasActuales();
-        $this->puedeImprimirFormulario();
+    }
+
+    /**
+     * El flujo físico "imprimir + firmar + subir Formulario firmado" fue reemplazado
+     * por firma digital. Se eliminan los registros heredados de ese documento.
+     */
+    private function limpiarFormularioFirmadoLegado()
+    {
+        $legados = TerceroDocumento::where('tercero_id', $this->tercero->id)
+            ->where('tipo_documento', 'Formulario firmado')
+            ->get();
+
+        foreach ($legados as $doc) {
+            if ($doc->archivo && Storage::disk('public')->exists($doc->archivo)) {
+                Storage::disk('public')->delete($doc->archivo);
+            }
+
+            $doc->delete();
+        }
     }
 
     // ====================== firma ===============================
@@ -142,6 +168,18 @@ class Formulario extends Component
         $this->firmaDibujo = $firma;
 
         $this->guardarFirmaDibujo();
+    }
+
+    public function puedeFirmar()
+    {
+        return !$this->yaEnviado() && $this->modo !== 'auditoria';
+    }
+
+    public function puedeEnviar()
+    {
+        return $this->tercero->progreso >= 100
+            && $this->documentosCompletos()
+            && $this->yaFirmado();
     }
 
     public function guardarFirmaDibujo()
@@ -159,7 +197,15 @@ class Formulario extends Component
         $imagen = str_replace('data:image/png;base64,', '', $this->firmaDibujo);
         $imagen = base64_decode($imagen);
 
-        $nombre = "firma_digital_{$this->tercero->identificacion}.png";
+        // Reemplazar cualquier firma digital previa
+        foreach (TerceroFirma::where('tercero_id', $this->tercero->id)->where('tipo', 'digital')->get() as $previa) {
+            if ($previa->archivo && Storage::disk('public')->exists($previa->archivo)) {
+                Storage::disk('public')->delete($previa->archivo);
+            }
+            $previa->delete();
+        }
+
+        $nombre = 'firma_digital_' . $this->tercero->identificacion . '_' . now()->timestamp . '.png';
         $ruta = "documentos_contrapartes/{$this->tercero->identificacion}/$nombre";
 
         Storage::disk('public')->put($ruta, $imagen);
@@ -170,6 +216,7 @@ class Formulario extends Component
             'archivo' => $ruta
         ]);
 
+        $this->firmaDibujo = null;
         $this->cargarFirmasActuales();
         $this->dispatch('toast-ok', msg: 'Firma digital guardada correctamente.');
     }
@@ -285,27 +332,46 @@ class Formulario extends Component
     public function documentosRequeridos()
     {
         if ($this->tercero->tipo == 'juridica') {
-            return [
+            $base = [
                 'Cámara de Comercio',
                 'RUT',
                 'Estados Financieros',
                 'Certificación Bancaria',
                 'Referencias Comerciales',
                 'Fotocopia Cédula Representante Legal',
-                'Formulario firmado'
+            ];
+        } else {
+            $base = [
+                'Cámara de Comercio',
+                'RUT',
+                'Estados Financieros',
+                'Certificación Bancaria',
+                'Referencias Comerciales',
+                'Fotocopia Cédula Representante Legal',
+                'Declaración de renta del último año',
             ];
         }
 
-        return [
-            'Cámara de Comercio',
-            'RUT',
-            'Estados Financieros',
-            'Certificación Bancaria',
-            'Referencias Comerciales',
-            'Fotocopia Cédula Representante Legal',
-            'Declaración de renta del último año',
-            'Formulario firmado'
-        ];
+        return array_merge($base, $this->documentosCertificadosSeguridad());
+    }
+
+    public function documentosCertificadosSeguridad()
+    {
+        $docs = [];
+
+        foreach ($this->certificados_seguridad as $cert) {
+            $cert = trim($cert);
+
+            if ($cert === '') {
+                continue;
+            }
+
+            $docs[] = $cert === 'OTRA'
+                ? 'Certificado de seguridad (Otra)'
+                : "Certificado {$cert}";
+        }
+
+        return $docs;
     }
 
     public function inicializarDocumentos()
@@ -322,6 +388,77 @@ class Formulario extends Component
                     'cargado' => false
                 ]
             );
+        }
+    }
+
+    public function guardarCertificadosSeguridad()
+    {
+        if ($this->yaEnviado()) {
+            $this->dispatch('toast-error', msg: 'El formulario ya fue enviado y no puede ser modificado.');
+            return;
+        }
+
+        $this->certificados_seguridad = array_values(array_filter(
+            $this->certificados_seguridad,
+            fn($v) => trim((string) $v) !== ''
+        ));
+
+        // Si ya no está marcada "OTRA", limpiar el texto asociado
+        if (!in_array('OTRA', $this->certificados_seguridad)) {
+            $this->datos['certificado_seguridad_otra'] = '';
+
+            TerceroFormulario::updateOrCreate(
+                ['tercero_id' => $this->tercero->id, 'campo' => 'certificado_seguridad_otra'],
+                ['valor' => '', 'seccion' => 'general', 'tipo_campo' => 'text', 'obligatorio' => false]
+            );
+        }
+
+        TerceroFormulario::updateOrCreate(
+            ['tercero_id' => $this->tercero->id, 'campo' => 'certificados_seguridad'],
+            [
+                'valor' => implode(',', $this->certificados_seguridad),
+                'seccion' => 'general',
+                'tipo_campo' => 'text',
+                'obligatorio' => false,
+            ]
+        );
+
+        $this->datos['certificados_seguridad'] = implode(',', $this->certificados_seguridad);
+
+        $this->sincronizarDocumentosCertificados();
+        $this->calcularProgreso();
+    }
+
+    private function sincronizarDocumentosCertificados()
+    {
+        $requeridos = $this->documentosCertificadosSeguridad();
+
+        // Crear los documentos de certificados seleccionados
+        foreach ($requeridos as $doc) {
+            TerceroDocumento::firstOrCreate(
+                ['tercero_id' => $this->tercero->id, 'tipo_documento' => $doc],
+                ['obligatorio' => true, 'cargado' => false]
+            );
+        }
+
+        // Eliminar los documentos de certificados que ya no están seleccionados
+        $certDocs = TerceroDocumento::where('tercero_id', $this->tercero->id)
+            ->where(function ($q) {
+                $q->where('tipo_documento', 'like', 'Certificado %')
+                    ->orWhere('tipo_documento', 'Certificado de seguridad (Otra)');
+            })
+            ->get();
+
+        foreach ($certDocs as $doc) {
+            if (in_array($doc->tipo_documento, $requeridos)) {
+                continue;
+            }
+
+            if ($doc->archivo && Storage::disk('public')->exists($doc->archivo)) {
+                Storage::disk('public')->delete($doc->archivo);
+            }
+
+            $doc->delete();
         }
     }
 
@@ -492,10 +629,6 @@ class Formulario extends Component
             'descripcion_secundaria',
             'medio_pago',
             'relacionado_pep',
-
-            'pais_verificacion',
-            'departamento_verificacion',
-            'ciudad_verificacion',
 
             'pais_alto_riesgo',
             'activos_virtuales',
@@ -947,6 +1080,13 @@ class Formulario extends Component
                 $campo => $this->datos[$campo]
             ]);
 
+            // El tipo (natural/jurídica) cambia la lista de campos y documentos obligatorios
+            if ($campo === 'tipo') {
+                $this->tercero->refresh();
+                $this->inicializarDocumentos();
+                $this->calcularProgreso();
+            }
+
             return;
         }
 
@@ -1250,24 +1390,20 @@ class Formulario extends Component
 
     public function enviarFormulario()
     {
-        $formularioFirmado = TerceroDocumento::where('tercero_id', $this->tercero->id)
-            ->where('tipo_documento', 'Formulario firmado')
-            ->where('cargado', true)
-            ->exists();
-
-        if (!$formularioFirmado) {
-
-            $this->dispatch(
-                'toast-error',
-                msg: 'Debe cargar el formulario firmado antes de enviarlo'
-            );
-
+        if ($this->tercero->progreso < 100) {
+            $this->dispatch('toast-error', msg: 'Debe completar el 100% del formulario antes de enviarlo.');
             return;
         }
-        // if (!$this->yaFirmado()) {
-        //     $this->dispatch('toast-error', msg: 'Debe firmar el formulario antes de enviarlo.');
-        //     return;
-        // }
+
+        if (!$this->documentosCompletos()) {
+            $this->dispatch('toast-error', msg: 'Debe cargar todos los documentos obligatorios antes de enviarlo.');
+            return;
+        }
+
+        if (!$this->yaFirmado()) {
+            $this->dispatch('toast-error', msg: 'Debe firmar digitalmente el formulario antes de enviarlo.');
+            return;
+        }
 
         $this->tercero->update([
             'enviado' => true,

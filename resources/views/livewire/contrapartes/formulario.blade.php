@@ -243,7 +243,7 @@
                     <!-- HEADER -->
                     <div class="text-center mb-3">
                         <img src="{{ asset('img-logisticarga/logo.png') }}" style="max-width:260px">
-                        <h5 class="mt-3">FORMULARIO DE REGISTRO DE ASOCIADOS DE NEGOCIOS</h5>
+                        <h5 class="mt-3">FORMULARIO DE CONOCIMIENTO ASOCIADO DE NEGOCIO</h5>
                         <p class="info-text">
                             Complete la información solicitada para continuar con el proceso.
                         </p>
@@ -276,46 +276,73 @@
 
                         <tr class="titulo-seccion">
                             <td colspan="4">
-                                INFORMACIÓN GENERAL PROVEEDOR - PRODUCTOR
+                                INFORMACIÓN GENERAL PROVEEDORES - CLIENTES
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="label-td">Tipo de persona</td>
+                            <td>
+                                <label class="me-3">
+                                    <input type="radio" name="tipo_persona" value="natural"
+                                        wire:model.defer="datos.tipo" wire:change="guardar('tipo','radio')"> Natural
+                                </label>
+                                <label>
+                                    <input type="radio" name="tipo_persona" value="juridica"
+                                        wire:model.defer="datos.tipo" wire:change="guardar('tipo','radio')"> Jurídica
+                                </label>
+                            </td>
+
+                            <td class="label-td">Relación con la empresa</td>
+                            <td>
+                                <label class="me-3">
+                                    <input type="checkbox" wire:model.defer="datos.es_proveedor"
+                                        wire:change="guardar('es_proveedor','checkbox')"> Proveedor
+                                </label>
+                                <label>
+                                    <input type="checkbox" wire:model.defer="datos.es_cliente"
+                                        wire:change="guardar('es_cliente','checkbox')"> Cliente
+                                </label>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="label-td">Cuenta con certificado de seguridad</td>
+                            <td colspan="3">
+                                <div class="d-flex flex-wrap gap-3 align-items-center">
+                                    @foreach (['BASC', 'OEA', 'ISO 28000', 'C-TPAT', 'OTRA'] as $cert)
+                                        <label class="me-2">
+                                            <input type="checkbox" value="{{ $cert }}"
+                                                wire:model.defer="certificados_seguridad"
+                                                wire:change="guardarCertificadosSeguridad"> {{ $cert }}
+                                        </label>
+                                    @endforeach
+                                    <input class="input-corporativo" style="max-width:260px" placeholder="¿Cuál? (OTRA)"
+                                        wire:model.defer="datos.certificado_seguridad_otra"
+                                        wire:change="guardar('certificado_seguridad_otra','text')"
+                                        @if (!in_array('OTRA', $certificados_seguridad ?? [])) disabled @endif>
+                                </div>
+                                <small class="text-muted">
+                                    La(s) certificación(es) seleccionada(s) deberá(n) adjuntarse en
+                                    "Cargar Documentos Requeridos".
+                                </small>
                             </td>
                         </tr>
 
                         <tr>
                             @if ($tercero->tipo == 'juridica')
-                                <td class="label-td">Razón Social</td>
+                                <td class="label-td">Razón Social / Nombre Persona Natural</td>
                                 <td colspan="3">
                                     <input class="input-corporativo" wire:model.defer="datos.razon_social"
                                         wire:change="guardar('razon_social','text')">
                                 </td>
                             @else
-                                <td class="label-td">Nombre Completo</td>
+                                <td class="label-td">Razón Social / Nombre Persona Natural</td>
                                 <td colspan="3">
                                     <input class="input-corporativo" wire:model.defer="datos.nombre_completo"
                                         wire:change="guardar('nombre_completo','text')">
                                 </td>
                             @endif
-                        </tr>
-
-                        <tr>
-                            <td class="label-td">¿Tiene Casa Matriz?</td>
-                            <td>
-                                <label class="me-2">
-                                    <input type="radio" name="casa_matriz" wire:model.defer="datos.casa_matriz"
-                                        wire:change="guardar('casa_matriz','radio')" value="Si"> Sí
-                                </label>
-
-                                <label>
-                                    <input type="radio" name="casa_matriz" wire:model.defer="datos.casa_matriz"
-                                        wire:change="guardar('casa_matriz','radio')" value="No"> No
-                                </label>
-                            </td>
-
-                            <td class="label-td">Indique cuál</td>
-                            <td>
-                                <input class="input-corporativo" wire:model.defer="datos.cual_casa_matriz"
-                                    wire:change="guardar('cual_casa_matriz','text')"
-                                    @if (($datos['casa_matriz'] ?? '') !== 'Si') disabled @endif>
-                            </td>
                         </tr>
 
                         <tr>
@@ -326,11 +353,6 @@
                                     <option value="">Seleccionar</option>
                                     <option value="CC">CC</option>
                                     <option value="NIT">NIT</option>
-                                    <option value="CE">CE</option>
-                                    <option value="TI">TI</option>
-                                    <option value="PASAPORTE">PASAPORTE</option>
-                                    <option value="NUIP">NUIP</option>
-                                    <option value="PPT">PPT</option>
                                 </select>
                             </td>
 
@@ -348,7 +370,7 @@
                                     wire:change="guardar('email','email')">
                             </td>
 
-                            <td class="label-td">Dirección</td>
+                            <td class="label-td">Dirección empresa</td>
                             <td>
                                 <input class="input-corporativo" wire:model.defer="datos.direccion"
                                     wire:change="guardar('direccion','text')">
@@ -433,25 +455,21 @@
                                 </select>
                             </td>
 
-                            <td class="label-td">Dirección Corporativa</td>
-                            <td>
-                                <input class="input-corporativo" wire:model.defer="datos.direccion_corporativa"
-                                    wire:change="guardar('direccion_corporativa','text')">
-                            </td>
-                        </tr>
-
-                        <tr>
                             <td class="label-td">Teléfono Corporativo</td>
                             <td>
                                 <input class="input-corporativo" wire:model.defer="datos.telefono"
                                     wire:change="guardar('telefono','text')">
                             </td>
+                        </tr>
 
+                        <tr>
                             <td class="label-td">Email de Contacto</td>
                             <td>
                                 <input class="input-corporativo" wire:model.defer="datos.email_contacto"
                                     wire:change="guardar('email_contacto','email')">
                             </td>
+                            <td class="label-td"></td>
+                            <td></td>
                         </tr>
 
                     </table>
@@ -526,7 +544,7 @@
 
                         <tr class="titulo-seccion">
                             <td colspan="4">
-                                REPRESENTANTE LEGAL
+                                REPRESENTANTE LEGAL PRINCIPAL
                             </td>
                         </tr>
 
@@ -638,11 +656,98 @@
                         </tr>
                     </table>
                     <br>
+                    <!--===================== DECLARACIÓN PEP  ====================-->
+                    <table class="tabla-corporativa mt-3">
+
+                        <tr class="titulo-seccion">
+                            <td colspan="4">
+                                DECLARACIÓN PEP (Persona Expuesta Políticamente)
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="3">
+                                Por su cargo o actividad administrativa o tiene a su cargo el manejo de recursos
+                                públicos.
+                            </td>
+                            <td>
+                                <label class="me-3">
+                                    <input type="radio" name="pep_recursos_publicos"
+                                        wire:model="datos.pep_recursos_publicos"
+                                        wire:change="guardar('pep_recursos_publicos','radio')" value="Si"> Sí
+                                </label>
+
+                                <label>
+                                    <input type="radio" name="pep_recursos_publicos"
+                                        wire:model="datos.pep_recursos_publicos"
+                                        wire:change="guardar('pep_recursos_publicos','radio')" value="No"> No
+                                </label>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="3">
+                                Por su cargo o actividad ejerce algún grado o tipo de poder público.
+                            </td>
+                            <td>
+                                <label class="me-3">
+                                    <input type="radio" name="pep_poder_publico"
+                                        wire:model="datos.pep_poder_publico"
+                                        wire:change="guardar('pep_poder_publico','radio')" value="Si"> Sí
+                                </label>
+
+                                <label>
+                                    <input type="radio" name="pep_poder_publico"
+                                        wire:model="datos.pep_poder_publico"
+                                        wire:change="guardar('pep_poder_publico','radio')" value="No"> No
+                                </label>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="3">
+                                Por su actividad, ocupación u oficio, goza de reconocimiento público general.
+                            </td>
+                            <td>
+                                <label class="me-3">
+                                    <input type="radio" name="pep_reconocimiento"
+                                        wire:model="datos.pep_reconocimiento"
+                                        wire:change="guardar('pep_reconocimiento','radio')" value="Si"> Sí
+                                </label>
+
+                                <label>
+                                    <input type="radio" name="pep_reconocimiento"
+                                        wire:model="datos.pep_reconocimiento"
+                                        wire:change="guardar('pep_reconocimiento','radio')" value="No"> No
+                                </label>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="3">
+                                Es usted sujeto de obligaciones tributarias en otro país diferente a Colombia.
+                            </td>
+                            <td>
+                                <label class="me-3">
+                                    <input type="radio" name="pep_obligaciones_exterior"
+                                        wire:model="datos.pep_obligaciones_exterior"
+                                        wire:change="guardar('pep_obligaciones_exterior','radio')" value="Si"> Sí
+                                </label>
+
+                                <label>
+                                    <input type="radio" name="pep_obligaciones_exterior"
+                                        wire:model="datos.pep_obligaciones_exterior"
+                                        wire:change="guardar('pep_obligaciones_exterior','radio')" value="No"> No
+                                </label>
+                            </td>
+                        </tr>
+                    </table>
+                    <br>
                     <!-- ==================== COMPOSICIÓN ACCIONARIA ==================== -->
                     <table class="tabla-corporativa mt-3">
                         <tr class="titulo-seccion">
                             <td colspan="8">
-                                COMPOSICIÓN ACCIONARIA
+                                INFORMACIÓN SOBRE COMPOSICIÓN ACCIONARIA MAYOR AL 5%
                             </td>
                         </tr>
                         <tr class="subtitulo-tabla">
@@ -1480,99 +1585,12 @@
                         </tr>
                     </table>
                     <br>
-                    <!--===================== DECLARACIÓN PEP  ====================-->
+                    <!--===================== INFORMACIÓN COMPLEMENTARIA  ====================-->
                     <table class="tabla-corporativa mt-3">
 
                         <tr class="titulo-seccion">
                             <td colspan="4">
-                                DECLARACIÓN PEP (Persona Expuesta Políticamente)
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td colspan="3">
-                                Por su cargo o actividad administrativa o tiene a su cargo el manejo de recursos
-                                públicos.
-                            </td>
-                            <td>
-                                <label class="me-3">
-                                    <input type="radio" name="pep_recursos_publicos"
-                                        wire:model="datos.pep_recursos_publicos"
-                                        wire:change="guardar('pep_recursos_publicos','radio')" value="Si"> Sí
-                                </label>
-
-                                <label>
-                                    <input type="radio" name="pep_recursos_publicos"
-                                        wire:model="datos.pep_recursos_publicos"
-                                        wire:change="guardar('pep_recursos_publicos','radio')" value="No"> No
-                                </label>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td colspan="3">
-                                Por su cargo o actividad ejerce algún grado o tipo de poder público.
-                            </td>
-                            <td>
-                                <label class="me-3">
-                                    <input type="radio" name="pep_poder_publico"
-                                        wire:model="datos.pep_poder_publico"
-                                        wire:change="guardar('pep_poder_publico','radio')" value="Si"> Sí
-                                </label>
-
-                                <label>
-                                    <input type="radio" name="pep_poder_publico"
-                                        wire:model="datos.pep_poder_publico"
-                                        wire:change="guardar('pep_poder_publico','radio')" value="No"> No
-                                </label>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td colspan="3">
-                                Por su actividad, ocupación u oficio, goza de reconocimiento público general.
-                            </td>
-                            <td>
-                                <label class="me-3">
-                                    <input type="radio" name="pep_reconocimiento"
-                                        wire:model="datos.pep_reconocimiento"
-                                        wire:change="guardar('pep_reconocimiento','radio')" value="Si"> Sí
-                                </label>
-
-                                <label>
-                                    <input type="radio" name="pep_reconocimiento"
-                                        wire:model="datos.pep_reconocimiento"
-                                        wire:change="guardar('pep_reconocimiento','radio')" value="No"> No
-                                </label>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td colspan="3">
-                                Es usted sujeto de obligaciones tributarias en otro país diferente a Colombia.
-                            </td>
-                            <td>
-                                <label class="me-3">
-                                    <input type="radio" name="pep_obligaciones_exterior"
-                                        wire:model="datos.pep_obligaciones_exterior"
-                                        wire:change="guardar('pep_obligaciones_exterior','radio')" value="Si"> Sí
-                                </label>
-
-                                <label>
-                                    <input type="radio" name="pep_obligaciones_exterior"
-                                        wire:model="datos.pep_obligaciones_exterior"
-                                        wire:change="guardar('pep_obligaciones_exterior','radio')" value="No"> No
-                                </label>
-                            </td>
-                        </tr>
-                    </table>
-                    <br>
-                    <!--===================== VERIFICACIÓN DE INFORMACIÓN  ====================-->
-                    <table class="tabla-corporativa mt-3">
-
-                        <tr class="titulo-seccion">
-                            <td colspan="4">
-                                VERIFICACIÓN DE LA INFORMACIÓN
+                                INFORMACIÓN COMPLEMENTARIA
                             </td>
                         </tr>
 
@@ -1648,75 +1666,6 @@
                                     <option value="">Seleccione</option>
                                     <option value="Si">Sí</option>
                                     <option value="No">No</option>
-                                </select>
-                            </td>
-                        </tr>
-                    </table>
-                    <!--=============    DATOS DE UBICACIÓN – VERIFICACIÓN ===============-->
-                    <table class="tabla-corporativa mt-3">
-
-                        <tr class="subtitulo-tabla">
-                            <td colspan="6" style="text-align:center !important; font-weight:bold;">
-                                DATOS DE UBICACIÓN – VERIFICACIÓN
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="label-td">País:</td>
-
-                            <td>
-                                <select class="input-corporativo" wire:model="datos.pais_verificacion"
-                                    wire:change="guardar('pais_verificacion','select')">
-
-                                    <option value="">Seleccione</option>
-
-                                    @foreach ($paisesVerificacion as $pais)
-                                        <option value="{{ $pais }}">{{ strtoupper($pais) }}</option>
-                                    @endforeach
-
-                                </select>
-                            </td>
-
-                            <td class="label-td">Departamento:</td>
-
-                            <td>
-                                <select class="input-corporativo" wire:model="datos.departamento_verificacion"
-                                    wire:change="cambioDepartamentoVerificacion($event.target.value)"
-                                    @if (($datos['pais_verificacion'] ?? '') != 'Colombia') disabled @endif>
-
-                                    @if (($datos['pais_verificacion'] ?? '') == 'Colombia')
-
-                                        <option value="">Seleccione</option>
-
-                                        @foreach ($departamentosVerificacion as $dep)
-                                            <option value="{{ $dep }}">{{ $dep }}</option>
-                                        @endforeach
-                                    @else
-                                        <option value="NO APLICA">NO APLICA</option>
-                                    @endif
-                                </select>
-                            </td>
-                            <td class="label-td">Municipio:</td>
-                            <td>
-                                <div wire:loading wire:target="cambioDepartamentoVerificacion"
-                                    class="text-red small mb-1">
-                                    Cargando municipios...
-                                </div>
-
-                                <select class="input-corporativo" wire:model.defer="datos.ciudad_verificacion"
-                                    wire:change="guardar('ciudad_verificacion','select')"
-                                    @if (($datos['pais_verificacion'] ?? '') != 'Colombia') disabled @endif>
-
-                                    @if (($datos['pais_verificacion'] ?? '') == 'Colombia')
-
-                                        <option value="">Seleccione</option>
-
-                                        @foreach ($ciudadesVerificacion as $ciu)
-                                            <option value="{{ $ciu }}">{{ $ciu }}</option>
-                                        @endforeach
-                                    @else
-                                        <option value="NO APLICA">NO APLICA</option>
-                                    @endif
                                 </select>
                             </td>
                         </tr>
@@ -1805,7 +1754,7 @@
                         </tr>
 
                         <tr>
-                            <td>Certificaciones como BASC / C-TPAT / OEA</td>
+                            <td>Certificaciones como BASC / C-TPAT / OEA / ISO 28000</td>
                             <td class="text-center">SI APLICA</td>
                             <td class="text-center">SI APLICA</td>
                         </tr>
@@ -1847,139 +1796,12 @@
                         </tr>
 
                         <tr>
-                            <td>Fotocopia de cédula</td>
+                            <td>Copia cédula del representante legal</td>
                             <td class="text-center">X</td>
                             <td class="text-center">X</td>
-                        </tr>
-                        <tr>
-                            <td>Procuraduría</td>
-                            <td class="text-center">SI APLICA</td>
-                            <td class="text-center">SI APLICA</td>
-                        </tr>
-
-                        <tr>
-                            <td>OFAC</td>
-                            <td class="text-center">SI APLICA</td>
-                            <td class="text-center">SI APLICA</td>
-                        </tr>
-
-                        <tr>
-                            <td>Contraloría</td>
-                            <td class="text-center">SI APLICA</td>
-                            <td class="text-center">SI APLICA</td>
-                        </tr>
-
-                        <tr>
-                            <td>Certificación moneda extranjera o activos virtuales</td>
-                            <td class="text-center">SI APLICA</td>
-                            <td class="text-center">SI APLICA</td>
-                        </tr>
-
-                        <tr>
-                            <td>
-                                Origen de los recursos empleados en las operaciones realizadas a través de la
-                                transportadora
-                            </td>
-                            <td class="text-center">SI APLICA</td>
-                            <td class="text-center">SI APLICA</td>
                         </tr>
                     </table>
                     <br>
-                    <!--============= REQUISITOS ADICIONALES ===============-->
-                    <table class="tabla-corporativa mt-3">
-
-                        <tr class="titulo-seccion">
-                            <td colspan="2">
-                                REQUISITOS ADICIONALES POR TIPO DE PROVEEDOR - PRODUCTOR (No aplica para Clientes)
-                            </td>
-                        </tr>
-
-                        <tr class="subtitulo-tabla">
-                            <th style="width:40%">Tipo de Proveedor</th>
-                            <th style="width:60%">Requisitos Adicionales</th>
-                        </tr>
-
-                        <tr>
-                            <td>
-                                <strong>Prestación de Servicios:</strong>
-                                Empresas cuya labor sea de prestar servicios a la compañía.
-                            </td>
-
-                            <td>
-                                Deberán tener el pago de la seguridad social de los empleados al día y cumplir con la
-                                respectiva documentación bajo la función del trabajo a realizar solicitados por el área
-                                de
-                                Seguridad y salud en el trabajo de la compañía.
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>
-                                <strong>Productos Químicos:</strong>
-                                Suministran productos químicos de línea industrial usados en limpieza, desinfección,
-                                tratamiento de aguas.
-                            </td>
-
-                            <td>
-                                Certificaciones (NTC - INVIMA - Fichas Técnicas y Hoja de seguridad en idioma español
-                                por
-                                cada producto). Apto para uso en alimentos.
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>
-                                <strong>Equipo Médico Científico:</strong>
-                                Empresas que su fuerte o core es la venta de equipos especializados de Salud.
-                            </td>
-
-                            <td>
-                                Certificaciones (INVIMA - Fichas Técnicas).
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>
-                                <strong>Tecnología:</strong>
-                                Empresas que su fuerte o core es la venta de aplicativos, equipos de computación y
-                                comunicación, sonido, elementos periféricos, consumibles entre otros.
-                            </td>
-
-                            <td>
-                                Certificación de ser distribuidor autorizado y/o fabricante.
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>
-                                <strong>Material de Empaque de Primer Contacto:</strong>
-                                Empresas que abastecen a las plantas de empaque con insumos como:
-                                Canastilla plástica, cajas de cartón y alveolos.
-                            </td>
-
-                            <td>
-                                Certificado de metales Pesados y microbiológicos, Certificado migración de tintas, Carta
-                                garantía de inocuidad, Certificado de inocuidad, Certificado de no Alérgenos.
-                                Trazabilidad.
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>
-                                <strong>Material de Empaque de No Contacto:</strong>
-                                Empresas que abastecen a las plantas de empaque con insumos como:
-                                Estibas, Esquineros, Zuncho, Grapa.
-                            </td>
-
-                            <td>
-                                Estibas: Certificado Norma NIMF 15, Certificado ICA, Ficha técnica Esquinero: Ficha
-                                Técnica,
-                                Certificado de Análisis Metales Pesados y Microbiológicos Zuncho y Grapa: Certificado de
-                                Calidad, Ficha Técnica.
-                            </td>
-                        </tr>
-
-                    </table>
                     <!--============= CARGAR DOCUMENTOS REQUERIDOS ===============-->
                     <table class="tabla-corporativa mt-4">
 
@@ -2136,142 +1958,90 @@
                         @endforeach
                     </table>
                     <br>
-                    @if ($this->formularioFirmadoCargado())
-                        <div class="alert alert-success text-center mt-4">
 
-                            ✔ El formulario firmado ya fue cargado correctamente.
+                    <!--============= FIRMA DEL REPRESENTANTE LEGAL ===============-->
+                    <table class="tabla-corporativa mt-4 firma-representante">
+                        <tr class="titulo-seccion">
+                            <td colspan="2">FIRMA DEL REPRESENTANTE LEGAL</td>
+                        </tr>
+                        <tr>
+                            <td style="width:60%; vertical-align:top">
+                                @if ($firmaDigitalActual)
+                                    <img src="{{ Storage::url($firmaDigitalActual->archivo) }}?v={{ $firmaDigitalActual->updated_at?->timestamp }}"
+                                        alt="Firma"
+                                        style="max-height:170px; max-width:100%; border:1px solid #cbd5df; background:#fff">
+                                    @if (!$this->yaEnviado() && $modo != 'auditoria')
+                                        <div class="mt-2 no-print">
+                                            <button type="button" class="btn btn-sm btn-danger"
+                                                wire:click="eliminarFirma('digital')">Rehacer firma</button>
+                                        </div>
+                                    @endif
+                                @elseif (!$this->yaEnviado() && $modo != 'auditoria')
+                                    <div wire:ignore>
+                                        <canvas id="firma-contraparte"
+                                            style="width:100%; max-width:520px; height:180px; border:2px dashed #173f5f; background:#fff; touch-action:none; display:block"></canvas>
+                                    </div>
+                                    <div class="mt-2 no-print">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary"
+                                            onclick="window._firmaContraparte && window._firmaContraparte.limpiar()">Limpiar</button>
+                                        <button type="button" class="btn btn-sm btn-primary"
+                                            onclick="window._firmaContraparte && window._firmaContraparte.guardar()">Guardar firma</button>
+                                    </div>
+                                @else
+                                    <span class="text-muted">Sin firma registrada.</span>
+                                @endif
+                            </td>
+                            <td style="width:40%; vertical-align:bottom; text-align:center">
+                                <strong>
+                                    {{ trim(
+                                        ($datos['rep_primer_nombre'] ?? '') .
+                                            ' ' .
+                                            ($datos['rep_segundo_nombre'] ?? '') .
+                                            ' ' .
+                                            ($datos['rep_primer_apellido'] ?? '') .
+                                            ' ' .
+                                            ($datos['rep_segundo_apellido'] ?? ''),
+                                    ) }}
+                                </strong>
+                                <br>
+                                Representante Legal
+                                <br>
+                                {{ $datos['rep_tipo_identificacion'] ?? '' }}
+                                {{ $datos['rep_numero_documento'] ?? '' }}
+                            </td>
+                        </tr>
+                    </table>
 
-                            <br><br>
-
-                            <button class="btn btn-lg btn-success" wire:click="enviarFormulario"
-                                wire:loading.attr="disabled">
-
-                                <span wire:loading.remove wire:target="enviarFormulario">
-                                    📤 Enviar formulario
-                                </span>
-
-                                <span wire:loading wire:target="enviarFormulario">
-                                    Enviando...
-                                </span>
-
-                            </button>
-
+                    <!--============= CUMPLIMIENTO DEL DILIGENCIAMIENTO ===============-->
+                    <div class="progress-container my-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="fw-bold">Cumplimiento del diligenciamiento del formulario</span>
+                            <span class="fw-bold">{{ $tercero->progreso }}%</span>
                         </div>
-                    @endif
-                    @if (!$this->formularioFirmadoCargado())
-                        @if ($this->puedeImprimirFormulario())
-                            <div class="alert alert-info text-center mt-3 aviso-descarga">
 
-                                <strong>El formulario está listo para firma.</strong>
+                        <div class="progress" style="height: 14px;">
+                            <div class="progress-bar progress-bar-logi" style="width: {{ $tercero->progreso }}%"></div>
+                        </div>
 
-                                <br><br>
+                        <ul class="mt-3 mb-0 small">
+                            <li>Formulario diligenciado: <strong>{{ $tercero->progreso }}%</strong></li>
+                            <li>Documentos obligatorios:
+                                <strong>{{ $this->documentosCompletos() ? 'Completos' : 'Pendientes' }}</strong>
+                            </li>
+                            <li>Firma del representante legal:
+                                <strong>{{ $this->yaFirmado() ? 'Registrada' : 'Pendiente' }}</strong>
+                            </li>
+                        </ul>
+                    </div>
 
-                                Todos los campos han sido completados y los documentos obligatorios han sido cargados.
-
-                                <br><br>
-
-                                Ahora debe descargar el formulario, firmarlo y colocar la huella.
-                                Luego deberá subir el documento firmado en la sección de documentos para poder enviarlo
-                                oficialmente.
-
-                                <br><br>
-
-                                <button type="button" onclick="window.print()" class="btn btn-primary">
-                                    🖨️ Descargar / Imprimir formulario para firma
-                                </button>
-
-                            </div>
-
-                            <div class="firma-impresion">
-
-                                <table class="tabla-corporativa mt-4">
-
-                                    <tr class="titulo-seccion">
-                                        <td colspan="2">FIRMA DEL FORMULARIO</td>
-                                    </tr>
-
-                                    <tr>
-
-                                        <td
-                                            style="width:60%; text-align:center; vertical-align:bottom; padding-top:60px">
-
-                                            _________________________________________
-
-                                            <br>
-
-                                            <strong>
-                                                {{ trim(
-                                                    ($datos['rep_primer_nombre'] ?? '') .
-                                                        ' ' .
-                                                        ($datos['rep_segundo_nombre'] ?? '') .
-                                                        ' ' .
-                                                        ($datos['rep_primer_apellido'] ?? '') .
-                                                        ' ' .
-                                                        ($datos['rep_segundo_apellido'] ?? ''),
-                                                ) }}
-                                            </strong>
-
-                                            <br>
-
-                                            Representante Legal
-
-                                            <br>
-
-                                            {{ $datos['rep_tipo_identificacion'] ?? '' }}
-                                            {{ $datos['rep_numero_documento'] ?? '' }}
-
-                                        </td>
-
-                                        <td style="width:40%; text-align:center">
-                                            <div class="huella-box">
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="2" style="text-align:right; padding-top:20px">
-                                            Fecha: _______________________________
-                                        </td>
-                                    </tr>
-                                </table>
-
-                            </div>
-                        @else
-                            <div class="alert alert-warning mt-3">
-
-                                <h5 class="text-center mb-3">
-                                    ⚠ Aún no puede descargar el formulario
-                                </h5>
-
-                                <p class="text-center">
-                                    Para habilitar la descarga y firma del formulario debe cumplir los siguientes
-                                    requisitos:
-                                </p>
-
-                                <ul style="max-width:600px;margin:auto">
-
-                                    <li>
-                                        El formulario debe estar completado al <strong>100%</strong>.
-                                    </li>
-
-                                    <li>
-                                        Todos los <strong>documentos obligatorios</strong> deben estar cargados.
-                                    </li>
-
-                                    <li>
-                                        El documento <strong>"Formulario firmado"</strong> se debe cargar únicamente
-                                        después de imprimir el formulario, firmarlo y colocar la huella.
-                                    </li>
-
-                                </ul>
-
-                                <p class="text-center mt-3">
-                                    Una vez cumpla estos requisitos se habilitará automáticamente la opción para
-                                    <strong>descargar el formulario, firmarlo y enviarlo.</strong>
-                                </p>
-
-                            </div>
-                        @endif
-
+                    @if (!$this->yaEnviado() && $modo != 'auditoria')
+                        <div class="text-center mt-3 no-print">
+                            <button class="btn btn-lg btn-success" wire:click="enviarFormulario"
+                                wire:loading.attr="disabled" @if (!$this->puedeEnviar()) disabled @endif>
+                                <span wire:loading.remove wire:target="enviarFormulario">📤 Enviar formulario</span>
+                                <span wire:loading wire:target="enviarFormulario">Enviando...</span>
+                            </button>
+                        </div>
                     @endif
 
                 </div>
@@ -2308,6 +2078,66 @@
                                 }
                             })
                         }
+
+                        // ===== Firma digital del representante legal =====
+                        (function () {
+                            function initFirmaContraparte() {
+                                const canvas = document.getElementById('firma-contraparte');
+                                if (!canvas || canvas.dataset.ready) return;
+                                canvas.dataset.ready = '1';
+
+                                const rect = canvas.getBoundingClientRect();
+                                canvas.width = rect.width || 520;
+                                canvas.height = rect.height || 180;
+
+                                const ctx = canvas.getContext('2d');
+                                ctx.lineWidth = 2;
+                                ctx.lineCap = 'round';
+                                ctx.strokeStyle = '#173f5f';
+
+                                let dibujando = false;
+                                const punto = (e) => {
+                                    const r = canvas.getBoundingClientRect();
+                                    const p = e.touches ? e.touches[0] : e;
+                                    return { x: p.clientX - r.left, y: p.clientY - r.top };
+                                };
+                                const iniciar = (e) => { e.preventDefault(); dibujando = true; const p = punto(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); };
+                                const mover = (e) => { if (!dibujando) return; e.preventDefault(); const p = punto(e); ctx.lineTo(p.x, p.y); ctx.stroke(); };
+                                const soltar = () => { dibujando = false; };
+
+                                canvas.addEventListener('mousedown', iniciar);
+                                canvas.addEventListener('mousemove', mover);
+                                canvas.addEventListener('mouseup', soltar);
+                                canvas.addEventListener('mouseleave', soltar);
+                                canvas.addEventListener('touchstart', iniciar, { passive: false });
+                                canvas.addEventListener('touchmove', mover, { passive: false });
+                                canvas.addEventListener('touchend', soltar);
+
+                                window._firmaContraparte = {
+                                    limpiar() { ctx.clearRect(0, 0, canvas.width, canvas.height); },
+                                    vacia() {
+                                        const b = document.createElement('canvas');
+                                        b.width = canvas.width; b.height = canvas.height;
+                                        return canvas.toDataURL() === b.toDataURL();
+                                    },
+                                    guardar() {
+                                        if (this.vacia()) {
+                                            Swal.fire({ icon: 'warning', text: 'Realice la firma antes de guardar', timer: 2500, showConfirmButton: false });
+                                            return;
+                                        }
+                                        Livewire.dispatch('setFirmaDibujo', { firma: canvas.toDataURL('image/png') });
+                                    }
+                                };
+                            }
+
+                            document.addEventListener('DOMContentLoaded', initFirmaContraparte);
+                            document.addEventListener('livewire:navigated', initFirmaContraparte);
+                            document.addEventListener('livewire:init', () => {
+                                Livewire.hook('morph.updated', initFirmaContraparte);
+                                Livewire.hook('commit', ({ succeed }) => succeed(() => setTimeout(initFirmaContraparte, 50)));
+                            });
+                            setTimeout(initFirmaContraparte, 400);
+                        })();
                     </script>
                 @endpush
             </div>

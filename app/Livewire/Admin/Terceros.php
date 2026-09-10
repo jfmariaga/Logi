@@ -71,7 +71,7 @@ class Terceros extends Component
                     'id' => $t->id,
                     'identificacion' => $t->identificacion,
                     'nombre' => $t->nombre,
-                    'tipo' => ucfirst($t->tipo),
+                    'tipo' => $t->tipo ? ucfirst($t->tipo) : 'Sin definir',
                     'estado' => $estado['html'],
                     'progreso' => $t->progreso ?? 0,
                     'enviado' => $t->enviado ? 'Sí' : 'No',
