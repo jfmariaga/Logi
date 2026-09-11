@@ -598,6 +598,95 @@
                             </td>
                         </tr>
                     </table>
+                    <br>
+                    <!--===================== DECLARACIÓN PEP - REPRESENTANTE LEGAL PRINCIPAL ====================-->
+                    <table class="tabla-corporativa mt-3">
+
+                        <tr class="titulo-seccion">
+                            <td colspan="4">
+                                DECLARACIÓN PEP - REPRESENTANTE LEGAL PRINCIPAL (Persona Expuesta Políticamente)
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="3">
+                                Por su cargo o actividad administrativa o tiene a su cargo el manejo de recursos
+                                públicos.
+                            </td>
+                            <td>
+                                <label class="me-3">
+                                    <input type="radio" name="pep_principal_recursos_publicos"
+                                        wire:model="datos.pep_principal_recursos_publicos"
+                                        wire:change="guardar('pep_principal_recursos_publicos','radio')" value="Si"> Sí
+                                </label>
+
+                                <label>
+                                    <input type="radio" name="pep_principal_recursos_publicos"
+                                        wire:model="datos.pep_principal_recursos_publicos"
+                                        wire:change="guardar('pep_principal_recursos_publicos','radio')" value="No"> No
+                                </label>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="3">
+                                Por su cargo o actividad ejerce algún grado o tipo de poder público.
+                            </td>
+                            <td>
+                                <label class="me-3">
+                                    <input type="radio" name="pep_principal_poder_publico"
+                                        wire:model="datos.pep_principal_poder_publico"
+                                        wire:change="guardar('pep_principal_poder_publico','radio')" value="Si"> Sí
+                                </label>
+
+                                <label>
+                                    <input type="radio" name="pep_principal_poder_publico"
+                                        wire:model="datos.pep_principal_poder_publico"
+                                        wire:change="guardar('pep_principal_poder_publico','radio')" value="No"> No
+                                </label>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="3">
+                                Por su actividad, ocupación u oficio, goza de reconocimiento público general.
+                            </td>
+                            <td>
+                                <label class="me-3">
+                                    <input type="radio" name="pep_principal_reconocimiento"
+                                        wire:model="datos.pep_principal_reconocimiento"
+                                        wire:change="guardar('pep_principal_reconocimiento','radio')" value="Si"> Sí
+                                </label>
+
+                                <label>
+                                    <input type="radio" name="pep_principal_reconocimiento"
+                                        wire:model="datos.pep_principal_reconocimiento"
+                                        wire:change="guardar('pep_principal_reconocimiento','radio')" value="No"> No
+                                </label>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="3">
+                                Es usted sujeto de obligaciones tributarias en otro país diferente a Colombia.
+                            </td>
+                            <td>
+                                <label class="me-3">
+                                    <input type="radio" name="pep_principal_obligaciones_exterior"
+                                        wire:model="datos.pep_principal_obligaciones_exterior"
+                                        wire:change="guardar('pep_principal_obligaciones_exterior','radio')"
+                                        value="Si"> Sí
+                                </label>
+
+                                <label>
+                                    <input type="radio" name="pep_principal_obligaciones_exterior"
+                                        wire:model="datos.pep_principal_obligaciones_exterior"
+                                        wire:change="guardar('pep_principal_obligaciones_exterior','radio')"
+                                        value="No"> No
+                                </label>
+                            </td>
+                        </tr>
+                    </table>
                     <!-- ==================== REPRESENTANTE LEGAL SUPLENTE ==================== -->
                     <table class="tabla-corporativa mt-3">
                         <tr class="titulo-seccion">
@@ -656,12 +745,12 @@
                         </tr>
                     </table>
                     <br>
-                    <!--===================== DECLARACIÓN PEP  ====================-->
+                    <!--===================== DECLARACIÓN PEP - REPRESENTANTE LEGAL SUPLENTE ====================-->
                     <table class="tabla-corporativa mt-3">
 
                         <tr class="titulo-seccion">
                             <td colspan="4">
-                                DECLARACIÓN PEP (Persona Expuesta Políticamente)
+                                DECLARACIÓN PEP - REPRESENTANTE LEGAL SUPLENTE (Persona Expuesta Políticamente)
                             </td>
                         </tr>
 
@@ -672,15 +761,15 @@
                             </td>
                             <td>
                                 <label class="me-3">
-                                    <input type="radio" name="pep_recursos_publicos"
-                                        wire:model="datos.pep_recursos_publicos"
-                                        wire:change="guardar('pep_recursos_publicos','radio')" value="Si"> Sí
+                                    <input type="radio" name="pep_suplente_recursos_publicos"
+                                        wire:model="datos.pep_suplente_recursos_publicos"
+                                        wire:change="guardar('pep_suplente_recursos_publicos','radio')" value="Si"> Sí
                                 </label>
 
                                 <label>
-                                    <input type="radio" name="pep_recursos_publicos"
-                                        wire:model="datos.pep_recursos_publicos"
-                                        wire:change="guardar('pep_recursos_publicos','radio')" value="No"> No
+                                    <input type="radio" name="pep_suplente_recursos_publicos"
+                                        wire:model="datos.pep_suplente_recursos_publicos"
+                                        wire:change="guardar('pep_suplente_recursos_publicos','radio')" value="No"> No
                                 </label>
                             </td>
                         </tr>
@@ -691,15 +780,15 @@
                             </td>
                             <td>
                                 <label class="me-3">
-                                    <input type="radio" name="pep_poder_publico"
-                                        wire:model="datos.pep_poder_publico"
-                                        wire:change="guardar('pep_poder_publico','radio')" value="Si"> Sí
+                                    <input type="radio" name="pep_suplente_poder_publico"
+                                        wire:model="datos.pep_suplente_poder_publico"
+                                        wire:change="guardar('pep_suplente_poder_publico','radio')" value="Si"> Sí
                                 </label>
 
                                 <label>
-                                    <input type="radio" name="pep_poder_publico"
-                                        wire:model="datos.pep_poder_publico"
-                                        wire:change="guardar('pep_poder_publico','radio')" value="No"> No
+                                    <input type="radio" name="pep_suplente_poder_publico"
+                                        wire:model="datos.pep_suplente_poder_publico"
+                                        wire:change="guardar('pep_suplente_poder_publico','radio')" value="No"> No
                                 </label>
                             </td>
                         </tr>
@@ -710,15 +799,15 @@
                             </td>
                             <td>
                                 <label class="me-3">
-                                    <input type="radio" name="pep_reconocimiento"
-                                        wire:model="datos.pep_reconocimiento"
-                                        wire:change="guardar('pep_reconocimiento','radio')" value="Si"> Sí
+                                    <input type="radio" name="pep_suplente_reconocimiento"
+                                        wire:model="datos.pep_suplente_reconocimiento"
+                                        wire:change="guardar('pep_suplente_reconocimiento','radio')" value="Si"> Sí
                                 </label>
 
                                 <label>
-                                    <input type="radio" name="pep_reconocimiento"
-                                        wire:model="datos.pep_reconocimiento"
-                                        wire:change="guardar('pep_reconocimiento','radio')" value="No"> No
+                                    <input type="radio" name="pep_suplente_reconocimiento"
+                                        wire:model="datos.pep_suplente_reconocimiento"
+                                        wire:change="guardar('pep_suplente_reconocimiento','radio')" value="No"> No
                                 </label>
                             </td>
                         </tr>
@@ -729,15 +818,17 @@
                             </td>
                             <td>
                                 <label class="me-3">
-                                    <input type="radio" name="pep_obligaciones_exterior"
-                                        wire:model="datos.pep_obligaciones_exterior"
-                                        wire:change="guardar('pep_obligaciones_exterior','radio')" value="Si"> Sí
+                                    <input type="radio" name="pep_suplente_obligaciones_exterior"
+                                        wire:model="datos.pep_suplente_obligaciones_exterior"
+                                        wire:change="guardar('pep_suplente_obligaciones_exterior','radio')"
+                                        value="Si"> Sí
                                 </label>
 
                                 <label>
-                                    <input type="radio" name="pep_obligaciones_exterior"
-                                        wire:model="datos.pep_obligaciones_exterior"
-                                        wire:change="guardar('pep_obligaciones_exterior','radio')" value="No"> No
+                                    <input type="radio" name="pep_suplente_obligaciones_exterior"
+                                        wire:model="datos.pep_suplente_obligaciones_exterior"
+                                        wire:change="guardar('pep_suplente_obligaciones_exterior','radio')"
+                                        value="No"> No
                                 </label>
                             </td>
                         </tr>

@@ -618,10 +618,10 @@ class Formulario extends Component
             'agente_retenedor_iva',
             'responsable_ica',
 
-            'pep_recursos_publicos',
-            'pep_poder_publico',
-            'pep_reconocimiento',
-            'pep_obligaciones_exterior',
+            'pep_principal_recursos_publicos',
+            'pep_principal_poder_publico',
+            'pep_principal_reconocimiento',
+            'pep_principal_obligaciones_exterior',
 
             'ciiu_principal',
             'descripcion_principal',
@@ -641,7 +641,12 @@ class Formulario extends Component
                 'sup_primer_apellido',
                 'sup_segundo_apellido',
                 'sup_tipo_identificacion',
-                'sup_numero_documento'
+                'sup_numero_documento',
+
+                'pep_suplente_recursos_publicos',
+                'pep_suplente_poder_publico',
+                'pep_suplente_reconocimiento',
+                'pep_suplente_obligaciones_exterior',
             ]);
         }
 
