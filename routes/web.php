@@ -18,6 +18,7 @@ use App\Livewire\Admin\TercerosDetalle;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\URL;
 
 use App\Livewire\Pruebas\PruebaVelocidad;
 use App\Livewire\PaginaWeb\Pagina;
@@ -121,6 +122,25 @@ Route::post('logout', function () {
     return redirect('/login');
 })->name('cerrar-sesion');
 
+
+Route::get('/debug-url-info', function () {
+    abort_if(request('key') !== 'armando123', 403);
+
+    $firmada = URL::temporarySignedRoute('livewire.preview-file', now()->addMinutes(5), ['filename' => 'test.png']);
+
+    return response()->json([
+        'app_url_config'      => config('app.url'),
+        'scheme_actual'       => request()->getScheme(),
+        'is_secure'           => request()->isSecure(),
+        'host'                => request()->getHost(),
+        'root_url'            => url('/'),
+        'x_forwarded_proto'   => request()->header('X-Forwarded-Proto'),
+        'x_forwarded_host'    => request()->header('X-Forwarded-Host'),
+        'trusted_proxies_ok'  => request()->isSecure() && str_starts_with(url('/'), 'https://'),
+        'ejemplo_url_firmada' => $firmada,
+        'valida_a_si_misma'   => \Illuminate\Http\Request::create($firmada)->hasValidSignature(),
+    ]);
+});
 
 // Route::get('/instalar-permisos', function () {
 
