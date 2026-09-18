@@ -39,7 +39,6 @@ class Formulario extends Component
     public $archivos = [];
     public $nuevoDocumentoNombre;
     public $nuevoDocumentoArchivo;
-    public $tipoFirma = '';
     public $firmaImagen;
     public $firmaDibujo;
     public $firmaDigitalActual;
@@ -223,8 +222,17 @@ class Formulario extends Component
 
     public function guardarFirmaImagen()
     {
+        if (!$this->puedeFirmar()) {
+            $this->dispatch('toast-error', msg: 'No cumple los requisitos para firmar');
+            return;
+        }
+
         $this->validate([
             'firmaImagen' => 'required|image|max:2048'
+        ], [
+            'firmaImagen.required' => 'Debe adjuntar una imagen de la firma',
+            'firmaImagen.image' => 'El archivo debe ser una imagen',
+            'firmaImagen.max' => 'La imagen no debe superar 2MB',
         ]);
 
         $ruta = $this->firmaImagen

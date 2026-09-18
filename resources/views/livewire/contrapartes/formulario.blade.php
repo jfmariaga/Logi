@@ -2067,16 +2067,64 @@
                                                 wire:click="eliminarFirma('digital')">Rehacer firma</button>
                                         </div>
                                     @endif
+                                @elseif ($firmaEscaneadaActual)
+                                    <img src="{{ Storage::url($firmaEscaneadaActual->archivo) }}?v={{ $firmaEscaneadaActual->updated_at?->timestamp }}"
+                                        alt="Firma"
+                                        style="max-height:170px; max-width:100%; border:1px solid #cbd5df; background:#fff">
+                                    @if (!$this->yaEnviado() && $modo != 'auditoria')
+                                        <div class="mt-2 no-print">
+                                            <button type="button" class="btn btn-sm btn-danger"
+                                                wire:click="eliminarFirma('escaneada')">Rehacer firma</button>
+                                        </div>
+                                    @endif
                                 @elseif (!$this->yaEnviado() && $modo != 'auditoria')
-                                    <div wire:ignore>
-                                        <canvas id="firma-contraparte"
-                                            style="width:100%; max-width:520px; height:180px; border:2px dashed #173f5f; background:#fff; touch-action:none; display:block"></canvas>
-                                    </div>
-                                    <div class="mt-2 no-print">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary"
-                                            onclick="window._firmaContraparte && window._firmaContraparte.limpiar()">Limpiar</button>
-                                        <button type="button" class="btn btn-sm btn-primary"
-                                            onclick="window._firmaContraparte && window._firmaContraparte.guardar()">Guardar firma</button>
+                                    <div x-data="{ tipoFirma: 'dibujo' }">
+                                        <div class="mb-2 no-print">
+                                            <button type="button" class="btn btn-sm"
+                                                :class="tipoFirma === 'archivo' ? 'btn-outline-primary' : 'btn-primary'"
+                                                @click="tipoFirma = 'dibujo'">✍️ Dibujar firma</button>
+                                            <button type="button" class="btn btn-sm"
+                                                :class="tipoFirma === 'archivo' ? 'btn-primary' : 'btn-outline-primary'"
+                                                @click="tipoFirma = 'archivo'">📎 Adjuntar firma</button>
+                                        </div>
+
+                                        <div x-show="tipoFirma === 'archivo'" x-cloak>
+                                            <input type="file" wire:model="firmaImagen" accept="image/*"
+                                                class="form-control form-control-sm">
+                                            <div wire:loading wire:target="firmaImagen" class="small text-muted mt-1">
+                                                Cargando imagen...
+                                            </div>
+                                            @if ($firmaImagen)
+                                                <div class="mt-2">
+                                                    <img src="{{ $firmaImagen->temporaryUrl() }}" alt="Vista previa"
+                                                        style="max-height:150px; max-width:100%; border:1px solid #cbd5df; background:#fff">
+                                                </div>
+                                            @endif
+                                            @error('firmaImagen')
+                                                <div class="text-danger small mt-1">{{ $message }}</div>
+                                            @enderror
+                                            <div class="mt-2 no-print">
+                                                <button type="button" class="btn btn-sm btn-primary"
+                                                    wire:click="guardarFirmaImagen" wire:loading.attr="disabled"
+                                                    wire:target="guardarFirmaImagen,firmaImagen">
+                                                    <span wire:loading.remove wire:target="guardarFirmaImagen">Guardar firma</span>
+                                                    <span wire:loading wire:target="guardarFirmaImagen">Guardando...</span>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div x-show="tipoFirma === 'dibujo'" x-cloak>
+                                            <div wire:ignore>
+                                                <canvas id="firma-contraparte"
+                                                    style="width:100%; max-width:520px; height:180px; border:2px dashed #173f5f; background:#fff; touch-action:none; display:block"></canvas>
+                                            </div>
+                                            <div class="mt-2 no-print">
+                                                <button type="button" class="btn btn-sm btn-outline-secondary"
+                                                    onclick="window._firmaContraparte && window._firmaContraparte.limpiar()">Limpiar</button>
+                                                <button type="button" class="btn btn-sm btn-primary"
+                                                    onclick="window._firmaContraparte && window._firmaContraparte.guardar()">Guardar firma</button>
+                                            </div>
+                                        </div>
                                     </div>
                                 @else
                                     <span class="text-muted">Sin firma registrada.</span>
@@ -2177,6 +2225,12 @@
                                 if (!canvas || canvas.dataset.ready) return;
                                 canvas.dataset.ready = '1';
 
+                                // requestAnimationFrame asegura que el layout ya esté calculado
+                                // (el canvas puede acabar de insertarse y medir 0x0 si no se espera).
+                                requestAnimationFrame(() => configurarCanvas(canvas));
+                            }
+
+                            function configurarCanvas(canvas) {
                                 const rect = canvas.getBoundingClientRect();
                                 canvas.width = rect.width || 520;
                                 canvas.height = rect.height || 180;
@@ -2228,6 +2282,13 @@
                                 Livewire.hook('commit', ({ succeed }) => succeed(() => setTimeout(initFirmaContraparte, 50)));
                             });
                             setTimeout(initFirmaContraparte, 400);
+
+                            // Respaldo: el canvas se destruye y se vuelve a crear cada vez que
+                            // Livewire cambia entre las secciones de firma (adjuntar/dibujar/reset),
+                            // y no siempre coincide con los hooks de arriba. Un MutationObserver
+                            // detecta la inserción del nodo sin depender del timing de Livewire.
+                            const observer = new MutationObserver(() => initFirmaContraparte());
+                            observer.observe(document.body, { childList: true, subtree: true });
                         })();
                     </script>
                 @endpush
