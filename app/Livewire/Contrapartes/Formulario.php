@@ -39,7 +39,6 @@ class Formulario extends Component
     public $archivos = [];
     public $nuevoDocumentoNombre;
     public $nuevoDocumentoArchivo;
-    public $firmaImagen;
     public $firmaDibujo;
     public $firmaDigitalActual;
     public $firmaEscaneadaActual;
@@ -220,23 +219,39 @@ class Formulario extends Component
         $this->dispatch('toast-ok', msg: 'Firma digital guardada correctamente.');
     }
 
-    public function guardarFirmaImagen()
+    #[On('setFirmaArchivo')]
+    public function setFirmaArchivo($firma)
     {
         if (!$this->puedeFirmar()) {
             $this->dispatch('toast-error', msg: 'No cumple los requisitos para firmar');
             return;
         }
 
-        $this->validate([
-            'firmaImagen' => 'required|image|max:2048'
-        ], [
-            'firmaImagen.required' => 'Debe adjuntar una imagen de la firma',
-            'firmaImagen.image' => 'El archivo debe ser una imagen',
-            'firmaImagen.max' => 'La imagen no debe superar 2MB',
-        ]);
+        if (!preg_match('/^data:image\/(png|jpe?g|webp);base64,/', $firma, $coincidencia)) {
+            $this->dispatch('toast-error', msg: 'El archivo debe ser una imagen (png, jpg o webp)');
+            return;
+        }
 
-        $ruta = $this->firmaImagen
-            ->store("documentos_contrapartes/{$this->tercero->identificacion}", 'public');
+        $extension = $coincidencia[1] === 'jpeg' ? 'jpg' : $coincidencia[1];
+        $contenido = base64_decode(preg_replace('#^data:image/\w+;base64,#', '', $firma));
+
+        if (strlen($contenido) > 2 * 1024 * 1024) {
+            $this->dispatch('toast-error', msg: 'La imagen no debe superar 2MB');
+            return;
+        }
+
+        // Reemplazar cualquier firma escaneada previa
+        foreach (TerceroFirma::where('tercero_id', $this->tercero->id)->where('tipo', 'escaneada')->get() as $previa) {
+            if ($previa->archivo && Storage::disk('public')->exists($previa->archivo)) {
+                Storage::disk('public')->delete($previa->archivo);
+            }
+            $previa->delete();
+        }
+
+        $nombre = 'firma_escaneada_' . $this->tercero->identificacion . '_' . now()->timestamp . '.' . $extension;
+        $ruta = "documentos_contrapartes/{$this->tercero->identificacion}/$nombre";
+
+        Storage::disk('public')->put($ruta, $contenido);
 
         TerceroFirma::create([
             'tercero_id' => $this->tercero->id,
@@ -244,9 +259,7 @@ class Formulario extends Component
             'archivo' => $ruta
         ]);
 
-        $this->firmaImagen = null;
         $this->cargarFirmasActuales();
-
         $this->dispatch('toast-ok', msg: 'Firma escaneada guardada correctamente.');
     }
 

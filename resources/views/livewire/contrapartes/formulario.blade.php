@@ -2089,27 +2089,15 @@
                                         </div>
 
                                         <div x-show="tipoFirma === 'archivo'" x-cloak>
-                                            <input type="file" wire:model="firmaImagen" accept="image/*"
+                                            <input type="file" id="firma-archivo-input" accept="image/*"
                                                 class="form-control form-control-sm">
-                                            <div wire:loading wire:target="firmaImagen" class="small text-muted mt-1">
-                                                Cargando imagen...
+                                            <div class="mt-2" id="firma-archivo-preview-wrap" style="display:none">
+                                                <img id="firma-archivo-preview" alt="Vista previa"
+                                                    style="max-height:150px; max-width:100%; border:1px solid #cbd5df; background:#fff">
                                             </div>
-                                            @if ($firmaImagen)
-                                                <div class="mt-2">
-                                                    <img src="{{ $firmaImagen->temporaryUrl() }}" alt="Vista previa"
-                                                        style="max-height:150px; max-width:100%; border:1px solid #cbd5df; background:#fff">
-                                                </div>
-                                            @endif
-                                            @error('firmaImagen')
-                                                <div class="text-danger small mt-1">{{ $message }}</div>
-                                            @enderror
                                             <div class="mt-2 no-print">
-                                                <button type="button" class="btn btn-sm btn-primary"
-                                                    wire:click="guardarFirmaImagen" wire:loading.attr="disabled"
-                                                    wire:target="guardarFirmaImagen,firmaImagen">
-                                                    <span wire:loading.remove wire:target="guardarFirmaImagen">Guardar firma</span>
-                                                    <span wire:loading wire:target="guardarFirmaImagen">Guardando...</span>
-                                                </button>
+                                                <button type="button" class="btn btn-sm btn-primary" id="firma-archivo-guardar"
+                                                    disabled>Guardar firma</button>
                                             </div>
                                         </div>
 
@@ -2288,6 +2276,56 @@
                             // y no siempre coincide con los hooks de arriba. Un MutationObserver
                             // detecta la inserción del nodo sin depender del timing de Livewire.
                             const observer = new MutationObserver(() => initFirmaContraparte());
+                            observer.observe(document.body, { childList: true, subtree: true });
+                        })();
+
+                        // ===== Firma adjunta (imagen) del representante legal =====
+                        // La vista previa se genera 100% en el navegador (FileReader -> base64),
+                        // igual que el avatar de usuarios, para no depender de la ruta firmada
+                        // de vista previa de Livewire (falla con 401 en hosting detrás de proxy/SSL).
+                        (function () {
+                            function initFirmaArchivo() {
+                                const input = document.getElementById('firma-archivo-input');
+                                if (!input || input.dataset.ready) return;
+                                input.dataset.ready = '1';
+
+                                const preview = document.getElementById('firma-archivo-preview');
+                                const previewWrap = document.getElementById('firma-archivo-preview-wrap');
+                                const btnGuardar = document.getElementById('firma-archivo-guardar');
+                                let dataUrl = null;
+
+                                input.addEventListener('change', () => {
+                                    const file = input.files[0];
+                                    dataUrl = null;
+                                    btnGuardar.disabled = true;
+                                    previewWrap.style.display = 'none';
+                                    if (!file) return;
+
+                                    const reader = new FileReader();
+                                    reader.onload = () => {
+                                        dataUrl = reader.result;
+                                        preview.src = dataUrl;
+                                        previewWrap.style.display = 'block';
+                                        btnGuardar.disabled = false;
+                                    };
+                                    reader.readAsDataURL(file);
+                                });
+
+                                btnGuardar.addEventListener('click', () => {
+                                    if (!dataUrl) return;
+                                    Livewire.dispatch('setFirmaArchivo', { firma: dataUrl });
+                                });
+                            }
+
+                            document.addEventListener('DOMContentLoaded', initFirmaArchivo);
+                            document.addEventListener('livewire:navigated', initFirmaArchivo);
+                            document.addEventListener('livewire:init', () => {
+                                Livewire.hook('morph.updated', initFirmaArchivo);
+                                Livewire.hook('commit', ({ succeed }) => succeed(() => setTimeout(initFirmaArchivo, 50)));
+                            });
+                            setTimeout(initFirmaArchivo, 400);
+
+                            const observer = new MutationObserver(() => initFirmaArchivo());
                             observer.observe(document.body, { childList: true, subtree: true });
                         })();
                     </script>
