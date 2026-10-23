@@ -591,12 +591,8 @@ class Formulario extends Component
             : ['nombre_completo'];
 
         $base = array_merge($base, [
-            'email',
-            'direccion',
             'pais',
             'departamento',
-            'ciudad',
-            'telefono',
             'email_contacto',
 
             'nombre_0',
@@ -605,29 +601,9 @@ class Formulario extends Component
             'cargo_0',
             'area_0',
 
-            'rep_primer_nombre',
-            'rep_primer_apellido',
-            'rep_segundo_apellido',
-            'rep_tipo_identificacion',
-            'rep_numero_documento',
-
             'entidad_bancaria',
             'tipo_cuenta',
             'numero_cuenta',
-
-            // 'ingresos_operacionales',
-            // 'utilidad_neta',
-            // 'depreciaciones',
-            // 'activo_no_corriente',
-            // 'pasivo_largo_plazo',
-            // 'total_obligaciones',
-
-            // 'utilidad_operacional',
-            // 'utilidades_acumuladas',
-            // 'activo_corriente',
-            // 'pasivo_corto_plazo',
-            // 'patrimonio',
-            // 'capital_social',
 
             'decl_origen_ingresos',
             'decl_sagrilaft',
@@ -635,19 +611,18 @@ class Formulario extends Component
             'actividad_economica',
 
             'contribuyente_renta',
+            'regimen_simple',
+            'facturador_electronico',
             'regimen_iva',
             'agente_retenedor_iva',
             'responsable_ica',
 
-            'pep_principal_recursos_publicos',
-            'pep_principal_poder_publico',
-            'pep_principal_reconocimiento',
-            'pep_principal_obligaciones_exterior',
+            'transacciones_extranjera',
+            'productos_exterior',
+            'cuentas_extranjera',
 
             'ciiu_principal',
             'descripcion_principal',
-            'ciiu_secundario',
-            'descripcion_secundaria',
             'medio_pago',
             'relacionado_pep',
 
@@ -657,6 +632,25 @@ class Formulario extends Component
 
         if ($this->tercero->tipo == 'juridica') {
             $base = array_merge($base, [
+                'email',
+                'direccion',
+                'telefono',
+                'ciudad',
+
+                'fecha_matricula',
+                'tipo_sociedad',
+
+                'rep_primer_nombre',
+                'rep_primer_apellido',
+                'rep_segundo_apellido',
+                'rep_tipo_identificacion',
+                'rep_numero_documento',
+
+                'pep_principal_recursos_publicos',
+                'pep_principal_poder_publico',
+                'pep_principal_reconocimiento',
+                'pep_principal_obligaciones_exterior',
+
                 // AHORA agregamos los del suplente
                 'sup_primer_nombre',
                 'sup_primer_apellido',
@@ -668,6 +662,26 @@ class Formulario extends Component
                 'pep_suplente_poder_publico',
                 'pep_suplente_reconocimiento',
                 'pep_suplente_obligaciones_exterior',
+
+                'ingresos_operacionales',
+                'utilidad_neta',
+                'depreciaciones',
+                'activo_no_corriente',
+                'pasivo_largo_plazo',
+                'total_obligaciones',
+
+                'utilidad_operacional',
+                'utilidades_acumuladas',
+                'activo_corriente',
+                'pasivo_corto_plazo',
+                'patrimonio',
+                'capital_social',
+
+                'acc_tipo_id_0',
+                'acc_documento_0',
+                'acc_nombre_0',
+                'acc_nacionalidad_0',
+                'acc_porcentaje_0',
             ]);
         }
 

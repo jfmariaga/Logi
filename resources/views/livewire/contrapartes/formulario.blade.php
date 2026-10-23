@@ -1,5 +1,24 @@
 <div>
     <style>
+        /* ASTERISCO DE CAMPO OBLIGATORIO */
+        .text-danger {
+            color: #dc3545 !important;
+        }
+
+        /* NOTA "OBLIGATORIO SOLO PARA JURÍDICA" */
+        .badge {
+            display: inline-block;
+            padding: .25em .6em;
+            border-radius: .5rem;
+            font-size: 11px;
+            vertical-align: middle;
+        }
+
+        .badge.bg-secondary {
+            background-color: #6c757d !important;
+            color: #fff !important;
+        }
+
         /* CONTENEDOR */
         .audit-card {
             background: #ffffff;
@@ -271,6 +290,18 @@
                         </div>
                     @endif
 
+                    @php
+                        $obligatorios = $this->getCamposObligatorios();
+                        $esJuridica = $tercero->tipo == 'juridica';
+                        $req = fn($campo) => in_array($campo, $obligatorios)
+                            ? ' <span class="text-danger" title="Campo obligatorio">*</span>'
+                            : '';
+                        $notaJuridica = ' <span class="badge bg-secondary ms-2" style="font-weight:normal;">Obligatorio solo para Jurídica</span>';
+                    @endphp
+                    <div class="text-end mb-2">
+                        <span class="text-danger">*</span> <small class="text-muted">Campo obligatorio</small>
+                    </div>
+
                     <!-- SECCIÓN GENERAL -->
                     <table class="tabla-corporativa">
 
@@ -281,7 +312,7 @@
                         </tr>
 
                         <tr>
-                            <td class="label-td">Tipo de persona</td>
+                            <td class="label-td">Tipo de persona <span class="text-danger">*</span></td>
                             <td>
                                 <label class="me-3">
                                     <input type="radio" name="tipo_persona" value="natural"
@@ -293,7 +324,7 @@
                                 </label>
                             </td>
 
-                            <td class="label-td">Relación con la empresa</td>
+                            <td class="label-td">Relación con la empresa <span class="text-danger">*</span></td>
                             <td>
                                 <label class="me-3">
                                     <input type="checkbox" wire:model.defer="datos.es_proveedor"
@@ -331,13 +362,13 @@
 
                         <tr>
                             @if ($tercero->tipo == 'juridica')
-                                <td class="label-td">Razón Social / Nombre Persona Natural</td>
+                                <td class="label-td">Razón Social / Nombre Persona Natural <span class="text-danger">*</span></td>
                                 <td colspan="3">
                                     <input class="input-corporativo" wire:model.defer="datos.razon_social"
                                         wire:change="guardar('razon_social','text')">
                                 </td>
                             @else
-                                <td class="label-td">Razón Social / Nombre Persona Natural</td>
+                                <td class="label-td">Razón Social / Nombre Persona Natural <span class="text-danger">*</span></td>
                                 <td colspan="3">
                                     <input class="input-corporativo" wire:model.defer="datos.nombre_completo"
                                         wire:change="guardar('nombre_completo','text')">
@@ -364,13 +395,13 @@
                         </tr>
 
                         <tr>
-                            <td class="label-td">Email Corporativo</td>
+                            <td class="label-td">Email Corporativo {!! $req('email') !!}</td>
                             <td>
                                 <input class="input-corporativo" wire:model.defer="datos.email"
                                     wire:change="guardar('email','email')">
                             </td>
 
-                            <td class="label-td">Dirección empresa</td>
+                            <td class="label-td">Dirección empresa {!! $req('direccion') !!}</td>
                             <td>
                                 <input class="input-corporativo" wire:model.defer="datos.direccion"
                                     wire:change="guardar('direccion','text')">
@@ -378,13 +409,13 @@
                         </tr>
 
                         <tr>
-                            <td class="label-td">Fecha de Matrícula</td>
+                            <td class="label-td">Fecha de Matrícula {!! $req('fecha_matricula') !!}</td>
                             <td>
                                 <input type="date" class="input-corporativo" wire:model.defer="datos.fecha_matricula"
                                     wire:change="guardar('fecha_matricula','date')">
                             </td>
 
-                            <td class="label-td">Tipo de Sociedad</td>
+                            <td class="label-td">Tipo de Sociedad {!! $req('tipo_sociedad') !!}</td>
                             <td>
                                 <select class="input-corporativo" wire:model.defer="datos.tipo_sociedad"
                                     wire:change="guardar('tipo_sociedad','select')">
@@ -416,7 +447,7 @@
                         </tr>
 
                         <tr>
-                            <td class="label-td">País</td>
+                            <td class="label-td">País <span class="text-danger">*</span></td>
                             <td>
                                 <select class="input-corporativo" wire:model="datos.pais"
                                     wire:change="guardar('pais','select')">
@@ -427,7 +458,7 @@
                                 </select>
                             </td>
 
-                            <td class="label-td">Departamento</td>
+                            <td class="label-td">Departamento <span class="text-danger">*</span></td>
                             <td>
                                 <select class="input-corporativo" wire:model="datos.departamento"
                                     wire:change="cambioDepartamento($event.target.value)">
@@ -441,7 +472,7 @@
 
                         <tr>
 
-                            <td class="label-td">Ciudad</td>
+                            <td class="label-td">Ciudad {!! $req('ciudad') !!}</td>
                             <td>
                                 <div wire:loading wire:target="cambioDepartamento" class="text-red small mb-1">
                                     Cargando ciudades...
@@ -455,7 +486,7 @@
                                 </select>
                             </td>
 
-                            <td class="label-td">Teléfono Corporativo</td>
+                            <td class="label-td">Teléfono Corporativo {!! $req('telefono') !!}</td>
                             <td>
                                 <input class="input-corporativo" wire:model.defer="datos.telefono"
                                     wire:change="guardar('telefono','text')">
@@ -463,7 +494,7 @@
                         </tr>
 
                         <tr>
-                            <td class="label-td">Email de Contacto</td>
+                            <td class="label-td">Email de Contacto <span class="text-danger">*</span></td>
                             <td>
                                 <input class="input-corporativo" wire:model.defer="datos.email_contacto"
                                     wire:change="guardar('email_contacto','email')">
@@ -480,6 +511,8 @@
                         <tr class="titulo-seccion">
                             <td colspan="5">
                                 INFORMACIÓN DE CONTACTOS
+                                <span class="text-danger" title="Se requiere al menos el primer contacto">*</span>
+                                <small class="fw-normal">(al menos un contacto)</small>
                             </td>
                         </tr>
 
@@ -544,7 +577,7 @@
 
                         <tr class="titulo-seccion">
                             <td colspan="4">
-                                REPRESENTANTE LEGAL PRINCIPAL
+                                REPRESENTANTE LEGAL PRINCIPAL {!! $notaJuridica !!}
                             </td>
                         </tr>
 
@@ -604,7 +637,7 @@
 
                         <tr class="titulo-seccion">
                             <td colspan="4">
-                                DECLARACIÓN PEP - REPRESENTANTE LEGAL PRINCIPAL (Persona Expuesta Políticamente)
+                                DECLARACIÓN PEP - REPRESENTANTE LEGAL PRINCIPAL (Persona Expuesta Políticamente) {!! $notaJuridica !!}
                             </td>
                         </tr>
 
@@ -691,7 +724,7 @@
                     <table class="tabla-corporativa mt-3">
                         <tr class="titulo-seccion">
                             <td colspan="4">
-                                REPRESENTANTE LEGAL SUPLENTE
+                                REPRESENTANTE LEGAL SUPLENTE {!! $notaJuridica !!}
                             </td>
                         </tr>
                         <tr>
@@ -750,7 +783,7 @@
 
                         <tr class="titulo-seccion">
                             <td colspan="4">
-                                DECLARACIÓN PEP - REPRESENTANTE LEGAL SUPLENTE (Persona Expuesta Políticamente)
+                                DECLARACIÓN PEP - REPRESENTANTE LEGAL SUPLENTE (Persona Expuesta Políticamente) {!! $notaJuridica !!}
                             </td>
                         </tr>
 
@@ -838,7 +871,10 @@
                     <table class="tabla-corporativa mt-3">
                         <tr class="titulo-seccion">
                             <td colspan="8">
-                                INFORMACIÓN SOBRE COMPOSICIÓN ACCIONARIA MAYOR AL 5%
+                                INFORMACIÓN SOBRE COMPOSICIÓN ACCIONARIA MAYOR AL 5% {!! $notaJuridica !!}
+                                @if ($esJuridica)
+                                    <small class="fw-normal">(se requiere al menos la primera fila)</small>
+                                @endif
                             </td>
                         </tr>
                         <tr class="subtitulo-tabla">
@@ -952,7 +988,7 @@
                         </tr>
 
                         <tr>
-                            <td class="label-td">Entidad Bancaria</td>
+                            <td class="label-td">Entidad Bancaria <span class="text-danger">*</span></td>
                             <td>
                                 <select class="input-corporativo" wire:model.defer="datos.entidad_bancaria"
                                     wire:change="guardar('entidad_bancaria','select')">
@@ -994,7 +1030,7 @@
                                 </select>
                             </td>
 
-                            <td class="label-td">Tipo de Cuenta</td>
+                            <td class="label-td">Tipo de Cuenta <span class="text-danger">*</span></td>
                             <td>
                                 <select class="input-corporativo" wire:model.defer="datos.tipo_cuenta"
                                     wire:change="guardar('tipo_cuenta','select')">
@@ -1007,7 +1043,7 @@
                         </tr>
 
                         <tr>
-                            <td class="label-td">Número de Cuenta</td>
+                            <td class="label-td">Número de Cuenta <span class="text-danger">*</span></td>
                             <td colspan="3">
                                 <input class="input-corporativo" wire:model.defer="datos.numero_cuenta"
                                     wire:change="guardar('numero_cuenta','text')">
@@ -1021,7 +1057,7 @@
 
                         <tr class="titulo-seccion">
                             <td colspan="4">
-                                INFORMACIÓN FINANCIERA
+                                INFORMACIÓN FINANCIERA {!! $notaJuridica !!}
                             </td>
                         </tr>
 
@@ -1125,7 +1161,7 @@
                         <tr>
                             <td colspan="4" class="p-2">
 
-                                <strong>Actividad económica:</strong>
+                                <strong>Actividad económica:</strong> <span class="text-danger">*</span>
 
                                 <label class="ms-3">
                                     <input type="checkbox" wire:model="actividades" wire:change="guardarActividades"
@@ -1176,7 +1212,7 @@
                                 <label>
                                     <input type="checkbox" wire:model.defer="datos.decl_origen_ingresos"
                                         wire:change="guardar('decl_origen_ingresos','checkbox')">
-                                    Acepto y certifico esta declaración
+                                    Acepto y certifico esta declaración <span class="text-danger">*</span>
                                 </label>
                             </td>
                         </tr>
@@ -1217,7 +1253,7 @@
                                 <label>
                                     <input type="checkbox" wire:model.defer="datos.decl_sagrilaft"
                                         wire:change="guardar('decl_sagrilaft','checkbox')">
-                                    Acepto autorización SAGRILAFT
+                                    Acepto autorización SAGRILAFT <span class="text-danger">*</span>
                                 </label>
                             </td>
                         </tr>
@@ -1293,7 +1329,7 @@
                                 <label>
                                     <input type="checkbox" wire:model.defer="datos.decl_datos_personales"
                                         wire:change="guardar('decl_datos_personales','checkbox')">
-                                    Acepto autorización de datos personales
+                                    Acepto autorización de datos personales <span class="text-danger">*</span>
                                 </label>
                             </td>
                         </tr>
@@ -1317,7 +1353,7 @@
                         </tr>
 
                         <tr>
-                            <td class="label-td">Contribuyente del impuesto de Renta</td>
+                            <td class="label-td">Contribuyente del impuesto de Renta <span class="text-danger">*</span></td>
                             <td colspan="5">
                                 <label class="me-3">
                                     <input type="radio" name="contribuyente_renta"
@@ -1384,7 +1420,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="label-td">Régimen simple de tributación</td>
+                            <td class="label-td">Régimen simple de tributación <span class="text-danger">*</span></td>
                             <td>
                                 <label class="me-3">
                                     <input type="radio" name="regimen_simple" wire:model="datos.regimen_simple"
@@ -1397,7 +1433,7 @@
                                 </label>
                             </td>
 
-                            <td class="label-td">Facturador Electrónico</td>
+                            <td class="label-td">Facturador Electrónico <span class="text-danger">*</span></td>
                             <td colspan="3">
                                 <label class="me-3">
                                     <input type="radio" name="facturador_electronico"
@@ -1423,7 +1459,7 @@
                         </tr>
 
                         <tr>
-                            <td class="label-td">Régimen de IVA</td>
+                            <td class="label-td">Régimen de IVA <span class="text-danger">*</span></td>
                             <td>
                                 <select class="input-corporativo" wire:model.defer="datos.regimen_iva"
                                     wire:change="guardar('regimen_iva','select')">
@@ -1435,7 +1471,7 @@
                                 </select>
                             </td>
 
-                            <td class="label-td">Agente Retenedor IVA</td>
+                            <td class="label-td">Agente Retenedor IVA <span class="text-danger">*</span></td>
                             <td colspan="3">
                                 <label class="me-3">
                                     <input type="radio" name="agente_retenedor_iva"
@@ -1460,7 +1496,7 @@
                         </tr>
 
                         <tr>
-                            <td class="label-td">Responsable de Industria y Comercio</td>
+                            <td class="label-td">Responsable de Industria y Comercio <span class="text-danger">*</span></td>
                             <td colspan="5">
                                 <label class="me-3">
                                     <input type="radio" name="responsable_ica" wire:model="datos.responsable_ica"
@@ -1506,7 +1542,7 @@
                         </tr>
 
                         <tr>
-                            <td colspan="3">¿Realiza transacciones en moneda extranjera?</td>
+                            <td colspan="3">¿Realiza transacciones en moneda extranjera? <span class="text-danger">*</span></td>
                             <td colspan="4">
                                 <label class="me-3">
                                     <input type="radio" name="transacciones_extranjera"
@@ -1523,7 +1559,7 @@
                         </tr>
 
                         <tr>
-                            <td colspan="3">¿Posee productos financieros en el exterior?</td>
+                            <td colspan="3">¿Posee productos financieros en el exterior? <span class="text-danger">*</span></td>
                             <td colspan="4">
                                 <label class="me-3">
                                     <input type="radio" name="productos_exterior"
@@ -1540,7 +1576,7 @@
                         </tr>
 
                         <tr>
-                            <td colspan="3">¿Posee cuentas en moneda extranjera?</td>
+                            <td colspan="3">¿Posee cuentas en moneda extranjera? <span class="text-danger">*</span></td>
                             <td colspan="4">
                                 <label class="me-3">
                                     <input type="radio" name="cuentas_extranjera"
@@ -1687,7 +1723,7 @@
 
                         <tr>
                             <td class="label-td" style="width:25%">
-                                Relacione la Actividad económica - CIIU de la contraparte
+                                Relacione la Actividad económica - CIIU de la contraparte <span class="text-danger">*</span>
                             </td>
 
                             <td style="width:35%">
@@ -1698,7 +1734,7 @@
                             </td>
 
                             <td class="label-td" style="width:15%">
-                                Descripción Principal
+                                Descripción Principal <span class="text-danger">*</span>
                             </td>
 
                             <td style="width:25%">
@@ -1731,7 +1767,7 @@
 
                         <tr>
                             <td class="label-td">
-                                ¿Cuál es el medio de pago o recaudo de la operación?
+                                ¿Cuál es el medio de pago o recaudo de la operación? <span class="text-danger">*</span>
                             </td>
 
                             <td>
@@ -1747,7 +1783,7 @@
                             </td>
 
                             <td class="label-td">
-                                ¿Cuenta con un relacionado PEP?
+                                ¿Cuenta con un relacionado PEP? <span class="text-danger">*</span>
                             </td>
 
                             <td>
@@ -1772,7 +1808,7 @@
 
                         <tr>
                             <td class="label-td" style="width:25%">
-                                ¿Está usted ubicado en alguno de estos países?
+                                ¿Está usted ubicado en alguno de estos países? <span class="text-danger">*</span>
                             </td>
 
                             <td style="width:35%">
@@ -1813,7 +1849,7 @@
                             </td>
 
                             <td class="label-td" style="width:20%">
-                                ¿Desarrolla actividades con Activos Virtuales?
+                                ¿Desarrolla actividades con Activos Virtuales? <span class="text-danger">*</span>
                             </td>
 
                             <td style="width:20%">
