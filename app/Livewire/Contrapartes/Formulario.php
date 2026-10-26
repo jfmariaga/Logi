@@ -363,9 +363,7 @@ class Formulario extends Component
             ];
         } else {
             $base = [
-                'Cámara de Comercio',
                 'RUT',
-                'Estados Financieros',
                 'Certificación Bancaria',
                 'Referencias Comerciales',
                 'Fotocopia Cédula Representante Legal',
@@ -409,6 +407,44 @@ class Formulario extends Component
                     'cargado' => false
                 ]
             );
+        }
+
+        $this->sincronizarDocumentosPorTipo();
+    }
+
+    /**
+     * 'Cámara de Comercio' y 'Estados Financieros' solo aplican a Jurídica,
+     * 'Declaración de renta del último año' solo a Natural. Si el tipo cambia
+     * (o si el registro quedó obligatorio con una versión anterior de esta lista),
+     * se limpian aquí en vez de quedar bloqueando el envío para siempre.
+     */
+    private function sincronizarDocumentosPorTipo()
+    {
+        $dependientesDeTipo = ['Cámara de Comercio', 'Estados Financieros', 'Declaración de renta del último año'];
+        $requeridos = $this->documentosRequeridos();
+
+        foreach ($dependientesDeTipo as $doc) {
+            $existente = TerceroDocumento::where('tercero_id', $this->tercero->id)
+                ->where('tipo_documento', $doc)
+                ->first();
+
+            if (!$existente) {
+                continue;
+            }
+
+            if (in_array($doc, $requeridos)) {
+                if (!$existente->obligatorio) {
+                    $existente->update(['obligatorio' => true]);
+                }
+                continue;
+            }
+
+            // Ya no aplica para este tipo de persona
+            if (!$existente->cargado) {
+                $existente->delete();
+            } elseif ($existente->obligatorio) {
+                $existente->update(['obligatorio' => false]);
+            }
         }
     }
 
