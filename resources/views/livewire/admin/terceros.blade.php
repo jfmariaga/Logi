@@ -110,13 +110,18 @@
                         <td>${t.enviado}</td>
                         <td>${t.actualizado}</td>
                         <td>
-                            @can('ver formularios')
-                                <div class="d-flex">
+                            <div class="d-flex">
+                                @can('ver formularios')
                                     <x-buttonsm click="goDetalle('${t.id}')" color="primary" title="Ver formulario">
                                         <i class="la la-eye"></i>
                                     </x-buttonsm>
-                                </div>
-                            @endcan
+                                @endcan
+                                @can('eliminar formularios')
+                                    <x-buttonsm click="confirmDelete('${t.id}')" color="danger" title="Eliminar formulario" classextra="ml-1">
+                                        <i class="la la-trash"></i>
+                                    </x-buttonsm>
+                                @endcan
+                            </div>
                         </td>
                     </tr>`;
 
@@ -126,6 +131,16 @@
 
                     goDetalle(id) {
                         location.href = `/admin/terceros/${id}/auditar`;
+                    },
+
+                    confirmDelete(id) {
+                        alertClickCallback('Eliminar',
+                            'El formulario y todos sus datos, documentos y firmas se eliminarán por completo. Esta acción no se puede deshacer.',
+                            'warning', 'Eliminar', 'Cancelar', async () => {
+                                await @this.eliminarTercero(id);
+                                $(`#tercero_${id}`).remove();
+                                toastRight('error', 'Formulario eliminado');
+                            });
                     }
 
                 }));

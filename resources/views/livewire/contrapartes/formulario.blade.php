@@ -1145,7 +1145,11 @@
                             <td colspan="4" class="p-3 text-justify">
                                 Declaro expresamente que: <br>
                                 1. Los recursos que poseo proviene de las siguientes fuentes (detalle, ocupación,
-                                oficio, actividad o negocio): <br>
+                                oficio, actividad o negocio): <span class="text-danger">*</span>
+                                <input type="text" class="input-corporativo" style="width: 70%; display:inline-block;"
+                                    placeholder="Detalle" wire:model.defer="datos.detalle_origen_fondos"
+                                    wire:change="guardar('detalle_origen_fondos','text')">
+                                <br>
                                 2. Tanto mi actividad, profesión u oficio es lícita y la ejerzo dentro del marco legal y
                                 los recursos que poseo no provienen de actividades ilícitas de las contempladas en el
                                 Código penal Colombiano <br>

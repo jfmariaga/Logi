@@ -137,6 +137,10 @@ class Formulario extends Component
         $this->inicializarDocumentos();
         $this->limpiarFormularioFirmadoLegado();
         $this->cargarFirmasActuales();
+
+        if (!$this->yaEnviado()) {
+            $this->calcularProgreso();
+        }
     }
 
     /**
@@ -645,6 +649,7 @@ class Formulario extends Component
             'decl_sagrilaft',
             'decl_datos_personales',
             'actividad_economica',
+            'detalle_origen_fondos',
 
             'contribuyente_renta',
             'regimen_simple',
@@ -1171,7 +1176,7 @@ class Formulario extends Component
 
         if (in_array($campo, $camposMonetarios)) {
             $seccion = 'financiera';
-        } elseif (in_array($campo, ['decl_sagrilaft', 'decl_datos_personales', 'decl_origen_ingresos'])) {
+        } elseif (in_array($campo, ['decl_sagrilaft', 'decl_datos_personales', 'decl_origen_ingresos', 'detalle_origen_fondos'])) {
             $seccion = 'declaraciones';
         } else {
             $seccion = 'general';

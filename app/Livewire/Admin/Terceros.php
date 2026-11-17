@@ -4,6 +4,7 @@ namespace App\Livewire\Admin;
 
 use Livewire\Component;
 use App\Models\Tercero;
+use Illuminate\Support\Facades\Storage;
 
 class Terceros extends Component
 {
@@ -82,6 +83,33 @@ class Terceros extends Component
         $this->cargarResumen();
 
         return $data;
+    }
+
+    public function eliminarTercero($id)
+    {
+        if (!auth()->user()->can('eliminar formularios')) {
+            abort(403);
+        }
+
+        $tercero = Tercero::with(['documentos', 'firma'])->findOrFail($id);
+
+        foreach ($tercero->documentos as $documento) {
+            if ($documento->archivo && Storage::disk('public')->exists($documento->archivo)) {
+                Storage::disk('public')->delete($documento->archivo);
+            }
+        }
+
+        if ($tercero->firma && $tercero->firma->archivo && Storage::disk('public')->exists($tercero->firma->archivo)) {
+            Storage::disk('public')->delete($tercero->firma->archivo);
+        }
+
+        $tercero->formularios()->delete();
+        $tercero->documentos()->delete();
+        $tercero->firma()->delete();
+        $tercero->delete();
+
+        $this->cargarResumen();
+        $this->dispatch('toast-ok', msg: 'Formulario eliminado correctamente.');
     }
 
     public function render()
